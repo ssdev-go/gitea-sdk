@@ -51,13 +51,25 @@ type ListIssueOption struct {
 	State string
 }
 
-// ListRepoIssues list one repos' issues
+// ListIssues returns all issues assigned the authenticated user
+func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, error) {
+	issues := make([]*Issue, 0, 10)
+	return issues, c.getParsedResponse("GET", fmt.Sprintf("/issues?page=%d", opt.Page), nil, nil, &issues)
+}
+
+// ListUserIssues returns all issues assigned to the authenticated user
+func (c *Client) ListUserIssues(opt ListIssueOption) ([]*Issue, error) {
+	issues := make([]*Issue, 0, 10)
+	return issues, c.getParsedResponse("GET", fmt.Sprintf("/user/issues?page=%d", opt.Page), nil, nil, &issues)
+}
+
+// ListRepoIssues returns all issues for a given repository
 func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, error) {
 	issues := make([]*Issue, 0, 10)
 	return issues, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues?page=%d", owner, repo, opt.Page), nil, nil, &issues)
 }
 
-// GetIssue get some one issue of repository
+// GetIssue returns a single issue for a given repository
 func (c *Client) GetIssue(owner, repo string, index int64) (*Issue, error) {
 	issue := new(Issue)
 	return issue, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d", owner, repo, index), nil, nil, issue)
@@ -73,7 +85,7 @@ type CreateIssueOption struct {
 	Closed    bool    `json:"closed"`
 }
 
-// CreateIssue create an issue with options
+// CreateIssue create a new issue for a given repository
 func (c *Client) CreateIssue(owner, repo string, opt CreateIssueOption) (*Issue, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -93,7 +105,7 @@ type EditIssueOption struct {
 	State     *string `json:"state"`
 }
 
-// EditIssue modify an issue of repository
+// EditIssue modify an existing issue for a given repository
 func (c *Client) EditIssue(owner, repo string, index int64, opt EditIssueOption) (*Issue, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
