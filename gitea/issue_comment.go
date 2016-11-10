@@ -30,7 +30,7 @@ func (c *Client) ListIssueComments(owner, repo string, index int64) ([]*Comment,
 }
 
 // ListRepoIssueComments list comments for a given repo.
-func (c *Client) ListRepoIssuecomments(owner, repo string) ([]*Comment, error) {
+func (c *Client) ListRepoIssueComments(owner, repo string) ([]*Comment, error) {
 	comments := make([]*Comment, 0, 10)
 	return comments, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/comments", owner, repo), nil, nil, &comments)
 }
