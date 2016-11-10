@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// Version return the library version
 func Version() string {
 	return "0.12.3"
 }

@@ -14,9 +14,11 @@ import (
 )
 
 var (
+	// ErrInvalidReceiveHook FIXME
 	ErrInvalidReceiveHook = errors.New("Invalid JSON payload received over webhook")
 )
 
+// Hook a hook is a web hook when one repository changed
 type Hook struct {
 	ID      int64             `json:"id"`
 	Type    string            `json:"type"`
@@ -28,11 +30,13 @@ type Hook struct {
 	Created time.Time         `json:"created_at"`
 }
 
+// ListRepoHooks list all the hooks of one repository
 func (c *Client) ListRepoHooks(user, repo string) ([]*Hook, error) {
 	hooks := make([]*Hook, 0, 10)
 	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), nil, nil, &hooks)
 }
 
+// CreateHookOption options when create a hook
 type CreateHookOption struct {
 	Type   string            `json:"type" binding:"Required"`
 	Config map[string]string `json:"config" binding:"Required"`
@@ -40,6 +44,7 @@ type CreateHookOption struct {
 	Active bool              `json:"active"`
 }
 
+// CreateRepoHook create one hook with options
 func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*Hook, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -49,12 +54,14 @@ func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*Hook,
 	return h, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), jsonHeader, bytes.NewReader(body), h)
 }
 
+// EditHookOption options when modify one hook
 type EditHookOption struct {
 	Config map[string]string `json:"config"`
 	Events []string          `json:"events"`
 	Active *bool             `json:"active"`
 }
 
+// EditRepoHook modify one hook with hook id and options
 func (c *Client) EditRepoHook(user, repo string, id int64, opt EditHookOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -64,23 +71,26 @@ func (c *Client) EditRepoHook(user, repo string, id int64, opt EditHookOption) e
 	return err
 }
 
+// DeleteRepoHook delete one hook with hook id
 func (c *Client) DeleteRepoHook(user, repo string, id int64) error {
 	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/hooks/%d", user, repo, id), nil, nil)
 	return err
 }
 
+// Payloader payload is some part of one hook
 type Payloader interface {
 	SetSecret(string)
 	JSONPayload() ([]byte, error)
 }
 
+// PayloadUser FIXME
 type PayloadUser struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	UserName string `json:"username"`
 }
 
-// FIXME: consider use same format as API when commits API are added.
+// PayloadCommit FIXME: consider use same format as API when commits API are added.
 type PayloadCommit struct {
 	ID        string       `json:"id"`
 	Message   string       `json:"message"`
@@ -103,6 +113,7 @@ var (
 //  \______  /|__|    \___  >____  /__|  \___  >
 //         \/             \/     \/          \/
 
+// CreatePayload FIXME
 type CreatePayload struct {
 	Secret  string      `json:"secret"`
 	Ref     string      `json:"ref"`
@@ -111,10 +122,12 @@ type CreatePayload struct {
 	Sender  *User       `json:"sender"`
 }
 
+// SetSecret FIXME
 func (p *CreatePayload) SetSecret(secret string) {
 	p.Secret = secret
 }
 
+// JSONPayload return payload information
 func (p *CreatePayload) JSONPayload() ([]byte, error) {
 	return json.MarshalIndent(p, "", "  ")
 }
@@ -159,10 +172,12 @@ type PushPayload struct {
 	Sender     *User            `json:"sender"`
 }
 
+// SetSecret FIXME
 func (p *PushPayload) SetSecret(secret string) {
 	p.Secret = secret
 }
 
+// JSONPayload FIXME
 func (p *PushPayload) JSONPayload() ([]byte, error) {
 	return json.MarshalIndent(p, "", "  ")
 }
@@ -195,24 +210,36 @@ func (p *PushPayload) Branch() string {
 // |___/____  >____  >____/  \___  >
 //          \/     \/            \/
 
+// HookIssueAction FIXME
 type HookIssueAction string
 
 const (
-	HOOK_ISSUE_OPENED        HookIssueAction = "opened"
-	HOOK_ISSUE_CLOSED        HookIssueAction = "closed"
-	HOOK_ISSUE_REOPENED      HookIssueAction = "reopened"
-	HOOK_ISSUE_EDITED        HookIssueAction = "edited"
-	HOOK_ISSUE_ASSIGNED      HookIssueAction = "assigned"
-	HOOK_ISSUE_UNASSIGNED    HookIssueAction = "unassigned"
-	HOOK_ISSUE_LABEL_UPDATED HookIssueAction = "label_updated"
-	HOOK_ISSUE_LABEL_CLEARED HookIssueAction = "label_cleared"
-	HOOK_ISSUE_SYNCHRONIZED  HookIssueAction = "synchronized"
+	// HookIssueOpened opened
+	HookIssueOpened HookIssueAction = "opened"
+	// HookIssueClosed closed
+	HookIssueClosed HookIssueAction = "closed"
+	// HookIssueReOpened reopened
+	HookIssueReOpened HookIssueAction = "reopened"
+	// HookIssueEdited edited
+	HookIssueEdited HookIssueAction = "edited"
+	// HookIssueAssigned assigned
+	HookIssueAssigned HookIssueAction = "assigned"
+	// HookIssueUnassigned unassigned
+	HookIssueUnassigned HookIssueAction = "unassigned"
+	// HookIssueLabelUpdated label_updated
+	HookIssueLabelUpdated HookIssueAction = "label_updated"
+	// HookIssueLabelCleared label_cleared
+	HookIssueLabelCleared HookIssueAction = "label_cleared"
+	// HookIssueSynchronized synchronized
+	HookIssueSynchronized HookIssueAction = "synchronized"
 )
 
+// ChangesFromPayload FIXME
 type ChangesFromPayload struct {
 	From string `json:"from"`
 }
 
+// ChangesPayload FIXME
 type ChangesPayload struct {
 	Title *ChangesFromPayload `json:"title,omitempty"`
 	Body  *ChangesFromPayload `json:"body,omitempty"`
@@ -236,10 +263,12 @@ type PullRequestPayload struct {
 	Sender      *User           `json:"sender"`
 }
 
+// SetSecret FIXME
 func (p *PullRequestPayload) SetSecret(secret string) {
 	p.Secret = secret
 }
 
+// JSONPayload FIXME
 func (p *PullRequestPayload) JSONPayload() ([]byte, error) {
 	return json.MarshalIndent(p, "", "  ")
 }
