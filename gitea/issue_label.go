@@ -15,6 +15,7 @@ type Label struct {
 	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Color string `json:"color"`
+	URL   string `json:"url"`
 }
 
 // ListRepoLabels list lables of one reppsitory

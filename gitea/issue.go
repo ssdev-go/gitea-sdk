@@ -47,7 +47,8 @@ type Issue struct {
 
 // ListIssueOption list issue options
 type ListIssueOption struct {
-	Page int
+	Page  int
+	State string
 }
 
 // ListRepoIssues list one repos' issues
