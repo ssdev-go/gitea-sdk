@@ -1,7 +1,7 @@
-IMPORT := github.com/go-gitea/go-sdk
+IMPORT := code.gitea.io/sdk
 
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
-GENERATE ?= github.com/go-gitea/go-sdk/gitea
+GENERATE ?= code.gitea.io/sdk/gitea
 
 .PHONY: all
 all: clean test build

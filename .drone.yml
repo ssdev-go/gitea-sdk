@@ -1,6 +1,6 @@
 workspace:
   base: /srv/app
-  path: src/github.com/go-gitea/go-sdk
+  path: src/code.gitea.io/sdk
 
 pipeline:
   testing:
@@ -9,12 +9,13 @@ pipeline:
     commands:
       - make clean
       - make vet
-      - make lint
+      # - make lint
       - make test
       - make build
 
   coverage:
     image: plugins/coverage
+    server: https://coverage.gitea.io
 
   gitter:
     image: plugins/gitter
