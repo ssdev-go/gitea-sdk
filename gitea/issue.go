@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-// PRStateType issue state type
-type PRStateType string
+// StateType issue state type
+type StateType string
 
 const (
-	// PRStateOpen pr is opend
-	PRStateOpen PRStateType = "open"
-	// PRStateClosed pr is closed
-	PRStateClosed PRStateType = "closed"
+	// StateOpen pr is opend
+	StateOpen StateType = "open"
+	// StateClosed pr is closed
+	StateClosed StateType = "closed"
 )
 
 // PullRequestMeta PR info if an issue is a PR
@@ -29,18 +29,18 @@ type PullRequestMeta struct {
 
 // Issue an issue to a repository
 type Issue struct {
-	ID        int64       `json:"id"`
-	Index     int64       `json:"number"`
-	Poster    *User       `json:"user"`
-	Title     string      `json:"title"`
-	Body      string      `json:"body"`
-	Labels    []*Label    `json:"labels"`
-	Milestone *Milestone  `json:"milestone"`
-	Assignee  *User       `json:"assignee"`
-	State     PRStateType `json:"state"`
-	Comments  int         `json:"comments"`
-	Created   time.Time   `json:"created_at"`
-	Updated   time.Time   `json:"updated_at"`
+	ID        int64      `json:"id"`
+	Index     int64      `json:"number"`
+	Poster    *User      `json:"user"`
+	Title     string     `json:"title"`
+	Body      string     `json:"body"`
+	Labels    []*Label   `json:"labels"`
+	Milestone *Milestone `json:"milestone"`
+	Assignee  *User      `json:"assignee"`
+	State     StateType  `json:"state"`
+	Comments  int        `json:"comments"`
+	Created   time.Time  `json:"created_at"`
+	Updated   time.Time  `json:"updated_at"`
 
 	PullRequest *PullRequestMeta `json:"pull_request"`
 }
