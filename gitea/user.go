@@ -14,9 +14,10 @@ type User struct {
 	UserName  string `json:"username"`
 	FullName  string `json:"full_name"`
 	Email     string `json:"email"`
-	AvatarUrl string `json:"avatar_url"`
+	AvatarURL string `json:"avatar_url"`
 }
 
+// GetUserInfo get user info by user's name
 func (c *Client) GetUserInfo(user string) (*User, error) {
 	u := new(User)
 	err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s", user), nil, nil, u)

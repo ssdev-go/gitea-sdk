@@ -39,6 +39,7 @@ type PullRequest struct {
 	MergeBase string        `json:"merge_base"`
 }
 
+// PRBranchInfo base branch info when send a PR
 type PRBranchInfo struct {
 	Name       string      `json:"label"`
 	Ref        string      `json:"ref"`
@@ -47,11 +48,13 @@ type PRBranchInfo struct {
 	Repository *Repository `json:"repo"`
 }
 
+// ListPullRequestsOptions options when list PRs
 type ListPullRequestsOptions struct {
 	Page  int    `json:"page"`
 	State string `json:"state"`
 }
 
+// ListRepoPullRequests list PRs of one repository
 func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOptions) ([]*PullRequest, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -61,11 +64,13 @@ func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOp
 	return prs, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls", owner, repo), jsonHeader, bytes.NewReader(body), &prs)
 }
 
+// GetPullRequest get information of one PR
 func (c *Client) GetPullRequest(owner, repo string, index int64) (*PullRequest, error) {
 	pr := new(PullRequest)
 	return pr, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d", owner, repo, index), nil, nil, pr)
 }
 
+// CreatePullRequestOption options when creating a pull request
 type CreatePullRequestOption struct {
 	Head      string  `json:"head" binding:"Required"`
 	Base      string  `json:"base" binding:"Required"`
@@ -76,6 +81,7 @@ type CreatePullRequestOption struct {
 	Labels    []int64 `json:"labels"`
 }
 
+// CreatePullRequest create pull request with options
 func (c *Client) CreatePullRequest(owner, repo string, opt CreatePullRequestOption) (*PullRequest, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -86,6 +92,7 @@ func (c *Client) CreatePullRequest(owner, repo string, opt CreatePullRequestOpti
 		jsonHeader, bytes.NewReader(body), pr)
 }
 
+// EditPullRequestOption options when modify pull request
 type EditPullRequestOption struct {
 	Title     string  `json:"title"`
 	Body      string  `json:"body"`
@@ -95,6 +102,7 @@ type EditPullRequestOption struct {
 	State     *string `json:"state"`
 }
 
+// EditPullRequest modify pull request with PR id and options
 func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRequestOption) (*PullRequest, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -105,11 +113,13 @@ func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRe
 		jsonHeader, bytes.NewReader(body), pr)
 }
 
+// MergePullRequest merge a PR to repository by PR id
 func (c *Client) MergePullRequest(owner, repo string, index int64) error {
 	_, err := c.getResponse("POST", fmt.Sprintf("/repos/%s/%s/pulls/%d/merge", owner, repo, index), nil, nil)
 	return err
 }
 
+// IsPullRequestMerged test if one PR is merged to one repository
 func (c *Client) IsPullRequestMerged(owner, repo string, index int64) (bool, error) {
 	statusCode, err := c.getStatusCode("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d/merge", owner, repo, index), nil, nil)
 
