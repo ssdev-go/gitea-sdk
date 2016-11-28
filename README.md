@@ -11,6 +11,15 @@ This project acts as a client SDK implementation written in Go to interact with
 the Gitea API implementation. For further informations take a look at the
 current [documentation](https://godoc.org/code.gitea.io/sdk/gitea).
 
+## Contributing
+
+Fork -> Patch -> Push -> Pull Request
+
+## Authors
+
+* [Maintainers](https://github.com/orgs/go-gitea/people)
+* [Contributors](https://github.com/go-gitea/go-sdk/graphs/contributors)
+
 ## License
 
 This project is under the MIT License. See the [LICENSE](LICENSE) file for the
