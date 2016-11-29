@@ -116,6 +116,7 @@ var (
 // CreatePayload FIXME
 type CreatePayload struct {
 	Secret  string      `json:"secret"`
+	Sha     string      `json:"sha"`
 	Ref     string      `json:"ref"`
 	RefType string      `json:"ref_type"`
 	Repo    *Repository `json:"repository"`
