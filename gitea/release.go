@@ -13,19 +13,20 @@ import (
 
 // Release represents a repository release
 type Release struct {
-	ID           int64     `json:"id"`
-	TagName      string    `json:"tag_name"`
-	Target       string    `json:"target_commitish"`
-	Title        string    `json:"name"`
-	Note         string    `json:"body"`
-	URL          string    `json:"url"`
-	TarURL       string    `json:"tarball_url"`
-	ZipURL       string    `json:"zipball_url"`
-	IsDraft      bool      `json:"draft"`
-	IsPrerelease bool      `json:"prerelease"`
-	CreatedAt    time.Time `json:"created_at"`
-	PublishedAt  time.Time `json:"published_at"`
-	Publisher    *User     `json:"author"`
+	ID           int64         `json:"id"`
+	TagName      string        `json:"tag_name"`
+	Target       string        `json:"target_commitish"`
+	Title        string        `json:"name"`
+	Note         string        `json:"body"`
+	URL          string        `json:"url"`
+	TarURL       string        `json:"tarball_url"`
+	ZipURL       string        `json:"zipball_url"`
+	IsDraft      bool          `json:"draft"`
+	IsPrerelease bool          `json:"prerelease"`
+	CreatedAt    time.Time     `json:"created_at"`
+	PublishedAt  time.Time     `json:"published_at"`
+	Publisher    *User         `json:"author"`
+	Attachments  []*Attachment `json:"assets"`
 }
 
 // ListReleases list releases of a repository
@@ -42,6 +43,33 @@ func (c *Client) GetRelease(user, repo string, id int64) (*Release, error) {
 	r := new(Release)
 	err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/%d", user, repo, id),
+		nil, nil, &r)
+	return r, err
+}
+
+// ListReleaseAttachments gets all the assets of a release in a repository
+func (c *Client) ListReleaseAttachments(user, repo string, id int64) ([]*Attachment, error) {
+	attachments := make([]*Attachment, 0, 10)
+	err := c.getParsedResponse("GET",
+		fmt.Sprintf("/repos/%s/%s/releases/%d/assets", user, repo, id),
+		nil, nil, &attachments)
+	return attachments, err
+}
+
+// GetReleaseAttachment gets a single attachment of a release in a repository
+func (c *Client) GetReleaseAttachment(user, repo string, releaseID int64, attachmentID int64) (*Attachment, error) {
+	attachment := new(Attachment)
+	err := c.getParsedResponse("GET",
+		fmt.Sprintf("/repos/%s/%s/releases/%d/assets/%d", user, repo, releaseID, attachmentID),
+		nil, nil, &attachment)
+	return attachment, err
+}
+
+// GetLatestRelease gets the latest release in a repository. This cannot be a draft or prerelease
+func (c *Client) GetLatestRelease(user, repo string) (*Release, error) {
+	r := new(Release)
+	err := c.getParsedResponse("GET",
+		fmt.Sprintf("/repos/%s/%s/releases/latest", user, repo),
 		nil, nil, &r)
 	return r, err
 }
