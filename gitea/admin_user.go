@@ -24,7 +24,7 @@ type CreateUserOption struct {
 	// in: body
 	Email string `json:"email" binding:"Required;Email;MaxSize(254)"`
 	// in: body
-	Password string `json:"password" binding:"MaxSize(255)"`
+	Password string `json:"password" binding:"Required;MaxSize(255)"`
 	// in: body
 	SendNotify bool `json:"send_notify"`
 }
