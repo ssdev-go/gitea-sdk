@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"time"
@@ -46,7 +45,7 @@ func (c *Client) GetReleaseAttachment(user, repo string, release int64, id int64
 }
 
 // CreateReleaseAttachment creates an attachment for the given release
-func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file *io.Reader, filename string) (*Attachment, error) {
+func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file io.Reader, filename string) (*Attachment, error) {
 	// Write file to body
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
