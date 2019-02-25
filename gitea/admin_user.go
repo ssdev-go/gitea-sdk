@@ -16,7 +16,7 @@ type CreateUserOption struct {
 	SourceID  int64  `json:"source_id"`
 	LoginName string `json:"login_name"`
 	// required: true
-	Username string `json:"username" binding:"Required;AlphaDashDot;MaxSize(35)"`
+	Username string `json:"username" binding:"Required;AlphaDashDot;MaxSize(40)"`
 	FullName string `json:"full_name" binding:"MaxSize(100)"`
 	// required: true
 	// swagger:strfmt email
