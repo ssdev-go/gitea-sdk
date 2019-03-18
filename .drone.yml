@@ -1,16 +1,16 @@
 workspace:
-  base: /srv/app
+  base: /go
   path: src/code.gitea.io/sdk
 
 clone:
   git:
-    image: plugins/git:1
+    image: plugins/git:next
     depth: 50
     tags: true
 
 pipeline:
   testing:
-    image: webhippie/golang:edge
+    image: golang:1.12
     pull: true
     commands:
       - make clean
