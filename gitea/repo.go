@@ -114,6 +114,54 @@ func (c *Client) GetRepo(owner, reponame string) (*Repository, error) {
 	return repo, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s", owner, reponame), nil, nil, repo)
 }
 
+// EditRepoOption options when editing a repository's properties
+// swagger:model
+type EditRepoOption struct {
+	// Name of the repository
+	//
+	// required: true
+	// unique: true
+	Name *string `json:"name" binding:"Required;AlphaDashDot;MaxSize(100)"`
+	// A short description of the repository.
+	Description *string `json:"description,omitempty" binding:"MaxSize(255)"`
+	// A URL with more information about the repository.
+	Website *string `json:"website,omitempty" binding:"MaxSize(255)"`
+	// Either `true` to make the repository private or `false` to make it public.
+	// Note: You will get a 422 error if the organization restricts changing repository visibility to organization
+	// owners and a non-owner tries to change the value of private.
+	Private *bool `json:"private,omitempty"`
+	// Either `true` to enable issues for this repository or `false` to disable them.
+	EnableIssues *bool `json:"enable_issues,omitempty"`
+	// Either `true` to enable the wiki for this repository or `false` to disable it.
+	EnableWiki *bool `json:"enable_wiki,omitempty"`
+	// Updates the default branch for this repository.
+	DefaultBranch *string `json:"default_branch,omitempty"`
+	// Either `true` to allow pull requests, or `false` to prevent pull request.
+	EnablePullRequests *bool `json:"enable_pull_requests,omitempty"`
+	// Either `true` to ignore whitepace for conflicts, or `false` to not ignore whitespace. `enabled_pull_requests` must be `true`.
+	IgnoreWhitespaceConflicts *bool `json:"ignore_whitespace,omitempty"`
+	// Either `true` to allow merging pull requests with a merge commit, or `false` to prevent merging pull requests with merge commits. `enabled_pull_requests` must be `true`.
+	AllowMerge *bool `json:"allow_merge_commits,omitempty"`
+	// Either `true` to allow rebase-merging pull requests, or `false` to prevent rebase-merging. `enabled_pull_requests` must be `true`.
+	AllowRebase *bool `json:"allow_rebase,omitempty"`
+	// Either `true` to allow rebase with explicit merge commits (--no-ff), or `false` to prevent rebase with explicit merge commits. `enabled_pull_requests` must be `true`.
+	AllowRebaseMerge *bool `json:"allow_rebase_explicit,omitempty"`
+	// Either `true` to allow squash-merging pull requests, or `false` to prevent squash-merging. `enabled_pull_requests` must be `true`.
+	AllowSquashMerge *bool `json:"allow_squash_merge,omitempty"`
+	// `true` to archive this repository. Note: You cannot unarchive repositories through the API.
+	Archived *bool `json:"archived,omitempty"`
+}
+
+// EditRepo edit the properties of a repository
+func (c *Client) EditRepo(owner, reponame string, opt EditRepoOption) (*Repository, error) {
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, err
+	}
+	repo := new(Repository)
+	return repo, c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s", owner, reponame), jsonHeader, bytes.NewReader(body), repo)
+}
+
 // DeleteRepo deletes a repository of user or organization.
 func (c *Client) DeleteRepo(owner, repo string) error {
 	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s", owner, repo), nil, nil)
