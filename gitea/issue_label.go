@@ -8,17 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Label a label to an issue or a pr
-// swagger:model
-type Label struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	// example: 00aabb
-	Color string `json:"color"`
-	URL   string `json:"url"`
-}
+// Label is equal to structs.Label
+type Label = structs.Label
 
 // ListRepoLabels list labels of one repository
 func (c *Client) ListRepoLabels(owner, repo string) ([]*Label, error) {
@@ -33,17 +28,8 @@ func (c *Client) GetRepoLabel(owner, repo string, id int64) (*Label, error) {
 	return label, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/labels/%d", owner, repo, id), nil, nil, label)
 }
 
-// CreateLabelOption options for creating a label
-type CreateLabelOption struct {
-	// required:true
-	Name string `json:"name" binding:"Required"`
-	// required:true
-	// example: #00aabb
-	Color string `json:"color" binding:"Required;Size(7)"`
-}
-
 // CreateLabel create one label of repository
-func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*Label, error) {
+func (c *Client) CreateLabel(owner, repo string, opt structs.CreateLabelOption) (*Label, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -53,14 +39,8 @@ func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*Label,
 		jsonHeader, bytes.NewReader(body), label)
 }
 
-// EditLabelOption options for editing a label
-type EditLabelOption struct {
-	Name  *string `json:"name"`
-	Color *string `json:"color"`
-}
-
 // EditLabel modify one label with options
-func (c *Client) EditLabel(owner, repo string, id int64, opt EditLabelOption) (*Label, error) {
+func (c *Client) EditLabel(owner, repo string, id int64, opt structs.EditLabelOption) (*Label, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -76,12 +56,6 @@ func (c *Client) DeleteLabel(owner, repo string, id int64) error {
 	return err
 }
 
-// IssueLabelsOption a collection of labels
-type IssueLabelsOption struct {
-	// list of label IDs
-	Labels []int64 `json:"labels"`
-}
-
 // GetIssueLabels get labels of one issue via issue id
 func (c *Client) GetIssueLabels(owner, repo string, index int64) ([]*Label, error) {
 	labels := make([]*Label, 0, 5)
@@ -89,7 +63,7 @@ func (c *Client) GetIssueLabels(owner, repo string, index int64) ([]*Label, erro
 }
 
 // AddIssueLabels add one or more labels to one issue
-func (c *Client) AddIssueLabels(owner, repo string, index int64, opt IssueLabelsOption) ([]*Label, error) {
+func (c *Client) AddIssueLabels(owner, repo string, index int64, opt structs.IssueLabelsOption) ([]*Label, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -99,7 +73,7 @@ func (c *Client) AddIssueLabels(owner, repo string, index int64, opt IssueLabels
 }
 
 // ReplaceIssueLabels replace old labels of issue with new labels
-func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt IssueLabelsOption) ([]*Label, error) {
+func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt structs.IssueLabelsOption) ([]*Label, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

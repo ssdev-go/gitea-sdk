@@ -9,21 +9,12 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Reference represents a Git reference.
-type Reference struct {
-	Ref    string     `json:"ref"`
-	URL    string     `json:"url"`
-	Object *GitObject `json:"object"`
-}
-
-// GitObject represents a Git object.
-type GitObject struct {
-	Type string `json:"type"`
-	SHA  string `json:"sha"`
-	URL  string `json:"url"`
-}
+// Reference is equal to structs.Reference
+type Reference = structs.Reference
 
 // GetRepoRef get one ref's information of one repository
 func (c *Client) GetRepoRef(user, repo, ref string) (*Reference, error) {

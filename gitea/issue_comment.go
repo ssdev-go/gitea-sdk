@@ -8,22 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Comment represents a comment on a commit or issue
-type Comment struct {
-	ID       int64  `json:"id"`
-	HTMLURL  string `json:"html_url"`
-	PRURL    string `json:"pull_request_url"`
-	IssueURL string `json:"issue_url"`
-	Poster   *User  `json:"user"`
-	Body     string `json:"body"`
-	// swagger:strfmt date-time
-	Created time.Time `json:"created_at"`
-	// swagger:strfmt date-time
-	Updated time.Time `json:"updated_at"`
-}
+// Comment is equal to structs.Comment
+type Comment = structs.Comment
 
 // ListIssueComments list comments on an issue.
 func (c *Client) ListIssueComments(owner, repo string, index int64) ([]*Comment, error) {
@@ -37,14 +27,8 @@ func (c *Client) ListRepoIssueComments(owner, repo string) ([]*Comment, error) {
 	return comments, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/comments", owner, repo), nil, nil, &comments)
 }
 
-// CreateIssueCommentOption options for creating a comment on an issue
-type CreateIssueCommentOption struct {
-	// required:true
-	Body string `json:"body" binding:"Required"`
-}
-
 // CreateIssueComment create comment on an issue.
-func (c *Client) CreateIssueComment(owner, repo string, index int64, opt CreateIssueCommentOption) (*Comment, error) {
+func (c *Client) CreateIssueComment(owner, repo string, index int64, opt structs.CreateIssueCommentOption) (*Comment, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -53,14 +37,8 @@ func (c *Client) CreateIssueComment(owner, repo string, index int64, opt CreateI
 	return comment, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/%d/comments", owner, repo, index), jsonHeader, bytes.NewReader(body), comment)
 }
 
-// EditIssueCommentOption options for editing a comment
-type EditIssueCommentOption struct {
-	// required: true
-	Body string `json:"body" binding:"Required"`
-}
-
 // EditIssueComment edits an issue comment.
-func (c *Client) EditIssueComment(owner, repo string, index, commentID int64, opt EditIssueCommentOption) (*Comment, error) {
+func (c *Client) EditIssueComment(owner, repo string, index, commentID int64, opt structs.EditIssueCommentOption) (*Comment, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

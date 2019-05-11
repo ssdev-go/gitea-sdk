@@ -5,38 +5,13 @@
 package gitea
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// User represents a user
-// swagger:model
-type User struct {
-	// the user's id
-	ID int64 `json:"id"`
-	// the user's username
-	UserName string `json:"login"`
-	// the user's full name
-	FullName string `json:"full_name"`
-	// swagger:strfmt email
-	Email string `json:"email"`
-	// URL to the user's avatar
-	AvatarURL string `json:"avatar_url"`
-	// User locale
-	Language string `json:"language"`
-	// Is the user an administrator
-	IsAdmin bool `json:"is_admin"`
-}
-
-// MarshalJSON implements the json.Marshaler interface for User, adding field(s) for backward compatibility
-func (u User) MarshalJSON() ([]byte, error) {
-	// Re-declaring User to avoid recursion
-	type shadow User
-	return json.Marshal(struct {
-		shadow
-		CompatUserName string `json:"username"`
-	}{shadow(u), u.UserName})
-}
+// User is equal to structs.User
+type User = structs.User
 
 // GetUserInfo get user info by user's name
 func (c *Client) GetUserInfo(user string) (*User, error) {

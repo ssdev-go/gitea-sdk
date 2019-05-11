@@ -6,13 +6,12 @@ package gitea
 
 import (
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Branch represents a repository branch
-type Branch struct {
-	Name   string         `json:"name"`
-	Commit *PayloadCommit `json:"commit"`
-}
+// Branch is equal to structs.Branch
+type Branch = structs.Branch
 
 // ListRepoBranches list all the branches of one repository
 func (c *Client) ListRepoBranches(user, repo string) ([]*Branch, error) {

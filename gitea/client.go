@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+var jsonHeader = http.Header{"content-type": []string{"application/json"}}
+
 // Version return the library version
 func Version() string {
 	return "0.12.3"

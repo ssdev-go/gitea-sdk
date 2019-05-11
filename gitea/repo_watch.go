@@ -7,18 +7,12 @@ package gitea
 import (
 	"fmt"
 	"net/http"
-	"time"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// WatchInfo represents an API watch status of one repository
-type WatchInfo struct {
-	Subscribed    bool        `json:"subscribed"`
-	Ignored       bool        `json:"ignored"`
-	Reason        interface{} `json:"reason"`
-	CreatedAt     time.Time   `json:"created_at"`
-	URL           string      `json:"url"`
-	RepositoryURL string      `json:"repository_url"`
-}
+// WatchInfo is equal to structs.WatchInfo
+type WatchInfo = structs.WatchInfo
 
 // GetWatchedRepos list all the watched repos of user
 func (c *Client) GetWatchedRepos(user, pass string) ([]*Repository, error) {

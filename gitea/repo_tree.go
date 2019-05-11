@@ -6,32 +6,14 @@ package gitea
 
 import (
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
-
-// GitEntry represents a git tree
-type GitEntry struct {
-	Path string `json:"path"`
-	Mode string `json:"mode"`
-	Type string `json:"type"`
-	Size int64  `json:"size"`
-	SHA  string `json:"sha"`
-	URL  string `json:"url"`
-}
-
-// GitTreeResponse returns a git tree
-type GitTreeResponse struct {
-	SHA        string     `json:"sha"`
-	URL        string     `json:"url"`
-	Entries    []GitEntry `json:"tree"`
-	Truncated  bool       `json:"truncated"`
-	Page       int        `json:"page"`
-	TotalCount int        `json:"total_count"`
-}
 
 // GetTrees downloads a file of repository, ref can be branch/tag/commit.
 // e.g.: ref -> master, tree -> macaron.go(no leading slash)
-func (c *Client) GetTrees(user, repo, ref string, recursive bool) (*GitTreeResponse, error) {
-	var trees GitTreeResponse
+func (c *Client) GetTrees(user, repo, ref string, recursive bool) (*structs.GitTreeResponse, error) {
+	var trees structs.GitTreeResponse
 	var path = fmt.Sprintf("/repos/%s/%s/git/trees/%s", user, repo, ref)
 	if recursive {
 		path += "?recursive=1"

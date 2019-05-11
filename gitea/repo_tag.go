@@ -6,18 +6,12 @@ package gitea
 
 import (
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Tag represents a repository tag
-type Tag struct {
-	Name   string `json:"name"`
-	Commit struct {
-		SHA string `json:"sha"`
-		URL string `json:"url"`
-	} `json:"commit"`
-	ZipballURL string `json:"zipball_url"`
-	TarballURL string `json:"tarball_url"`
-}
+// Tag is equal to structs.Tag
+type Tag = structs.Tag
 
 // ListRepoTags list all the branches of one repository
 func (c *Client) ListRepoTags(user, repo string) ([]*Tag, error) {

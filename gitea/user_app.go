@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
 // BasicAuthEncode generate base64 of basic auth head
@@ -18,18 +20,8 @@ func BasicAuthEncode(user, pass string) string {
 	return base64.StdEncoding.EncodeToString([]byte(user + ":" + pass))
 }
 
-// AccessToken represents an API access token.
-// swagger:response AccessToken
-type AccessToken struct {
-	ID             int64  `json:"id"`
-	Name           string `json:"name"`
-	Token          string `json:"sha1"`
-	TokenLastEight string `json:"token_last_eight"`
-}
-
-// AccessTokenList represents a list of API access token.
-// swagger:response AccessTokenList
-type AccessTokenList []*AccessToken
+// AccessToken is equal to structs.AccessToken
+type AccessToken = structs.AccessToken
 
 // ListAccessTokens lista all the access tokens of user
 func (c *Client) ListAccessTokens(user, pass string) ([]*AccessToken, error) {
@@ -38,14 +30,8 @@ func (c *Client) ListAccessTokens(user, pass string) ([]*AccessToken, error) {
 		http.Header{"Authorization": []string{"Basic " + BasicAuthEncode(user, pass)}}, nil, &tokens)
 }
 
-// CreateAccessTokenOption options when create access token
-// swagger:parameters userCreateToken
-type CreateAccessTokenOption struct {
-	Name string `json:"name" binding:"Required"`
-}
-
 // CreateAccessToken create one access token with options
-func (c *Client) CreateAccessToken(user, pass string, opt CreateAccessTokenOption) (*AccessToken, error) {
+func (c *Client) CreateAccessToken(user, pass string, opt structs.CreateAccessTokenOption) (*AccessToken, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

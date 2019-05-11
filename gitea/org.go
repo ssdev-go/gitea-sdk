@@ -8,19 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// Organization represents an organization
-type Organization struct {
-	ID          int64       `json:"id"`
-	UserName    string      `json:"username"`
-	FullName    string      `json:"full_name"`
-	AvatarURL   string      `json:"avatar_url"`
-	Description string      `json:"description"`
-	Website     string      `json:"website"`
-	Location    string      `json:"location"`
-	Visibility  VisibleType `json:"visibility"`
-}
+// Organization is equal to structs.Organization
+type Organization = structs.Organization
 
 // ListMyOrgs list all of current user's organizations
 func (c *Client) ListMyOrgs() ([]*Organization, error) {
@@ -40,27 +33,8 @@ func (c *Client) GetOrg(orgname string) (*Organization, error) {
 	return org, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s", orgname), nil, nil, org)
 }
 
-// CreateOrgOption options for creating an organization
-type CreateOrgOption struct {
-	// required: true
-	UserName    string      `json:"username" binding:"Required"`
-	FullName    string      `json:"full_name"`
-	Description string      `json:"description"`
-	Website     string      `json:"website"`
-	Location    string      `json:"location"`
-	Visibility  VisibleType `json:"visibility"`
-}
-
-// EditOrgOption options for editing an organization
-type EditOrgOption struct {
-	FullName    string `json:"full_name"`
-	Description string `json:"description"`
-	Website     string `json:"website"`
-	Location    string `json:"location"`
-}
-
 // EditOrg modify one organization via options
-func (c *Client) EditOrg(orgname string, opt EditOrgOption) error {
+func (c *Client) EditOrg(orgname string, opt structs.EditOrgOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err

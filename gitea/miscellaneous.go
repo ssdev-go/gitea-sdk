@@ -4,49 +4,10 @@
 
 package gitea
 
-// SearchResults results of a successful search
-type SearchResults struct {
-	OK   bool          `json:"ok"`
-	Data []*Repository `json:"data"`
-}
-
-// SearchError error of a failed search
-type SearchError struct {
-	OK    bool   `json:"ok"`
-	Error string `json:"error"`
-}
-
-// MarkdownOption markdown options
-type MarkdownOption struct {
-	// Text markdown to render
-	//
-	// in: body
-	Text string
-	// Mode to render
-	//
-	// in: body
-	Mode string
-	// Context to render
-	//
-	// in: body
-	Context string
-	// Is it a wiki page ?
-	//
-	// in: body
-	Wiki bool
-}
-
-// MarkdownRender is a rendered markdown document
-// swagger:response MarkdownRender
-type MarkdownRender string
-
-// ServerVersion wraps the version of the server
-type ServerVersion struct {
-	Version string `json:"version"`
-}
+import "code.gitea.io/gitea/modules/structs"
 
 // ServerVersion returns the version of the server
 func (c *Client) ServerVersion() (string, error) {
-	v := ServerVersion{}
+	v := structs.ServerVersion{}
 	return v.Version, c.getParsedResponse("GET", "/api/v1/version", nil, nil, &v)
 }

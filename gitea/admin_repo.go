@@ -8,10 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
 // AdminCreateRepo create a repo
-func (c *Client) AdminCreateRepo(user string, opt CreateRepoOption) (*Repository, error) {
+func (c *Client) AdminCreateRepo(user string, opt structs.CreateRepoOption) (*Repository, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

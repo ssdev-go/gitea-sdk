@@ -22,6 +22,7 @@ fmt:
 
 .PHONY: vet
 vet:
+	go get code.gitea.io/gitea/modules/structs
 	go vet $(PACKAGES)
 
 .PHONY: lint

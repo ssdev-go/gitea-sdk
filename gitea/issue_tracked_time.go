@@ -8,22 +8,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// TrackedTime worked time for an issue / pr
-type TrackedTime struct {
-	ID int64 `json:"id"`
-	// swagger:strfmt date-time
-	Created time.Time `json:"created"`
-	// Time in seconds
-	Time    int64 `json:"time"`
-	UserID  int64 `json:"user_id"`
-	IssueID int64 `json:"issue_id"`
-}
+// TrackedTime is equal to structs.TrackedTime
+type TrackedTime = structs.TrackedTime
 
-// TrackedTimes represent a list of tracked times
-type TrackedTimes []*TrackedTime
+// TrackedTimes is equal to structs.TrackedTimes
+type TrackedTimes = structs.TrackedTimes
 
 // GetUserTrackedTimes list tracked times of a user
 func (c *Client) GetUserTrackedTimes(owner, repo, user string) (TrackedTimes, error) {
@@ -43,15 +36,8 @@ func (c *Client) GetMyTrackedTimes() (TrackedTimes, error) {
 	return times, c.getParsedResponse("GET", "/user/times", nil, nil, &times)
 }
 
-// AddTimeOption options for adding time to an issue
-type AddTimeOption struct {
-	// time in seconds
-	// required: true
-	Time int64 `json:"time" binding:"Required"`
-}
-
 // AddTime adds time to issue with the given index
-func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*TrackedTime, error) {
+func (c *Client) AddTime(owner, repo string, index int64, opt structs.AddTimeOption) (*TrackedTime, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

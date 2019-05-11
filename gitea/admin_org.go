@@ -8,10 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
 // AdminCreateOrg create an organization
-func (c *Client) AdminCreateOrg(user string, opt CreateOrgOption) (*Organization, error) {
+func (c *Client) AdminCreateOrg(user string, opt structs.CreateOrgOption) (*Organization, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

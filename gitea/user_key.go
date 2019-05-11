@@ -8,22 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// PublicKey publickey is a user key to push code to repository
-type PublicKey struct {
-	ID          int64  `json:"id"`
-	Key         string `json:"key"`
-	URL         string `json:"url,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Fingerprint string `json:"fingerprint,omitempty"`
-	// swagger:strfmt date-time
-	Created  time.Time `json:"created_at,omitempty"`
-	Owner    *User     `json:"user,omitempty"`
-	ReadOnly bool      `json:"read_only,omitempty"`
-	KeyType  string    `json:"key_type,omitempty"`
-}
+// PublicKey is equal to structs.PublicKey
+type PublicKey = structs.PublicKey
 
 // ListPublicKeys list all the public keys of the user
 func (c *Client) ListPublicKeys(user string) ([]*PublicKey, error) {
@@ -44,7 +34,7 @@ func (c *Client) GetPublicKey(keyID int64) (*PublicKey, error) {
 }
 
 // CreatePublicKey create public key with options
-func (c *Client) CreatePublicKey(opt CreateKeyOption) (*PublicKey, error) {
+func (c *Client) CreatePublicKey(opt structs.CreateKeyOption) (*PublicKey, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

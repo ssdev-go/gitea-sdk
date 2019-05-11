@@ -8,17 +8,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"code.gitea.io/gitea/modules/structs"
 )
 
-// GitHook represents a Git repository hook
-type GitHook struct {
-	Name     string `json:"name"`
-	IsActive bool   `json:"is_active"`
-	Content  string `json:"content,omitempty"`
-}
+// GitHook is equal to structs.GitHook
+type GitHook = structs.GitHook
 
-// GitHookList represents a list of Git hooks
-type GitHookList []*GitHook
+// GitHookList is equal to structs.GitHookList
+type GitHookList = structs.GitHookList
 
 // ListRepoGitHooks list all the Git hooks of one repository
 func (c *Client) ListRepoGitHooks(user, repo string) (GitHookList, error) {
@@ -32,13 +30,8 @@ func (c *Client) GetRepoGitHook(user, repo, id string) (*GitHook, error) {
 	return h, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/git/%s", user, repo, id), nil, nil, h)
 }
 
-// EditGitHookOption options when modifying one Git hook
-type EditGitHookOption struct {
-	Content string `json:"content"`
-}
-
 // EditRepoGitHook modify one Git hook of a repository
-func (c *Client) EditRepoGitHook(user, repo, id string, opt EditGitHookOption) error {
+func (c *Client) EditRepoGitHook(user, repo, id string, opt structs.EditGitHookOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
