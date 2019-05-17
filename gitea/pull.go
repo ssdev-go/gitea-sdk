@@ -49,7 +49,7 @@ func (c *Client) EditPullRequest(owner, repo string, index int64, opt structs.Ed
 		return nil, err
 	}
 	pr := new(PullRequest)
-	return pr, c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/issues/%d", owner, repo, index),
+	return pr, c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/pulls/%d", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), pr)
 }
 
