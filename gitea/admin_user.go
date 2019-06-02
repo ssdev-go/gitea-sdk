@@ -13,6 +13,12 @@ import (
 	"code.gitea.io/gitea/modules/structs"
 )
 
+// AdminListUsers lists all users
+func (c *Client) AdminListUsers() ([]*User, error) {
+	users := make([]*User, 0, 10)
+	return users, c.getParsedResponse("GET", "/admin/users", nil, nil, &users)
+}
+
 // AdminCreateUser create a user
 func (c *Client) AdminCreateUser(opt structs.CreateUserOption) (*User, error) {
 	body, err := json.Marshal(&opt)
@@ -39,7 +45,7 @@ func (c *Client) AdminDeleteUser(user string) error {
 	return err
 }
 
-// AdminCreateUserPublicKey create one user with options
+// AdminCreateUserPublicKey adds a public key for the user
 func (c *Client) AdminCreateUserPublicKey(user string, opt structs.CreateKeyOption) (*PublicKey, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -47,4 +53,10 @@ func (c *Client) AdminCreateUserPublicKey(user string, opt structs.CreateKeyOpti
 	}
 	key := new(PublicKey)
 	return key, c.getParsedResponse("POST", fmt.Sprintf("/admin/users/%s/keys", user), jsonHeader, bytes.NewReader(body), key)
+}
+
+// AdminDeleteUserPublicKey deletes a user's public key
+func (c *Client) AdminDeleteUserPublicKey(user string, keyID int) error {
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/admin/users/%s/keys/%d", user, keyID), nil, nil)
+	return err
 }
