@@ -38,17 +38,17 @@ func (c *Client) CreateIssueComment(owner, repo string, index int64, opt structs
 }
 
 // EditIssueComment edits an issue comment.
-func (c *Client) EditIssueComment(owner, repo string, index, commentID int64, opt structs.EditIssueCommentOption) (*Comment, error) {
+func (c *Client) EditIssueComment(owner, repo string, commentID int64, opt structs.EditIssueCommentOption) (*Comment, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
 	}
 	comment := new(Comment)
-	return comment, c.getParsedResponse("PATCH", fmt.Sprintf("/repos/:%s/:%s/issues/%d/comments/%d", owner, repo, index, commentID), jsonHeader, bytes.NewReader(body), comment)
+	return comment, c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/issues/comments/%d", owner, repo, commentID), jsonHeader, bytes.NewReader(body), comment)
 }
 
 // DeleteIssueComment deletes an issue comment.
-func (c *Client) DeleteIssueComment(owner, repo string, index, commentID int64) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/%d/comments/%d", owner, repo, index, commentID), nil, nil)
+func (c *Client) DeleteIssueComment(owner, repo string, commentID int64) error {
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/comments/%d", owner, repo, commentID), nil, nil)
 	return err
 }
