@@ -85,7 +85,7 @@ func (c *Client) EditRepoHook(user, repo string, id int64, opt structs.EditHookO
 
 // DeleteOrgHook delete one hook from an organization, with hook id
 func (c *Client) DeleteOrgHook(org string, id int64) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/org/%s/hooks/%d", org, id), nil, nil)
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/orgs/%s/hooks/%d", org, id), nil, nil)
 	return err
 }
 
