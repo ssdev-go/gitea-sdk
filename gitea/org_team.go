@@ -44,18 +44,18 @@ func (c *Client) CreateTeam(org string, opt structs.CreateTeamOption) (*Team, er
 }
 
 // EditTeam edits a team of an organization
-func (c *Client) EditTeam(org string, id int64, opt structs.EditTeamOption) error {
+func (c *Client) EditTeam(id int64, opt structs.EditTeamOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
 	}
-	_, err = c.getResponse("PATCH", fmt.Sprintf("/orgs/%s/teams/%d", org, id), jsonHeader, bytes.NewReader(body))
+	_, err = c.getResponse("PATCH", fmt.Sprintf("/teams/%d", id), jsonHeader, bytes.NewReader(body))
 	return err
 }
 
 // DeleteTeam deletes a team of an organization
-func (c *Client) DeleteTeam(org string, id int64) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/orgs/%s/teams/%d", org, id), nil, nil)
+func (c *Client) DeleteTeam(id int64) error {
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/teams/%d", id), nil, nil)
 	return err
 }
 
