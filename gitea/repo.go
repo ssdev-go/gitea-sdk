@@ -15,6 +15,9 @@ import (
 // Repository is equal to structs.Repository
 type Repository = structs.Repository
 
+// CreateRepoOption is equal to structs.CreateRepoOption
+type CreateRepoOption = structs.CreateRepoOption
+
 // ListMyRepos lists all repositories for the authenticated user that has access to.
 func (c *Client) ListMyRepos() ([]*Repository, error) {
 	repos := make([]*Repository, 0, 10)
@@ -34,7 +37,7 @@ func (c *Client) ListOrgRepos(org string) ([]*Repository, error) {
 }
 
 // CreateRepo creates a repository for authenticated user.
-func (c *Client) CreateRepo(opt structs.CreateRepoOption) (*Repository, error) {
+func (c *Client) CreateRepo(opt CreateRepoOption) (*Repository, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -44,7 +47,7 @@ func (c *Client) CreateRepo(opt structs.CreateRepoOption) (*Repository, error) {
 }
 
 // CreateOrgRepo creates an organization repository for authenticated user.
-func (c *Client) CreateOrgRepo(org string, opt structs.CreateRepoOption) (*Repository, error) {
+func (c *Client) CreateOrgRepo(org string, opt CreateRepoOption) (*Repository, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
