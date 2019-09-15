@@ -1,20 +1,9 @@
-IMPORT := code.gitea.io/sdk
-
-PACKAGES ?= $(shell go list -e ./... | grep -v /vendor/ | grep -v /benchmark/)
-GENERATE ?= code.gitea.io/sdk/gitea
-
 .PHONY: all
 all: clean test build
 
 .PHONY: clean
 clean:
 	go clean -i ./...
-
-generate:
-	@which mockery > /dev/null; if [ $$? -ne 0 ]; then \
-		go get -u github.com/vektra/mockery/...; \
-	fi
-	go generate $(GENERATE)
 
 .PHONY: fmt
 fmt:
@@ -23,23 +12,23 @@ fmt:
 .PHONY: vet
 vet:
 	go get code.gitea.io/gitea/modules/structs
-	go vet $(PACKAGES)
+	cd gitea && go vet ./...
 
 .PHONY: lint
 lint:
 	@which golint > /dev/null; if [ $$? -ne 0 ]; then \
 		go get -u golang.org/x/lint/golint; \
 	fi
-	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
+	cd gitea && golint -set_exit_status
 
 .PHONY: test
 test:
-	for PKG in $(PACKAGES); do go test -cover -coverprofile $$GOPATH/src/$$PKG/coverage.out $$PKG || exit 1; done;
+	cd gitea && go test -cover -coverprofile coverage.out
 
 .PHONY: bench
 bench:
-	go test -run=XXXXXX -benchtime=10s -bench=. || exit 1
+	cd gitea && go test -run=XXXXXX -benchtime=10s -bench=. || exit 1
 
 .PHONY: build
 build:
-	go build ./gitea
+	cd gitea && go build

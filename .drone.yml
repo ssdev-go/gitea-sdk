@@ -1,34 +1,51 @@
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  disable: true
+
 workspace:
   base: /go
   path: src/code.gitea.io/sdk
 
-clone:
-  git:
-    image: plugins/git:next
+steps:
+- name: git
+  pull: default
+  image: plugins/git:next
+  settings:
     depth: 50
     tags: true
 
-pipeline:
-  testing:
-    image: golang:1.12
-    pull: true
-    commands:
-      - make clean
-      - make vet
-      - make lint
-      - make test
-      - make build
+- name: testing
+  pull: always
+  image: golang:1.13
+  environment:
+    GOPROXY: https://goproxy.cn 
+  commands:
+  - make clean
+  - make vet
+  - make lint
+  - make test
+  - make build
 
-  # coverage:
-  #   image: plugins/coverage:1
-  #   pull: true
-  #   secrets: [ github_token ]
-  #   server: https://coverage.gitea.io
-
-  discord:
-    image: appleboy/drone-discord:1.0.0
-    pull: true
-    secrets: [ discord_webhook_id, discord_webhook_token ]
-    when:
-      event: [ push, tag, pull_request ]
-      status: [ changed, failure ]
+- name: discord
+  pull: always
+  image: appleboy/drone-discord:1.0.0
+  environment:
+    DISCORD_WEBHOOK_ID:
+      from_secret: discord_webhook_id
+    DISCORD_WEBHOOK_TOKEN:
+      from_secret: discord_webhook_token
+  when:
+    event:
+    - push
+    - tag
+    - pull_request
+    status:
+    - changed
+    - failure
