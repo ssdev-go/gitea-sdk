@@ -8,12 +8,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
+	"time"
 )
 
-// DeployKey is equal to structs.DeployKey
-type DeployKey = structs.DeployKey
+// DeployKey a deploy key
+type DeployKey struct {
+	ID          int64       `json:"id"`
+	KeyID       int64       `json:"key_id"`
+	Key         string      `json:"key"`
+	URL         string      `json:"url"`
+	Title       string      `json:"title"`
+	Fingerprint string      `json:"fingerprint"`
+	Created     time.Time   `json:"created_at"`
+	ReadOnly    bool        `json:"read_only"`
+	Repository  *Repository `json:"repository,omitempty"`
+}
 
 // ListDeployKeys list all the deploy keys of one repository
 func (c *Client) ListDeployKeys(user, repo string) ([]*DeployKey, error) {
@@ -28,7 +37,7 @@ func (c *Client) GetDeployKey(user, repo string, keyID int64) (*DeployKey, error
 }
 
 // CreateDeployKey options when create one deploy key
-func (c *Client) CreateDeployKey(user, repo string, opt structs.CreateKeyOption) (*DeployKey, error) {
+func (c *Client) CreateDeployKey(user, repo string, opt CreateKeyOption) (*DeployKey, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

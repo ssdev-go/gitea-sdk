@@ -6,12 +6,27 @@ package gitea
 
 import (
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
+	"time"
 )
 
-// User is equal to structs.User
-type User = structs.User
+// User represents a user
+type User struct {
+	// the user's id
+	ID int64 `json:"id"`
+	// the user's username
+	UserName string `json:"login"`
+	// the user's full name
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	// URL to the user's avatar
+	AvatarURL string `json:"avatar_url"`
+	// User locale
+	Language string `json:"language"`
+	// Is the user an administrator
+	IsAdmin   bool      `json:"is_admin"`
+	LastLogin time.Time `json:"last_login,omitempty"`
+	Created   time.Time `json:"created,omitempty"`
+}
 
 // GetUserInfo get user info by user's name
 func (c *Client) GetUserInfo(user string) (*User, error) {

@@ -10,12 +10,19 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-
-	"code.gitea.io/gitea/modules/structs"
+	"time"
 )
 
-// Attachment is equal to structs.Attachment
-type Attachment = structs.Attachment
+// Attachment a generic attachment
+type Attachment struct {
+	ID            int64     `json:"id"`
+	Name          string    `json:"name"`
+	Size          int64     `json:"size"`
+	DownloadCount int64     `json:"download_count"`
+	Created       time.Time `json:"created_at"`
+	UUID          string    `json:"uuid"`
+	DownloadURL   string    `json:"browser_download_url"`
+}
 
 // ListReleaseAttachments list release's attachments
 func (c *Client) ListReleaseAttachments(user, repo string, release int64) ([]*Attachment, error) {
@@ -60,8 +67,13 @@ func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file 
 	return attachment, err
 }
 
+// EditAttachmentOptions options for editing attachments
+type EditAttachmentOptions struct {
+	Name string `json:"name"`
+}
+
 // EditReleaseAttachment updates the given attachment with the given options
-func (c *Client) EditReleaseAttachment(user, repo string, release int64, attachment int64, form structs.EditAttachmentOptions) (*Attachment, error) {
+func (c *Client) EditReleaseAttachment(user, repo string, release int64, attachment int64, form EditAttachmentOptions) (*Attachment, error) {
 	body, err := json.Marshal(&form)
 	if err != nil {
 		return nil, err

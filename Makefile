@@ -11,7 +11,6 @@ fmt:
 
 .PHONY: vet
 vet:
-	go get code.gitea.io/gitea/modules/structs
 	cd gitea && go vet ./...
 
 .PHONY: lint

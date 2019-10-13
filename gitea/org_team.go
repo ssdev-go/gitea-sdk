@@ -8,12 +8,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
 )
 
-// Team is equal to structs.Team
-type Team = structs.Team
+// Team represents a team in an organization
+type Team struct {
+	ID           int64         `json:"id"`
+	Name         string        `json:"name"`
+	Description  string        `json:"description"`
+	Organization *Organization `json:"organization"`
+	// enum: none,read,write,admin,owner
+	Permission string `json:"permission"`
+	// example: ["repo.code","repo.issues","repo.ext_issues","repo.wiki","repo.pulls","repo.releases","repo.ext_wiki"]
+	Units []string `json:"units"`
+}
 
 // ListOrgTeams lists all teams of an organization
 func (c *Client) ListOrgTeams(org string) ([]*Team, error) {
@@ -33,8 +40,18 @@ func (c *Client) GetTeam(id int64) (*Team, error) {
 	return t, c.getParsedResponse("GET", fmt.Sprintf("/teams/%d", id), nil, nil, t)
 }
 
+// CreateTeamOption options for creating a team
+type CreateTeamOption struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	// enum: read,write,admin
+	Permission string `json:"permission"`
+	// example: ["repo.code","repo.issues","repo.ext_issues","repo.wiki","repo.pulls","repo.releases","repo.ext_wiki"]
+	Units []string `json:"units"`
+}
+
 // CreateTeam creates a team for an organization
-func (c *Client) CreateTeam(org string, opt structs.CreateTeamOption) (*Team, error) {
+func (c *Client) CreateTeam(org string, opt CreateTeamOption) (*Team, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -43,8 +60,18 @@ func (c *Client) CreateTeam(org string, opt structs.CreateTeamOption) (*Team, er
 	return t, c.getParsedResponse("POST", fmt.Sprintf("/orgs/%s/teams", org), jsonHeader, bytes.NewReader(body), t)
 }
 
+// EditTeamOption options for editing a team
+type EditTeamOption struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	// enum: read,write,admin
+	Permission string `json:"permission"`
+	// example: ["repo.code","repo.issues","repo.ext_issues","repo.wiki","repo.pulls","repo.releases","repo.ext_wiki"]
+	Units []string `json:"units"`
+}
+
 // EditTeam edits a team of an organization
-func (c *Client) EditTeam(id int64, opt structs.EditTeamOption) error {
+func (c *Client) EditTeam(id int64, opt EditTeamOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err

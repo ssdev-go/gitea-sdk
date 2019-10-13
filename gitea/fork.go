@@ -8,8 +8,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
 )
 
 // ListForks list a repository's forks
@@ -21,8 +19,14 @@ func (c *Client) ListForks(user, repo string) ([]*Repository, error) {
 	return forks, err
 }
 
+// CreateForkOption options for creating a fork
+type CreateForkOption struct {
+	// organization name, if forking into an organization
+	Organization *string `json:"organization"`
+}
+
 // CreateFork create a fork of a repository
-func (c *Client) CreateFork(user, repo string, form structs.CreateForkOption) (*Repository, error) {
+func (c *Client) CreateFork(user, repo string, form CreateForkOption) (*Repository, error) {
 	body, err := json.Marshal(form)
 	if err != nil {
 		return nil, err

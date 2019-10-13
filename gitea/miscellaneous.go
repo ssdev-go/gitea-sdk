@@ -4,10 +4,10 @@
 
 package gitea
 
-import "code.gitea.io/gitea/modules/structs"
-
 // ServerVersion returns the version of the server
 func (c *Client) ServerVersion() (string, error) {
-	v := structs.ServerVersion{}
+	var v = struct {
+		Version string `json:"version"`
+	}{}
 	return v.Version, c.getParsedResponse("GET", "/api/v1/version", nil, nil, &v)
 }

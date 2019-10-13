@@ -9,12 +9,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
 )
 
-// Organization is equal to structs.Organization
-type Organization = structs.Organization
+// Organization represents an organization
+type Organization struct {
+	ID          int64  `json:"id"`
+	UserName    string `json:"username"`
+	FullName    string `json:"full_name"`
+	AvatarURL   string `json:"avatar_url"`
+	Description string `json:"description"`
+	Website     string `json:"website"`
+	Location    string `json:"location"`
+	Visibility  string `json:"visibility"`
+}
 
 // ListMyOrgs list all of current user's organizations
 func (c *Client) ListMyOrgs() ([]*Organization, error) {
@@ -34,8 +41,20 @@ func (c *Client) GetOrg(orgname string) (*Organization, error) {
 	return org, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s", orgname), nil, nil, org)
 }
 
+// CreateOrgOption options for creating an organization
+type CreateOrgOption struct {
+	UserName    string `json:"username"`
+	FullName    string `json:"full_name"`
+	Description string `json:"description"`
+	Website     string `json:"website"`
+	Location    string `json:"location"`
+	// possible values are `public` (default), `limited` or `private`
+	// enum: public,limited,private
+	Visibility string `json:"visibility"`
+}
+
 // CreateOrg creates an organization
-func (c *Client) CreateOrg(opt structs.CreateOrgOption) (*Organization, error) {
+func (c *Client) CreateOrg(opt CreateOrgOption) (*Organization, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -44,8 +63,19 @@ func (c *Client) CreateOrg(opt structs.CreateOrgOption) (*Organization, error) {
 	return org, c.getParsedResponse("POST", "/orgs", jsonHeader, bytes.NewReader(body), org)
 }
 
+// EditOrgOption options for editing an organization
+type EditOrgOption struct {
+	FullName    string `json:"full_name"`
+	Description string `json:"description"`
+	Website     string `json:"website"`
+	Location    string `json:"location"`
+	// possible values are `public`, `limited` or `private`
+	// enum: public,limited,private
+	Visibility string `json:"visibility"`
+}
+
 // EditOrg modify one organization via options
-func (c *Client) EditOrg(orgname string, opt structs.EditOrgOption) error {
+func (c *Client) EditOrg(orgname string, opt EditOrgOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err

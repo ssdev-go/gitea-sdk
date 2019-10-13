@@ -9,8 +9,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
 )
 
 // AdminListUsers lists all users
@@ -19,8 +17,20 @@ func (c *Client) AdminListUsers() ([]*User, error) {
 	return users, c.getParsedResponse("GET", "/admin/users", nil, nil, &users)
 }
 
+// CreateUserOption create user options
+type CreateUserOption struct {
+	SourceID           int64  `json:"source_id"`
+	LoginName          string `json:"login_name"`
+	Username           string `json:"username"`
+	FullName           string `json:"full_name"`
+	Email              string `json:"email"`
+	Password           string `json:"password"`
+	MustChangePassword *bool  `json:"must_change_password"`
+	SendNotify         bool   `json:"send_notify"`
+}
+
 // AdminCreateUser create a user
-func (c *Client) AdminCreateUser(opt structs.CreateUserOption) (*User, error) {
+func (c *Client) AdminCreateUser(opt CreateUserOption) (*User, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -29,8 +39,27 @@ func (c *Client) AdminCreateUser(opt structs.CreateUserOption) (*User, error) {
 	return user, c.getParsedResponse("POST", "/admin/users", jsonHeader, bytes.NewReader(body), user)
 }
 
+// EditUserOption edit user options
+type EditUserOption struct {
+	SourceID                int64  `json:"source_id"`
+	LoginName               string `json:"login_name"`
+	FullName                string `json:"full_name"`
+	Email                   string `json:"email"`
+	Password                string `json:"password"`
+	MustChangePassword      *bool  `json:"must_change_password"`
+	Website                 string `json:"website"`
+	Location                string `json:"location"`
+	Active                  *bool  `json:"active"`
+	Admin                   *bool  `json:"admin"`
+	AllowGitHook            *bool  `json:"allow_git_hook"`
+	AllowImportLocal        *bool  `json:"allow_import_local"`
+	MaxRepoCreation         *int   `json:"max_repo_creation"`
+	ProhibitLogin           *bool  `json:"prohibit_login"`
+	AllowCreateOrganization *bool  `json:"allow_create_organization"`
+}
+
 // AdminEditUser modify user informations
-func (c *Client) AdminEditUser(user string, opt structs.EditUserOption) error {
+func (c *Client) AdminEditUser(user string, opt EditUserOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
@@ -46,7 +75,7 @@ func (c *Client) AdminDeleteUser(user string) error {
 }
 
 // AdminCreateUserPublicKey adds a public key for the user
-func (c *Client) AdminCreateUserPublicKey(user string, opt structs.CreateKeyOption) (*PublicKey, error) {
+func (c *Client) AdminCreateUserPublicKey(user string, opt CreateKeyOption) (*PublicKey, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err

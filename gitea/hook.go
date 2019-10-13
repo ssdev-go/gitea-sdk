@@ -9,24 +9,29 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"code.gitea.io/gitea/modules/structs"
+	"time"
 )
 
-// Hook is equal to structs.Hook
-type Hook = structs.Hook
-
-// HookList is equal to structs.HookList
-type HookList = structs.HookList
+// Hook a hook is a web hook when one repository changed
+type Hook struct {
+	ID      int64             `json:"id"`
+	Type    string            `json:"type"`
+	URL     string            `json:"-"`
+	Config  map[string]string `json:"config"`
+	Events  []string          `json:"events"`
+	Active  bool              `json:"active"`
+	Updated time.Time         `json:"updated_at"`
+	Created time.Time         `json:"created_at"`
+}
 
 // ListOrgHooks list all the hooks of one organization
-func (c *Client) ListOrgHooks(org string) (HookList, error) {
+func (c *Client) ListOrgHooks(org string) ([]*Hook, error) {
 	hooks := make([]*Hook, 0, 10)
 	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/hooks", org), nil, nil, &hooks)
 }
 
 // ListRepoHooks list all the hooks of one repository
-func (c *Client) ListRepoHooks(user, repo string) (HookList, error) {
+func (c *Client) ListRepoHooks(user, repo string) ([]*Hook, error) {
 	hooks := make([]*Hook, 0, 10)
 	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), nil, nil, &hooks)
 }
@@ -43,8 +48,17 @@ func (c *Client) GetRepoHook(user, repo string, id int64) (*Hook, error) {
 	return h, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/%d", user, repo, id), nil, nil, h)
 }
 
+// CreateHookOption options when create a hook
+type CreateHookOption struct {
+	Type         string            `json:"type"`
+	Config       map[string]string `json:"config"`
+	Events       []string          `json:"events"`
+	BranchFilter string            `json:"branch_filter"`
+	Active       bool              `json:"active"`
+}
+
 // CreateOrgHook create one hook for an organization, with options
-func (c *Client) CreateOrgHook(org string, opt structs.CreateHookOption) (*Hook, error) {
+func (c *Client) CreateOrgHook(org string, opt CreateHookOption) (*Hook, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -54,7 +68,7 @@ func (c *Client) CreateOrgHook(org string, opt structs.CreateHookOption) (*Hook,
 }
 
 // CreateRepoHook create one hook for a repository, with options
-func (c *Client) CreateRepoHook(user, repo string, opt structs.CreateHookOption) (*Hook, error) {
+func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*Hook, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -63,8 +77,16 @@ func (c *Client) CreateRepoHook(user, repo string, opt structs.CreateHookOption)
 	return h, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), jsonHeader, bytes.NewReader(body), h)
 }
 
+// EditHookOption options when modify one hook
+type EditHookOption struct {
+	Config       map[string]string `json:"config"`
+	Events       []string          `json:"events"`
+	BranchFilter string            `json:"branch_filter"`
+	Active       *bool             `json:"active"`
+}
+
 // EditOrgHook modify one hook of an organization, with hook id and options
-func (c *Client) EditOrgHook(org string, id int64, opt structs.EditHookOption) error {
+func (c *Client) EditOrgHook(org string, id int64, opt EditHookOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
@@ -74,7 +96,7 @@ func (c *Client) EditOrgHook(org string, id int64, opt structs.EditHookOption) e
 }
 
 // EditRepoHook modify one hook of a repository, with hook id and options
-func (c *Client) EditRepoHook(user, repo string, id int64, opt structs.EditHookOption) error {
+func (c *Client) EditRepoHook(user, repo string, id int64, opt EditHookOption) error {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
