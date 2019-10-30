@@ -39,9 +39,10 @@ func NewClient(url, token string) *Client {
 }
 
 // NewClientWithHTTP creates an API client with a custom http client
-func NewClientWithHTTP(url string, httpClient *http.Client) {
+func NewClientWithHTTP(url string, httpClient *http.Client) *Client {
 	client := NewClient(url, "")
 	client.client = httpClient
+	return client
 }
 
 // SetHTTPClient replaces default http.Client with user given one.
