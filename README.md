@@ -1,6 +1,6 @@
 # Gitea SDK for Go
 
-[![Build Status](http://drone.gitea.io/api/badges/go-gitea/go-sdk/status.svg)](http://drone.gitea.io/go-gitea/go-sdk)
+[![Build Status](https://drone.gitea.com/api/badges/gitea/go-sdk/status.svg)](https://drone.gitea.com/gitea/go-sdk)
 [![Join the chat at https://img.shields.io/discord/322538954119184384.svg](https://img.shields.io/discord/322538954119184384.svg)](https://discord.gg/NsatcWJ)
 [![](https://images.microbadger.com/badges/image/gitea/gitea.svg)](http://microbadger.com/images/gitea/gitea "Get your own image badge on microbadger.com")
 [![Go Report Card](https://goreportcard.com/badge/code.gitea.io/sdk)](https://goreportcard.com/report/code.gitea.io/sdk)
