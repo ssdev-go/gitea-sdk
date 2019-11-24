@@ -9,5 +9,5 @@ func (c *Client) ServerVersion() (string, error) {
 	var v = struct {
 		Version string `json:"version"`
 	}{}
-	return v.Version, c.getParsedResponse("GET", "/api/v1/version", nil, nil, &v)
+	return v.Version, c.getParsedResponse("GET", "/version", nil, nil, &v)
 }
