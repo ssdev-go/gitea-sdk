@@ -16,9 +16,13 @@ type TrackedTime struct {
 	ID      int64     `json:"id"`
 	Created time.Time `json:"created"`
 	// Time in seconds
-	Time    int64 `json:"time"`
-	UserID  int64 `json:"user_id"`
-	IssueID int64 `json:"issue_id"`
+	Time int64 `json:"time"`
+	// deprecated (only for backwards compatibility)
+	UserID   int64  `json:"user_id"`
+	UserName string `json:"user_name"`
+	// deprecated (only for backwards compatibility)
+	IssueID int64  `json:"issue_id"`
+	Issue   *Issue `json:"issue"`
 }
 
 // GetUserTrackedTimes list tracked times of a user
@@ -42,7 +46,11 @@ func (c *Client) GetMyTrackedTimes() ([]*TrackedTime, error) {
 // AddTimeOption options for adding time to an issue
 type AddTimeOption struct {
 	// time in seconds
-	Time int64 `json:"time"`
+	Time int64 `json:"time" binding:"Required"`
+	// optional
+	Created time.Time `json:"created"`
+	// optional
+	User string `json:"user_name"`
 }
 
 // AddTime adds time to issue with the given index
