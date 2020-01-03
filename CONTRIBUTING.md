@@ -63,17 +63,17 @@ I'm honored to having been elected an owner of Gitea, I agree with [CONTRIBUTING
 To honor the past owners, here's the history of the owners and the time they served:
 
 * 2016-11-04 ~ 2017-12-31
-  * [Lunny Xiao](https://github.com/lunny) <xiaolunwen@gmail.com>
+  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
   * [Thomas Boerger](https://github.com/tboerger) <thomas@webhippie.de>
   * [Kim Carlbäcker](https://github.com/bkcsoft) <kim.carlbacker@gmail.com>
 
 * 2018-01-01 ~ 2018-12-31
-  * [Lunny Xiao](https://github.com/lunny) <xiaolunwen@gmail.com>
+  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
   * [Lauris Bukšis-Haberkorns](https://github.com/lafriks) <lauris@nix.lv>
   * [Kim Carlbäcker](https://github.com/bkcsoft) <kim.carlbacker@gmail.com>
 
 * 2019-01-01 ~ 2019-12-31
-  * [Lunny Xiao](https://github.com/lunny) <xiaolunwen@gmail.com>
+  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
   * [Lauris Bukšis-Haberkorns](https://github.com/lafriks) <lauris@nix.lv>
   * [Matti Ranta](https://github.com/techknowlogick) <matti@mdranta.net>
 
