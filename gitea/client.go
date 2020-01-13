@@ -25,6 +25,8 @@ func Version() string {
 type Client struct {
 	url         string
 	accessToken string
+	username    string
+	password    string
 	sudo        string
 	client      *http.Client
 }
@@ -45,6 +47,11 @@ func NewClientWithHTTP(url string, httpClient *http.Client) *Client {
 	return client
 }
 
+// SetBasicAuth sets basicauth
+func (c *Client) SetBasicAuth(username, password string) {
+	c.username, c.password = username, password
+}
+
 // SetHTTPClient replaces default http.Client with user given one.
 func (c *Client) SetHTTPClient(client *http.Client) {
 	c.client = client
@@ -62,6 +69,9 @@ func (c *Client) doRequest(method, path string, header http.Header, body io.Read
 	}
 	if len(c.accessToken) != 0 {
 		req.Header.Set("Authorization", "token "+c.accessToken)
+	}
+	if len(c.username) != 0 {
+		req.SetBasicAuth(c.username, c.password)
 	}
 	if c.sudo != "" {
 		req.Header.Set("Sudo", c.sudo)

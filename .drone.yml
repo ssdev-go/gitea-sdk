@@ -6,32 +6,46 @@ platform:
   os: linux
   arch: amd64
 
-clone:
-  disable: true
-
 workspace:
   base: /go
   path: src/code.gitea.io/sdk
 
 steps:
-- name: git
-  pull: default
-  image: plugins/git:next
-  settings:
-    depth: 50
-    tags: true
+- name: gitea
+  image: gitea/gitea:latest
+  detach: true
+  commands:
+  - mkdir -p /tmp/conf/
+  - mkdir -p /tmp/data/
+  - echo "[security]" > /tmp/conf/app.ini
+  - echo "INTERNAL_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1NTg4MzY4ODB9.LoKQyK5TN_0kMJFVHWUW0uDAyoGjDP6Mkup4ps2VJN4" >> /tmp/conf/app.ini
+  - echo "INSTALL_LOCK   = true" >> /tmp/conf/app.ini
+  - echo "SECRET_KEY     = 2crAW4UANgvLipDS6U5obRcFosjSJHQANll6MNfX7P0G3se3fKcCwwK3szPyGcbo" >> /tmp/conf/app.ini
+  - echo "[database]" >> /tmp/conf/app.ini
+  - echo "DB_TYPE = sqlite3" >> /tmp/conf/app.ini
+  - echo "[repository]" >> /tmp/conf/app.ini
+  - echo "ROOT = /tmp/data/" >> /tmp/conf/app.ini
+  - gitea migrate -c /tmp/conf/app.ini
+  - gitea admin create-user --username=test01 --password=test01 --email=test01@gitea.io --admin=true --must-change-password=false --access-token -c /tmp/conf/app.ini
+  - gitea web -c /tmp/conf/app.ini
 
 - name: testing
   pull: always
   image: golang:1.13
   environment:
-    GOPROXY: https://goproxy.cn 
+    GOPROXY: https://goproxy.cn
+    GITEA_SDK_TEST_URL: "http://gitea:3000"
+    GITEA_SDK_TEST_USERNAME: "test01"
+    GITEA_SDK_TEST_PASSWORD: "test01"
+    #GITEA_SDK_TEST_RUN_GITEA: "true"
   commands:
   - make clean
   - make vet
-  - make lint
-  - make test
+  #- make lint
   - make build
+  - export HTTP_PROXY=""
+  - curl --noproxy "*" http://gitea:3000/api/v1/version # verify connection to instance
+  - HTTP_PROXY="" http_proxy="" make test
 
 - name: discord
   pull: always
