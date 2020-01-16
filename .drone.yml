@@ -34,6 +34,7 @@ steps:
   image: golang:1.13
   environment:
     GOPROXY: https://goproxy.cn
+    HTTP_PROXY: ""
     GITEA_SDK_TEST_URL: "http://gitea:3000"
     GITEA_SDK_TEST_USERNAME: "test01"
     GITEA_SDK_TEST_PASSWORD: "test01"
@@ -41,11 +42,9 @@ steps:
   commands:
   - make clean
   - make vet
-  #- make lint
   - make build
-  - export HTTP_PROXY=""
   - curl --noproxy "*" http://gitea:3000/api/v1/version # verify connection to instance
-  - HTTP_PROXY="" http_proxy="" make test
+  - make test
 
 - name: discord
   pull: always
