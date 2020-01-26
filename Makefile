@@ -1,8 +1,10 @@
+GO ?= go
+
 WORK_DIR   := $(shell pwd)
 
-export GITEA_SDK_TEST_URL ?= http://localhost:3000
-export GITEA_SDK_TEST_USERNAME ?= test01
-export GITEA_SDK_TEST_PASSWORD ?= test01
+GITEA_SDK_TEST_URL ?= http://localhost:3000
+GITEA_SDK_TEST_USERNAME ?= test01
+GITEA_SDK_TEST_PASSWORD ?= test01
 
 .PHONY: all
 all: clean test build
@@ -23,7 +25,7 @@ help:
 .PHONY: clean
 clean:
 	rm -r -f test
-	go clean -i ./...
+	$(GO) clean -i ./...
 
 .PHONY: fmt
 fmt:
@@ -31,19 +33,23 @@ fmt:
 
 .PHONY: vet
 vet:
-	cd gitea && go vet ./...
+	cd gitea && $(GO) vet ./...
 
 .PHONY: lint
 lint:
-	@which golint > /dev/null; if [ $$? -ne 0 ]; then \
-		go get -u golang.org/x/lint/golint; \
+	@echo 'make lint is depricated. Use "make revive" if you want to use the old lint tool, or "make golangci-lint" to run a complete code check.'
+
+.PHONY: revive
+revive:
+	@hash revive > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/mgechev/revive; \
 	fi
-	cd gitea && golint -set_exit_status
+	revive -config .revive.toml -exclude=./vendor/... ./... || exit 1
 
 .PHONY: test
 test:
 	@if [ -z "$(shell curl --noproxy "*" "${GITEA_SDK_TEST_URL}/api/v1/version" 2> /dev/null)" ]; then \echo "No test-instance detected!"; exit 1; else \
-	cd gitea && go test -cover -coverprofile coverage.out; \
+	    cd gitea && $(GO) test -cover -coverprofile coverage.out; \
 	fi
 
 .PHONY: test-instance
@@ -67,8 +73,16 @@ test-instance:
 
 .PHONY: bench
 bench:
-	cd gitea && go test -run=XXXXXX -benchtime=10s -bench=. || exit 1
+	cd gitea && $(GO) test -run=XXXXXX -benchtime=10s -bench=. || exit 1
 
 .PHONY: build
 build:
-	cd gitea && go build
+	cd gitea && $(GO) build
+
+.PHONY: golangci-lint
+golangci-lint:
+	@hash golangci-lint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		export BINARY="golangci-lint"; \
+		curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.22.2; \
+	fi
+	golangci-lint run --timeout 5m

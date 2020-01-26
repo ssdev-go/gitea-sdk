@@ -52,6 +52,7 @@ type ListIssueOption struct {
 	KeyWord string
 }
 
+// QueryEncode turns options into querystring argument
 func (opt *ListIssueOption) QueryEncode() string {
 	query := make(url.Values)
 	if opt.Page > 0 {
