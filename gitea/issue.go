@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -44,26 +45,80 @@ type Issue struct {
 
 // ListIssueOption list issue options
 type ListIssueOption struct {
-	Page  int
-	State string
+	Page int
+	// open, closed, all
+	State   string
+	Labels  []string
+	KeyWord string
+}
+
+func (opt *ListIssueOption) QueryEncode() string {
+	query := make(url.Values)
+	if opt.Page > 0 {
+		query.Add("page", fmt.Sprintf("%d", opt.Page))
+	}
+	if len(opt.State) > 0 {
+		query.Add("state", opt.State)
+	}
+
+	if opt.Page > 0 {
+		query.Add("page", fmt.Sprintf("%d", opt.Page))
+	}
+	if len(opt.State) > 0 {
+		query.Add("state", opt.State)
+	}
+	if len(opt.Labels) > 0 {
+		var lq string
+		for _, l := range opt.Labels {
+			if len(lq) > 0 {
+				lq += ","
+			}
+			lq += l
+		}
+		query.Add("labels", lq)
+	}
+	if len(opt.KeyWord) > 0 {
+		query.Add("q", opt.KeyWord)
+	}
+
+	return query.Encode()
 }
 
 // ListIssues returns all issues assigned the authenticated user
 func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, error) {
+	link, _ := url.Parse("/repos/issues/search")
 	issues := make([]*Issue, 0, 10)
-	return issues, c.getParsedResponse("GET", fmt.Sprintf("/issues?page=%d", opt.Page), nil, nil, &issues)
+	link.RawQuery = opt.QueryEncode()
+	return issues, c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 }
 
 // ListUserIssues returns all issues assigned to the authenticated user
 func (c *Client) ListUserIssues(opt ListIssueOption) ([]*Issue, error) {
+	// WARNING: "/user/issues" API is not implemented jet!
+	allIssues, err := c.ListIssues(opt)
+	if err != nil {
+		return nil, err
+	}
+	user, err := c.GetMyUserInfo()
+	if err != nil {
+		return nil, err
+	}
+	// Workaround: client sort out non user related issues
 	issues := make([]*Issue, 0, 10)
-	return issues, c.getParsedResponse("GET", fmt.Sprintf("/user/issues?page=%d", opt.Page), nil, nil, &issues)
+	for _, i := range allIssues {
+		if i.ID == user.ID {
+			issues = append(issues, i)
+		}
+	}
+	return issues, nil
 }
 
 // ListRepoIssues returns all issues for a given repository
 func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, error) {
+	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues", owner, repo))
 	issues := make([]*Issue, 0, 10)
-	return issues, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues?page=%d", owner, repo, opt.Page), nil, nil, &issues)
+	link.RawQuery = opt.QueryEncode()
+	return issues, c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 }
 
 // GetIssue returns a single issue for a given repository

@@ -43,7 +43,6 @@ func newTestClient() *Client {
 	token := getGiteaToken()
 	if token == "" {
 		client := NewClientWithHTTP(getGiteaURL(), &http.Client{})
-		log.Printf("testing with %v, %v, %v\n", getGiteaURL(), getGiteaUsername(), getGiteaPassword())
 		client.SetBasicAuth(getGiteaUsername(), getGiteaPassword())
 		return client
 	}
@@ -151,6 +150,7 @@ func TestMain(m *testing.M) {
 			p.Kill()
 		}()
 	}
+	log.Printf("testing with %v, %v, %v\n", getGiteaURL(), getGiteaUsername(), getGiteaPassword())
 	exitCode := m.Run()
 	os.Exit(exitCode)
 }

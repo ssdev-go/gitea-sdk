@@ -1,4 +1,5 @@
 // Copyright 2014 The Gogs Authors. All rights reserved.
+// Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
@@ -21,7 +22,7 @@ func Version() string {
 	return "0.12.3"
 }
 
-// Client represents a Gogs API client.
+// Client represents a Gitea API client.
 type Client struct {
 	url         string
 	accessToken string

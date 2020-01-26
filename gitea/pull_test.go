@@ -5,30 +5,22 @@
 package gitea
 
 import (
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPull(t *testing.T) {
+	log.Println("== TestPull ==")
 	c := newTestClient()
 	user, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
 
 	var repoName = "repo_pull_test"
-	repo, err := c.GetRepo(user.UserName, repoName)
+	_, err = createTestRepo(t, repoName, c)
 	if err != nil {
-		repo, err = c.CreateRepo(CreateRepoOption{
-			Name:        repoName,
-			Description: "PullTests",
-			AutoInit:    true,
-			Gitignores:  "C,C++",
-			License:     "MIT",
-			Readme:      "Default",
-			Private:     false,
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, repo)
+		return
 	}
 
 	// ListRepoPullRequests list PRs of one repository
