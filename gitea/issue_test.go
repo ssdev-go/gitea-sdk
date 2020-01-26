@@ -91,7 +91,7 @@ func listIssues(t *testing.T, c *Client) {
 	issues, err = c.ListIssues(ListIssueOption{
 		Labels:  []string{"Label2"},
 		KeyWord: "Done",
-		State:   "",
+		State:   "all",
 	})
 	assert.NoError(t, err)
 	assert.Len(t, issues, 1)

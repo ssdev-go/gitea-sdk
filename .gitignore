@@ -27,3 +27,6 @@ coverage.out
 
 # JetBrains
 .idea
+
+#integrations
+test
