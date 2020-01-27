@@ -50,7 +50,7 @@ revive:
 test:
 	@export GITEA_SDK_TEST_URL=${GITEA_SDK_TEST_URL}; export GITEA_SDK_TEST_USERNAME=${GITEA_SDK_TEST_USERNAME}; export GITEA_SDK_TEST_PASSWORD=${GITEA_SDK_TEST_PASSWORD}; \
 	if [ -z "$(shell curl --noproxy "*" "${GITEA_SDK_TEST_URL}/api/v1/version" 2> /dev/null)" ]; then \echo "No test-instance detected!"; exit 1; else \
-	    cd gitea && $(GO) test -cover -coverprofile coverage.out; \
+	    cd gitea && $(GO) test -race -cover -coverprofile coverage.out; \
 	fi
 
 .PHONY: test-instance

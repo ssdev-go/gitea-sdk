@@ -10,18 +10,27 @@ import (
 
 // GetIssueSubscribers get list of users who subscribed on an issue
 func (c *Client) GetIssueSubscribers(owner, repo string, index int64) ([]*User, error) {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return nil, err
+	}
 	subscribers := make([]*User, 0, 10)
 	return subscribers, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions", owner, repo, index), nil, nil, &subscribers)
 }
 
 // AddIssueSubscription Subscribe user to issue
 func (c *Client) AddIssueSubscription(owner, repo string, index int64, user string) error {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return err
+	}
 	_, err := c.getResponse("PUT", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
 	return err
 }
 
 // DeleteIssueSubscription unsubscribe user from issue
 func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user string) error {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return err
+	}
 	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
 	return err
 }

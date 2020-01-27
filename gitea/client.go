@@ -13,6 +13,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
+
+	"github.com/hashicorp/go-version"
 )
 
 var jsonHeader = http.Header{"content-type": []string{"application/json"}}
@@ -24,12 +27,14 @@ func Version() string {
 
 // Client represents a Gitea API client.
 type Client struct {
-	url         string
-	accessToken string
-	username    string
-	password    string
-	sudo        string
-	client      *http.Client
+	url           string
+	accessToken   string
+	username      string
+	password      string
+	sudo          string
+	client        *http.Client
+	serverVersion *version.Version
+	versionLock   sync.RWMutex
 }
 
 // NewClient initializes and returns a API client.

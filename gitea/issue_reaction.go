@@ -20,12 +20,18 @@ type Reaction struct {
 
 // GetIssueReactions get a list reactions of an issue
 func (c *Client) GetIssueReactions(owner, repo string, index int64) ([]*Reaction, error) {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return nil, err
+	}
 	reactions := make([]*Reaction, 0, 10)
 	return reactions, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/reactions", owner, repo, index), nil, nil, &reactions)
 }
 
 // GetIssueCommentReactions get a list of reactions from a comment of an issue
 func (c *Client) GetIssueCommentReactions(owner, repo string, commentID int64) ([]*Reaction, error) {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return nil, err
+	}
 	reactions := make([]*Reaction, 0, 10)
 	return reactions, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/comments/%d/reactions", owner, repo, commentID), nil, nil, &reactions)
 }
@@ -37,6 +43,9 @@ type editReactionOption struct {
 
 // PostIssueReaction add a reaction to an issue
 func (c *Client) PostIssueReaction(owner, repo string, index int64, reaction string) (*Reaction, error) {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return nil, err
+	}
 	reactionResponse := new(Reaction)
 	body, err := json.Marshal(&editReactionOption{Reaction: reaction})
 	if err != nil {
@@ -48,6 +57,9 @@ func (c *Client) PostIssueReaction(owner, repo string, index int64, reaction str
 
 // DeleteIssueReaction remove a reaction from an issue
 func (c *Client) DeleteIssueReaction(owner, repo string, index int64, reaction string) error {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return err
+	}
 	body, err := json.Marshal(&editReactionOption{Reaction: reaction})
 	if err != nil {
 		return err
@@ -58,6 +70,9 @@ func (c *Client) DeleteIssueReaction(owner, repo string, index int64, reaction s
 
 // PostIssueCommentReaction add a reaction to a comment of an issue
 func (c *Client) PostIssueCommentReaction(owner, repo string, commentID int64, reaction string) (*Reaction, error) {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return nil, err
+	}
 	reactionResponse := new(Reaction)
 	body, err := json.Marshal(&editReactionOption{Reaction: reaction})
 	if err != nil {
@@ -69,6 +84,9 @@ func (c *Client) PostIssueCommentReaction(owner, repo string, commentID int64, r
 
 // DeleteIssueCommentReaction remove a reaction from a comment of an issue
 func (c *Client) DeleteIssueCommentReaction(owner, repo string, commentID int64, reaction string) error {
+	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
+		return err
+	}
 	// swagger:operation DELETE /repos/{owner}/{repo}/issues/comments/{id}/reactions issue issueDeleteCommentReaction
 	body, err := json.Marshal(&editReactionOption{Reaction: reaction})
 	if err != nil {
