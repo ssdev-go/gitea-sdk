@@ -26,6 +26,8 @@ steps:
   - echo "DB_TYPE = sqlite3" >> /tmp/conf/app.ini
   - echo "[repository]" >> /tmp/conf/app.ini
   - echo "ROOT = /tmp/data/" >> /tmp/conf/app.ini
+  - echo "[server]" >> /tmp/conf/app.ini
+  - echo "ROOT_URL = http://gitea:3000" >> /tmp/conf/app.ini
   - gitea migrate -c /tmp/conf/app.ini
   - gitea admin create-user --username=test01 --password=test01 --email=test01@gitea.io --admin=true --must-change-password=false --access-token -c /tmp/conf/app.ini
   - gitea web -c /tmp/conf/app.ini
