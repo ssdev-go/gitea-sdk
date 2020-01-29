@@ -12,6 +12,12 @@ This project acts as a client SDK implementation written in Go to interact with
 the Gitea API implementation. For further informations take a look at the
 current [documentation](https://godoc.org/code.gitea.io/sdk/gitea).
 
+## Use it
+
+```go
+import "code.gitea.io/sdk/gitea"
+```
+
 ## Contributing
 
 Fork -> Patch -> Push -> Pull Request
