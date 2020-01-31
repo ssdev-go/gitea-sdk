@@ -117,8 +117,8 @@ func (c *Client) ListUserIssues(opt ListIssueOption) ([]*Issue, error) {
 // ListRepoIssues returns all issues for a given repository
 func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, error) {
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues", owner, repo))
-	issues := make([]*Issue, 0, 10)
 	link.RawQuery = opt.QueryEncode()
+	issues := make([]*Issue, 0, 10)
 	return issues, c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 }
 
