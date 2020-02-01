@@ -6,6 +6,7 @@ package gitea
 
 import (
 	"fmt"
+	"net/http"
 )
 
 // GetIssueSubscribers get list of users who subscribed on an issue
@@ -22,8 +23,14 @@ func (c *Client) AddIssueSubscription(owner, repo string, index int64, user stri
 	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
 		return err
 	}
-	_, err := c.getResponse("PUT", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
-	return err
+	status, err := c.getStatusCode("PUT", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
+	if err != nil {
+		return err
+	}
+	if status == http.StatusCreated {
+		return nil
+	}
+	return fmt.Errorf("unexpected Status: %d", status)
 }
 
 // DeleteIssueSubscription unsubscribe user from issue
@@ -31,8 +38,14 @@ func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user s
 	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
 		return err
 	}
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
-	return err
+	status, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
+	if err != nil {
+		return err
+	}
+	if status == http.StatusNoContent {
+		return nil
+	}
+	return fmt.Errorf("unexpected Status: %d", status)
 }
 
 // IssueSubscribe subscribe current user to an issue
