@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -72,6 +73,74 @@ func (c *Client) ListUserRepos(user string) ([]*Repository, error) {
 func (c *Client) ListOrgRepos(org string) ([]*Repository, error) {
 	repos := make([]*Repository, 0, 10)
 	return repos, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/repos", org), nil, nil, &repos)
+}
+
+// SearchRepoOptions options for searching repositories
+type SearchRepoOptions struct {
+	Keyword         string
+	Topic           bool
+	IncludeDesc     bool
+	UID             int64
+	PriorityOwnerID int64
+	StarredBy       int64
+	Private         bool
+	Template        bool
+	Mode            string
+	Exclusive       bool
+	Sort            string
+}
+
+// QueryEncode turns options into querystring argument
+func (opt *SearchRepoOptions) QueryEncode() string {
+	query := make(url.Values)
+	if opt.Keyword != "" {
+		query.Add("q", opt.Keyword)
+	}
+
+	query.Add("topic", fmt.Sprintf("%t", opt.Topic))
+	query.Add("includeDesc", fmt.Sprintf("%t", opt.IncludeDesc))
+
+	if opt.UID > 0 {
+		query.Add("uid", fmt.Sprintf("%d", opt.UID))
+	}
+
+	if opt.PriorityOwnerID > 0 {
+		query.Add("priority_owner_id", fmt.Sprintf("%d", opt.PriorityOwnerID))
+	}
+
+	if opt.StarredBy > 0 {
+		query.Add("starredBy", fmt.Sprintf("%d", opt.StarredBy))
+	}
+
+	query.Add("private", fmt.Sprintf("%t", opt.Private))
+	query.Add("template", fmt.Sprintf("%t", opt.Template))
+
+	if opt.Mode != "" {
+		query.Add("mode", opt.Mode)
+	}
+
+	query.Add("exclusive", fmt.Sprintf("%t", opt.Exclusive))
+
+	if opt.Sort != "" {
+		query.Add("sort", opt.Sort)
+	}
+
+	return query.Encode()
+}
+
+type searchRepoResponse struct {
+	Repos []*Repository `json:"data"`
+}
+
+// SearchRepos searches for repositories matching the given filters
+func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, error) {
+	resp := new(searchRepoResponse)
+
+	link, _ := url.Parse("/repos/search")
+	link.RawQuery = opt.QueryEncode()
+
+	err := c.getParsedResponse("GET", link.String(), nil, nil, &resp)
+	return resp.Repos, err
 }
 
 // CreateRepoOption options when creating repository

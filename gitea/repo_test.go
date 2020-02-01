@@ -31,6 +31,55 @@ func TestCreateRepo(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestSearchRepo(t *testing.T) {
+	log.Println("== TestSearchRepo ==")
+	c := newTestClient()
+
+	repo, err := createTestRepo(t, "RepoSearch1", c)
+	assert.NoError(t, err)
+	assert.NoError(t, c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic1"))
+	assert.NoError(t, c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic2"))
+
+	repo, err = createTestRepo(t, "RepoSearch2", c)
+	assert.NoError(t, err)
+	assert.NoError(t, c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic1"))
+
+	repos, err := c.SearchRepos(SearchRepoOptions{
+		Keyword:     "Search1",
+		IncludeDesc: true,
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, repos)
+	assert.Len(t, repos, 1)
+
+	repos, err = c.SearchRepos(SearchRepoOptions{
+		Keyword:     "Search",
+		IncludeDesc: true,
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, repos)
+	assert.Len(t, repos, 2)
+
+	repos, err = c.SearchRepos(SearchRepoOptions{
+		Keyword: "TestTopic1",
+		Topic:   true,
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, repos)
+	assert.Len(t, repos, 2)
+
+	repos, err = c.SearchRepos(SearchRepoOptions{
+		Keyword: "TestTopic2",
+		Topic:   true,
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, repos)
+	assert.Len(t, repos, 1)
+
+	err = c.DeleteRepo(repo.Owner.UserName, repo.Name)
+	assert.NoError(t, err)
+}
+
 func TestDeleteRepo(t *testing.T) {
 	log.Println("== TestDeleteRepo ==")
 	c := newTestClient()
