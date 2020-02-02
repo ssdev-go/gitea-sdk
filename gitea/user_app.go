@@ -13,8 +13,8 @@ import (
 	"net/http"
 )
 
-// BasicAuthEncode generate base64 of basic auth head
-func BasicAuthEncode(user, pass string) string {
+// basicAuthEncode generate base64 of basic auth head
+func basicAuthEncode(user, pass string) string {
 	return base64.StdEncoding.EncodeToString([]byte(user + ":" + pass))
 }
 
@@ -30,7 +30,7 @@ type AccessToken struct {
 func (c *Client) ListAccessTokens(user, pass string) ([]*AccessToken, error) {
 	tokens := make([]*AccessToken, 0, 10)
 	return tokens, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens", user),
-		http.Header{"Authorization": []string{"Basic " + BasicAuthEncode(user, pass)}}, nil, &tokens)
+		http.Header{"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}}, nil, &tokens)
 }
 
 // CreateAccessTokenOption options when create access token
@@ -48,12 +48,13 @@ func (c *Client) CreateAccessToken(user, pass string, opt CreateAccessTokenOptio
 	return t, c.getParsedResponse("POST", fmt.Sprintf("/users/%s/tokens", user),
 		http.Header{
 			"content-type":  []string{"application/json"},
-			"Authorization": []string{"Basic " + BasicAuthEncode(user, pass)}},
+			"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}},
 		bytes.NewReader(body), t)
 }
 
 // DeleteAccessToken delete token with key id
-func (c *Client) DeleteAccessToken(user string, keyID int64) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/user/%s/tokens/%d", user, keyID), nil, nil)
+func (c *Client) DeleteAccessToken(user, pass string, keyID int64) error {
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/users/%s/tokens/%d", user, keyID),
+		http.Header{"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}}, nil)
 	return err
 }
