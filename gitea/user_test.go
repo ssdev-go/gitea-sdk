@@ -45,3 +45,14 @@ func TestUserApp(t *testing.T) {
 	result, _ = c.ListAccessTokens(c.username, c.password)
 	assert.Len(t, result, 1)
 }
+
+func createTestUser(t *testing.T, username string, client *Client) *User {
+	bFalse := false
+	user, _ := client.GetUserInfo(username)
+	if user.ID != 0 {
+		return user
+	}
+	user, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: &bFalse, SendNotify: bFalse})
+	assert.NoError(t, err)
+	return user
+}
