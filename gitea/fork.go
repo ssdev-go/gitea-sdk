@@ -13,10 +13,7 @@ import (
 // ListForks list a repository's forks
 func (c *Client) ListForks(user, repo string) ([]*Repository, error) {
 	forks := make([]*Repository, 10)
-	err := c.getParsedResponse("GET",
-		fmt.Sprintf("/repos/%s/%s/forks", user, repo),
-		nil, nil, &forks)
-	return forks, err
+	return forks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/forks", user, repo), nil, nil, &forks)
 }
 
 // CreateForkOption options for creating a fork
@@ -32,8 +29,5 @@ func (c *Client) CreateFork(user, repo string, form CreateForkOption) (*Reposito
 		return nil, err
 	}
 	fork := new(Repository)
-	err = c.getParsedResponse("POST",
-		fmt.Sprintf("/repos/%s/%s/forks", user, repo),
-		jsonHeader, bytes.NewReader(body), &fork)
-	return fork, err
+	return fork, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/forks", user, repo), jsonHeader, bytes.NewReader(body), &fork)
 }

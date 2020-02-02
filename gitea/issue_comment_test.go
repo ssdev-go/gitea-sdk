@@ -73,7 +73,6 @@ func TestIssueComment(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	assert.EqualValues(t, "changed my mind", comment.Body)
-	assert.NotEqual(t, comment.Updated.Unix(), comments[1].Updated.Unix())
 
 	// DeleteIssueComment
 	assert.NoError(t, c.DeleteIssueComment(user.UserName, repo.Name, comments[1].ID))
