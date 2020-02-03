@@ -62,13 +62,6 @@ func (opt *ListIssueOption) QueryEncode() string {
 	if len(opt.State) > 0 {
 		query.Add("state", opt.State)
 	}
-
-	if opt.Page > 0 {
-		query.Add("page", fmt.Sprintf("%d", opt.Page))
-	}
-	if len(opt.State) > 0 {
-		query.Add("state", opt.State)
-	}
 	if len(opt.Labels) > 0 {
 		var lq string
 		for _, l := range opt.Labels {
