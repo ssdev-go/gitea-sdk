@@ -18,6 +18,7 @@ func TestIssue(t *testing.T) {
 	c := newTestClient()
 
 	createIssue(t, c)
+	editIssues(t, c)
 	listIssues(t, c)
 }
 
@@ -75,6 +76,24 @@ func createIssue(t *testing.T, c *Client) {
 	createOne("Do it soon!", "is important!", []string{user.UserName}, &nowTime, mile.ID, []int64{label1.ID, label2.ID}, false, false)
 	createOne("Job Done", "you never know", nil, nil, mile.ID, []int64{label2.ID}, true, false)
 	createOne("", "you never know", nil, nil, mile.ID, nil, true, true)
+}
+
+func editIssues(t *testing.T, c *Client) {
+	log.Println("== TestEditIssues ==")
+	il, err := c.ListIssues(ListIssueOption{KeyWord: "soon"})
+	assert.NoError(t, err)
+	issue, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
+	assert.NoError(t, err)
+
+	body := "123 test and go"
+	issueNew, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
+		Title: "Edited",
+		Body:  &body,
+	})
+	assert.NoError(t, err)
+	assert.EqualValues(t, issue.ID, issueNew.ID)
+	assert.EqualValues(t, body, issueNew.Body)
+	assert.EqualValues(t, "Edited", issueNew.Title)
 }
 
 func listIssues(t *testing.T, c *Client) {

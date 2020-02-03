@@ -41,6 +41,7 @@ type Issue struct {
 	Closed      *time.Time       `json:"closed_at"`
 	Deadline    *time.Time       `json:"due_date"`
 	PullRequest *PullRequestMeta `json:"pull_request"`
+	Repository  *Repository      `json:"repository"`
 }
 
 // ListIssueOption list issue options
