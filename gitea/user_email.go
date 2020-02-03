@@ -35,7 +35,7 @@ func (c *Client) AddEmail(opt CreateEmailOption) ([]*Email, error) {
 		return nil, err
 	}
 	emails := make([]*Email, 0, 3)
-	return emails, c.getParsedResponse("POST", "/user/emails", jsonHeader, bytes.NewReader(body), emails)
+	return emails, c.getParsedResponse("POST", "/user/emails", jsonHeader, bytes.NewReader(body), &emails)
 }
 
 // DeleteEmailOption options when deleting email addresses
