@@ -24,3 +24,24 @@ func TestMyUser(t *testing.T) {
 	assert.EqualValues(t, getGiteaURL()+"/user/avatar/test01/-1", user.AvatarURL)
 	assert.Equal(t, true, user.IsAdmin)
 }
+
+func TestUserApp(t *testing.T) {
+	log.Println("== TestUserApp ==")
+	c := newTestClient()
+
+	result, err := c.ListAccessTokens(c.username, c.password)
+	assert.NoError(t, err)
+	assert.Len(t, result, 1)
+	assert.EqualValues(t, "gitea-admin", result[0].Name)
+
+	t1, err := c.CreateAccessToken(c.username, c.password, CreateAccessTokenOption{Name: "TestCreateAccessToken"})
+	assert.NoError(t, err)
+	assert.EqualValues(t, "TestCreateAccessToken", t1.Name)
+	result, _ = c.ListAccessTokens(c.username, c.password)
+	assert.Len(t, result, 2)
+
+	err = c.DeleteAccessToken(c.username, t1.ID)
+	assert.NoError(t, err)
+	result, _ = c.ListAccessTokens(c.username, c.password)
+	assert.Len(t, result, 1)
+}
