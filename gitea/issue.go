@@ -94,27 +94,6 @@ func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, error) {
 	return issues, c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 }
 
-// ListUserIssues returns all issues assigned to the authenticated user
-func (c *Client) ListUserIssues(opt ListIssueOption) ([]*Issue, error) {
-	// WARNING: "/user/issues" API is not implemented jet!
-	allIssues, err := c.ListIssues(opt)
-	if err != nil {
-		return nil, err
-	}
-	user, err := c.GetMyUserInfo()
-	if err != nil {
-		return nil, err
-	}
-	// Workaround: client sort out non user related issues
-	issues := make([]*Issue, 0, 10)
-	for _, i := range allIssues {
-		if i.ID == user.ID {
-			issues = append(issues, i)
-		}
-	}
-	return issues, nil
-}
-
 // ListRepoIssues returns all issues for a given repository
 func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, error) {
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues", owner, repo))
