@@ -4,15 +4,41 @@
 
 package gitea
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 type searchUsersResponse struct {
 	Users []*User `json:"data"`
 }
 
+// SearchUsersOption options for SearchUsers
+type SearchUsersOption struct {
+	ListOptions
+	KeyWord string
+}
+
+// QueryEncode turns options into querystring argument
+func (opt *SearchUsersOption) QueryEncode() string {
+	query := make(url.Values)
+	if opt.Page > 0 {
+		query.Add("page", fmt.Sprintf("%d", opt.Page))
+	}
+	if opt.PageSize > 0 {
+		query.Add("limit", fmt.Sprintf("%d", opt.PageSize))
+	}
+	if len(opt.KeyWord) > 0 {
+		query.Add("q", opt.KeyWord)
+	}
+	return query.Encode()
+}
+
 // SearchUsers finds users by query
-func (c *Client) SearchUsers(query string, limit int) ([]*User, error) {
+func (c *Client) SearchUsers(opt SearchUsersOption) ([]*User, error) {
+	link, _ := url.Parse("/users/search")
+	link.RawQuery = opt.QueryEncode()
 	resp := new(searchUsersResponse)
-	err := c.getParsedResponse("GET", fmt.Sprintf("/users/search?q=%s&limit=%d", query, limit), nil, nil, &resp)
+	err := c.getParsedResponse("GET", link.String(), nil, nil, &resp)
 	return resp.Users, err
 }
