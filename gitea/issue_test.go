@@ -86,9 +86,11 @@ func editIssues(t *testing.T, c *Client) {
 	assert.NoError(t, err)
 
 	body := "123 test and go"
+	state := StateClosed
 	issueNew, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
 		Title: "Edited",
 		Body:  &body,
+		State: &state,
 	})
 	assert.NoError(t, err)
 	assert.EqualValues(t, issue.ID, issueNew.ID)
@@ -117,5 +119,5 @@ func listIssues(t *testing.T, c *Client) {
 
 	issues, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{})
 	assert.NoError(t, err)
-	assert.Len(t, issues, 4)
+	assert.Len(t, issues, 3)
 }

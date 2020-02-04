@@ -59,9 +59,8 @@ type PullRequest struct {
 
 // ListPullRequestsOptions options for listing pull requests
 type ListPullRequestsOptions struct {
-	Page int `json:"page"`
-	// open, closed, all
-	State string `json:"state"`
+	Page  int       `json:"page"`
+	State StateType `json:"state"`
 	// oldest, recentupdate, leastupdate, mostcomment, leastcomment, priority
 	Sort      string `json:"sort"`
 	Milestone int64  `json:"milestone"`
@@ -78,7 +77,7 @@ func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOp
 		query.Add("page", fmt.Sprintf("%d", opt.Page))
 	}
 	if len(opt.State) > 0 {
-		query.Add("state", opt.State)
+		query.Add("state", string(opt.State))
 	}
 	if len(opt.Sort) > 0 {
 		query.Add("sort", opt.Sort)
@@ -129,7 +128,7 @@ type EditPullRequestOption struct {
 	Assignees []string   `json:"assignees"`
 	Milestone int64      `json:"milestone"`
 	Labels    []int64    `json:"labels"`
-	State     *string    `json:"state"`
+	State     *StateType `json:"state"`
 	Deadline  *time.Time `json:"due_date"`
 }
 

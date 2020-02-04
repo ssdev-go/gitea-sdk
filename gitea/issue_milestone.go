@@ -12,18 +12,6 @@ import (
 	"time"
 )
 
-// StateType issue state type
-type StateType string
-
-const (
-	// StateOpen pr is opend
-	StateOpen StateType = "open"
-	// StateClosed pr is closed
-	StateClosed StateType = "closed"
-	// StateAll is all
-	StateAll StateType = "all"
-)
-
 // Milestone milestone is a collection of issues on one repository
 type Milestone struct {
 	ID           int64      `json:"id"`

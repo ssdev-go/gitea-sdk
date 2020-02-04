@@ -26,7 +26,7 @@ func TestPull(t *testing.T) {
 	// ListRepoPullRequests list PRs of one repository
 	pulls, err := c.ListRepoPullRequests(user.UserName, repoName, ListPullRequestsOptions{
 		Page:  1,
-		State: "all",
+		State: StateAll,
 		Sort:  "leastupdate",
 	})
 	assert.NoError(t, err)

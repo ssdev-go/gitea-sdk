@@ -46,12 +46,23 @@ type Issue struct {
 
 // ListIssueOption list issue options
 type ListIssueOption struct {
-	Page int
-	// open, closed, all
-	State   string
+	Page    int
+	State   StateType
 	Labels  []string
 	KeyWord string
 }
+
+// StateType issue state type
+type StateType string
+
+const (
+	// StateOpen pr is opend
+	StateOpen StateType = "open"
+	// StateClosed pr is closed
+	StateClosed StateType = "closed"
+	// StateAll is all
+	StateAll StateType = "all"
+)
 
 // QueryEncode turns options into querystring argument
 func (opt *ListIssueOption) QueryEncode() string {
@@ -60,7 +71,7 @@ func (opt *ListIssueOption) QueryEncode() string {
 		query.Add("page", fmt.Sprintf("%d", opt.Page))
 	}
 	if len(opt.State) > 0 {
-		query.Add("state", opt.State)
+		query.Add("state", string(opt.State))
 	}
 	if len(opt.Labels) > 0 {
 		var lq string
@@ -134,7 +145,7 @@ type EditIssueOption struct {
 	Assignee  *string    `json:"assignee"`
 	Assignees []string   `json:"assignees"`
 	Milestone *int64     `json:"milestone"`
-	State     *string    `json:"state"`
+	State     *StateType `json:"state"`
 	Deadline  *time.Time `json:"due_date"`
 }
 
