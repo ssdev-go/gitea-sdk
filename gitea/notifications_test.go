@@ -89,7 +89,7 @@ func TestNotifications(t *testing.T) {
 	assert.Len(t, nList, 0)
 
 	// ReadThread
-	iState := "closed"
+	iState := StateClosed
 	c.sudo = ""
 	_, err = c.EditIssue(repoB.Owner.UserName, repoB.Name, issue.Index, EditIssueOption{State: &iState})
 	assert.NoError(t, err)
