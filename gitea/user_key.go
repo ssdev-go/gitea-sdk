@@ -24,16 +24,23 @@ type PublicKey struct {
 	KeyType     string    `json:"key_type,omitempty"`
 }
 
+// ListPublicKeysOptions options for listing a user's PublicKeys
+type ListPublicKeysOptions struct {
+	ListOptions
+}
+
 // ListPublicKeys list all the public keys of the user
-func (c *Client) ListPublicKeys(user string) ([]*PublicKey, error) {
-	keys := make([]*PublicKey, 0, 10)
-	return keys, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/keys", user), nil, nil, &keys)
+func (c *Client) ListPublicKeys(user string, opt ListPublicKeysOptions) ([]*PublicKey, error) {
+	opt.setDefaults()
+	keys := make([]*PublicKey, 0, opt.PageSize)
+	return keys, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/keys?%s", user, opt.getURLQuery().Encode()), nil, nil, &keys)
 }
 
 // ListMyPublicKeys list all the public keys of current user
-func (c *Client) ListMyPublicKeys() ([]*PublicKey, error) {
-	keys := make([]*PublicKey, 0, 10)
-	return keys, c.getParsedResponse("GET", "/user/keys", nil, nil, &keys)
+func (c *Client) ListMyPublicKeys(opt ListPublicKeysOptions) ([]*PublicKey, error) {
+	opt.setDefaults()
+	keys := make([]*PublicKey, 0, opt.PageSize)
+	return keys, c.getParsedResponse("GET", fmt.Sprintf("/user/keys?%s", opt.getURLQuery().Encode()), nil, nil, &keys)
 }
 
 // GetPublicKey get current user's public key by key id

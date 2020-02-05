@@ -26,10 +26,16 @@ type AccessToken struct {
 	TokenLastEight string `json:"token_last_eight"`
 }
 
-// ListAccessTokens lista all the access tokens of user
-func (c *Client) ListAccessTokens(user, pass string) ([]*AccessToken, error) {
-	tokens := make([]*AccessToken, 0, 10)
-	return tokens, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens", user),
+// ListAccessTokensOptions options for listing a users's access tokens
+type ListAccessTokensOptions struct {
+	ListOptions
+}
+
+// ListAccessTokens lists all the access tokens of user
+func (c *Client) ListAccessTokens(user, pass string, opts ListAccessTokensOptions) ([]*AccessToken, error) {
+	opts.setDefaults()
+	tokens := make([]*AccessToken, 0, opts.PageSize)
+	return tokens, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens?%s", user, opts.getURLQuery().Encode()),
 		http.Header{"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}}, nil, &tokens)
 }
 

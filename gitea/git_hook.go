@@ -17,10 +17,16 @@ type GitHook struct {
 	Content  string `json:"content,omitempty"`
 }
 
+// ListRepoGitHooksOptions options for listing repository's githooks
+type ListRepoGitHooksOptions struct {
+	ListOptions
+}
+
 // ListRepoGitHooks list all the Git hooks of one repository
-func (c *Client) ListRepoGitHooks(user, repo string) ([]*GitHook, error) {
-	hooks := make([]*GitHook, 0, 10)
-	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/git", user, repo), nil, nil, &hooks)
+func (c *Client) ListRepoGitHooks(user, repo string, opt ListRepoGitHooksOptions) ([]*GitHook, error) {
+	opt.setDefaults()
+	hooks := make([]*GitHook, 0, opt.PageSize)
+	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/git?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &hooks)
 }
 
 // GetRepoGitHook get a Git hook of a repository

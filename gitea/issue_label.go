@@ -20,10 +20,16 @@ type Label struct {
 	URL         string `json:"url"`
 }
 
+// ListLabelsOptions options for listing repository's labels
+type ListLabelsOptions struct {
+	ListOptions
+}
+
 // ListRepoLabels list labels of one repository
-func (c *Client) ListRepoLabels(owner, repo string) ([]*Label, error) {
-	labels := make([]*Label, 0, 10)
-	return labels, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/labels", owner, repo), nil, nil, &labels)
+func (c *Client) ListRepoLabels(owner, repo string, opt ListLabelsOptions) ([]*Label, error) {
+	opt.setDefaults()
+	labels := make([]*Label, 0, opt.PageSize)
+	return labels, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/labels?%s", owner, repo, opt.getURLQuery().Encode()), nil, nil, &labels)
 }
 
 // GetRepoLabel get one label of repository by repo it
@@ -77,9 +83,9 @@ func (c *Client) DeleteLabel(owner, repo string, id int64) error {
 }
 
 // GetIssueLabels get labels of one issue via issue id
-func (c *Client) GetIssueLabels(owner, repo string, index int64) ([]*Label, error) {
+func (c *Client) GetIssueLabels(owner, repo string, index int64, opts ListLabelsOptions) ([]*Label, error) {
 	labels := make([]*Label, 0, 5)
-	return labels, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/labels", owner, repo, index), nil, nil, &labels)
+	return labels, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/labels?%s", owner, repo, index, opts.getURLQuery().Encode()), nil, nil, &labels)
 }
 
 // IssueLabelsOption a collection of labels

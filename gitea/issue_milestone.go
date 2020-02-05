@@ -33,13 +33,7 @@ type ListMilestoneOption struct {
 
 // QueryEncode turns options into querystring argument
 func (opt *ListMilestoneOption) QueryEncode() string {
-	query := make(url.Values)
-	if opt.Page > 0 {
-		query.Add("page", fmt.Sprintf("%d", opt.Page))
-	}
-	if opt.PageSize > 0 {
-		query.Add("limit", fmt.Sprintf("%d", opt.PageSize))
-	}
+	query := opt.getURLQuery()
 	if opt.State != "" {
 		query.Add("state", string(opt.State))
 	}
@@ -48,9 +42,11 @@ func (opt *ListMilestoneOption) QueryEncode() string {
 
 // ListRepoMilestones list all the milestones of one repository
 func (c *Client) ListRepoMilestones(owner, repo string, opt ListMilestoneOption) ([]*Milestone, error) {
+	opt.setDefaults()
+	milestones := make([]*Milestone, 0, opt.PageSize)
+
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/milestones", owner, repo))
 	link.RawQuery = opt.QueryEncode()
-	milestones := make([]*Milestone, 0, 10)
 	return milestones, c.getParsedResponse("GET", link.String(), nil, nil, &milestones)
 }
 

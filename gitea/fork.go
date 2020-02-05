@@ -10,10 +10,18 @@ import (
 	"fmt"
 )
 
+// ListForksOptions options for listing repository's forks
+type ListForksOptions struct {
+	ListOptions
+}
+
 // ListForks list a repository's forks
-func (c *Client) ListForks(user, repo string) ([]*Repository, error) {
-	forks := make([]*Repository, 10)
-	return forks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/forks", user, repo), nil, nil, &forks)
+func (c *Client) ListForks(user string, repo string, opt ListForksOptions) ([]*Repository, error) {
+	opt.setDefaults()
+	forks := make([]*Repository, opt.PageSize)
+	return forks, c.getParsedResponse("GET",
+		fmt.Sprintf("/repos/%s/%s/forks?%s", user, repo, opt.getURLQuery().Encode()),
+		nil, nil, &forks)
 }
 
 // CreateForkOption options for creating a fork

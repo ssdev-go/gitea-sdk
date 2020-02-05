@@ -6,28 +6,42 @@ package gitea
 
 import "fmt"
 
+// ListFollowersOptions options for listing followers
+type ListFollowersOptions struct {
+	ListOptions
+}
+
 // ListMyFollowers list all the followers of current user
-func (c *Client) ListMyFollowers(page int) ([]*User, error) {
-	users := make([]*User, 0, 10)
-	return users, c.getParsedResponse("GET", fmt.Sprintf("/user/followers?page=%d", page), nil, nil, &users)
+func (c *Client) ListMyFollowers(opt ListFollowersOptions) ([]*User, error) {
+	opt.setDefaults()
+	users := make([]*User, 0, opt.PageSize)
+	return users, c.getParsedResponse("GET", fmt.Sprintf("/user/followers?%s", opt.getURLQuery().Encode()), nil, nil, &users)
 }
 
 // ListFollowers list all the followers of one user
-func (c *Client) ListFollowers(user string, page int) ([]*User, error) {
-	users := make([]*User, 0, 10)
-	return users, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/followers?page=%d", user, page), nil, nil, &users)
+func (c *Client) ListFollowers(user string, opt ListFollowersOptions) ([]*User, error) {
+	opt.setDefaults()
+	users := make([]*User, 0, opt.PageSize)
+	return users, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/followers?%s", user, opt.getURLQuery().Encode()), nil, nil, &users)
+}
+
+// ListFollowingOptions options for listing a user's users being followed
+type ListFollowingOptions struct {
+	ListOptions
 }
 
 // ListMyFollowing list all the users current user followed
-func (c *Client) ListMyFollowing(page int) ([]*User, error) {
-	users := make([]*User, 0, 10)
-	return users, c.getParsedResponse("GET", fmt.Sprintf("/user/following?page=%d", page), nil, nil, &users)
+func (c *Client) ListMyFollowing(opt ListFollowingOptions) ([]*User, error) {
+	opt.setDefaults()
+	users := make([]*User, 0, opt.PageSize)
+	return users, c.getParsedResponse("GET", fmt.Sprintf("/user/following?%s", opt.getURLQuery().Encode()), nil, nil, &users)
 }
 
 // ListFollowing list all the users the user followed
-func (c *Client) ListFollowing(user string, page int) ([]*User, error) {
-	users := make([]*User, 0, 10)
-	return users, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/following?page=%d", user, page), nil, nil, &users)
+func (c *Client) ListFollowing(user string, opt ListFollowingOptions) ([]*User, error) {
+	opt.setDefaults()
+	users := make([]*User, 0, opt.PageSize)
+	return users, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/following?%s", user, opt.getURLQuery().Encode()), nil, nil, &users)
 }
 
 // IsFollowing if current user followed the target

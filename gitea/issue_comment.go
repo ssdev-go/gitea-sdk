@@ -28,13 +28,14 @@ type Comment struct {
 
 // ListIssueCommentOptions list comment options
 type ListIssueCommentOptions struct {
+	ListOptions
 	Since  time.Time
 	Before time.Time
 }
 
 // QueryEncode turns options into querystring argument
 func (opt *ListIssueCommentOptions) QueryEncode() string {
-	query := make(url.Values)
+	query := opt.getURLQuery()
 	if !opt.Since.IsZero() {
 		query.Add("since", opt.Since.Format(time.RFC3339))
 	}
@@ -46,17 +47,19 @@ func (opt *ListIssueCommentOptions) QueryEncode() string {
 
 // ListIssueComments list comments on an issue.
 func (c *Client) ListIssueComments(owner, repo string, index int64, opt ListIssueCommentOptions) ([]*Comment, error) {
+	opt.setDefaults()
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues/%d/comments", owner, repo, index))
 	link.RawQuery = opt.QueryEncode()
-	comments := make([]*Comment, 0, 10)
+	comments := make([]*Comment, 0, opt.PageSize)
 	return comments, c.getParsedResponse("GET", link.String(), nil, nil, &comments)
 }
 
 // ListRepoIssueComments list comments for a given repo.
 func (c *Client) ListRepoIssueComments(owner, repo string, opt ListIssueCommentOptions) ([]*Comment, error) {
+	opt.setDefaults()
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues/comments", owner, repo))
 	link.RawQuery = opt.QueryEncode()
-	comments := make([]*Comment, 0, 10)
+	comments := make([]*Comment, 0, opt.PageSize)
 	return comments, c.getParsedResponse("GET", link.String(), nil, nil, &comments)
 }
 

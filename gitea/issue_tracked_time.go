@@ -37,12 +37,6 @@ func (c *Client) GetRepoTrackedTimes(owner, repo string) ([]*TrackedTime, error)
 	return times, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/times", owner, repo), nil, nil, &times)
 }
 
-// ListTrackedTimes list tracked times of a single issue for a given repository
-func (c *Client) ListTrackedTimes(owner, repo string, index int64) ([]*TrackedTime, error) {
-	times := make([]*TrackedTime, 0, 10)
-	return times, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/times", owner, repo, index), nil, nil, &times)
-}
-
 // GetMyTrackedTimes list tracked times of the current user
 func (c *Client) GetMyTrackedTimes() ([]*TrackedTime, error) {
 	times := make([]*TrackedTime, 0, 10)
@@ -68,6 +62,18 @@ func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*T
 	t := new(TrackedTime)
 	return t, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/%d/times", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), t)
+}
+
+// ListTrackedTimesOptions options for listing repository's tracked times
+type ListTrackedTimesOptions struct {
+	ListOptions
+}
+
+// ListTrackedTimes list tracked times of a single issue for a given repository
+func (c *Client) ListTrackedTimes(owner, repo string, index int64, opt ListTrackedTimesOptions) ([]*TrackedTime, error) {
+	opt.setDefaults()
+	times := make([]*TrackedTime, 0, opt.PageSize)
+	return times, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/times?%s", owner, repo, index, opt.getURLQuery().Encode()), nil, nil, &times)
 }
 
 // ResetIssueTime reset tracked time of a single issue for a given repository

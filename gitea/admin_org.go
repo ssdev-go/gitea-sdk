@@ -11,10 +11,16 @@ import (
 	"fmt"
 )
 
+// AdminListOrgsOptions options for listing admin's organizations
+type AdminListOrgsOptions struct {
+	ListOptions
+}
+
 // AdminListOrgs lists all orgs
-func (c *Client) AdminListOrgs() ([]*Organization, error) {
-	orgs := make([]*Organization, 0, 10)
-	return orgs, c.getParsedResponse("GET", "/admin/orgs", nil, nil, &orgs)
+func (c *Client) AdminListOrgs(opt AdminListOrgsOptions) ([]*Organization, error) {
+	opt.setDefaults()
+	orgs := make([]*Organization, 0, opt.PageSize)
+	return orgs, c.getParsedResponse("GET", fmt.Sprintf("/admin/orgs?%s", opt.getURLQuery().Encode()), nil, nil, &orgs)
 }
 
 // AdminCreateOrg create an organization

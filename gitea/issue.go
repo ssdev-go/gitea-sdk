@@ -55,7 +55,7 @@ type Issue struct {
 
 // ListIssueOption list issue options
 type ListIssueOption struct {
-	Page    int
+	ListOptions
 	State   StateType
 	Labels  []string
 	KeyWord string
@@ -75,10 +75,7 @@ const (
 
 // QueryEncode turns options into querystring argument
 func (opt *ListIssueOption) QueryEncode() string {
-	query := make(url.Values)
-	if opt.Page > 0 {
-		query.Add("page", fmt.Sprintf("%d", opt.Page))
-	}
+	query := opt.getURLQuery()
 	if len(opt.State) > 0 {
 		query.Add("state", string(opt.State))
 	}
@@ -101,8 +98,10 @@ func (opt *ListIssueOption) QueryEncode() string {
 
 // ListIssues returns all issues assigned the authenticated user
 func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, error) {
+	opt.setDefaults()
+	issues := make([]*Issue, 0, opt.PageSize)
+
 	link, _ := url.Parse("/repos/issues/search")
-	issues := make([]*Issue, 0, 10)
 	link.RawQuery = opt.QueryEncode()
 	err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 	if e := c.CheckServerVersionConstraint(">=1.12.0"); e != nil {
@@ -117,9 +116,11 @@ func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, error) {
 
 // ListRepoIssues returns all issues for a given repository
 func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, error) {
+	opt.setDefaults()
+	issues := make([]*Issue, 0, opt.PageSize)
+
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues", owner, repo))
 	link.RawQuery = opt.QueryEncode()
-	issues := make([]*Issue, 0, 10)
 	err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &issues)
 	if e := c.CheckServerVersionConstraint(">=1.12.0"); e != nil {
 		for i := 0; i < len(issues); i++ {

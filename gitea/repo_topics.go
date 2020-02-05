@@ -10,15 +10,22 @@ import (
 	"fmt"
 )
 
+// ListRepoTopicsOptions options for listing repo's topics
+type ListRepoTopicsOptions struct {
+	ListOptions
+}
+
 // TopicsList represents a list of repo's topics
 type TopicsList struct {
 	Topics []string `json:"topics"`
 }
 
 // ListRepoTopics list all repository's topics
-func (c *Client) ListRepoTopics(user, repo string) (*TopicsList, error) {
+func (c *Client) ListRepoTopics(user, repo string, opt ListRepoTopicsOptions) (*TopicsList, error) {
+	opt.setDefaults()
+
 	var list TopicsList
-	return &list, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/topics", user, repo), nil, nil, &list)
+	return &list, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/topics?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &list)
 }
 
 // SetRepoTopics replaces the list of repo's topics

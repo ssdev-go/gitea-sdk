@@ -29,11 +29,17 @@ type Release struct {
 	Attachments  []*Attachment `json:"assets"`
 }
 
+// ListReleasesOptions options for listing repository's releases
+type ListReleasesOptions struct {
+	ListOptions
+}
+
 // ListReleases list releases of a repository
-func (c *Client) ListReleases(user, repo string) ([]*Release, error) {
-	releases := make([]*Release, 0, 10)
+func (c *Client) ListReleases(user, repo string, opt ListReleasesOptions) ([]*Release, error) {
+	opt.setDefaults()
+	releases := make([]*Release, 0, opt.PageSize)
 	err := c.getParsedResponse("GET",
-		fmt.Sprintf("/repos/%s/%s/releases", user, repo),
+		fmt.Sprintf("/repos/%s/%s/releases?%s", user, repo, opt.getURLQuery().Encode()),
 		nil, nil, &releases)
 	return releases, err
 }

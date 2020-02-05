@@ -57,26 +57,40 @@ type Repository struct {
 	AvatarURL                 string      `json:"avatar_url"`
 }
 
+// ListReposOptions options for listing repositories
+type ListReposOptions struct {
+	ListOptions
+}
+
 // ListMyRepos lists all repositories for the authenticated user that has access to.
-func (c *Client) ListMyRepos() ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, c.getParsedResponse("GET", "/user/repos", nil, nil, &repos)
+func (c *Client) ListMyRepos(opt ListReposOptions) ([]*Repository, error) {
+	opt.setDefaults()
+	repos := make([]*Repository, 0, opt.PageSize)
+	return repos, c.getParsedResponse("GET", fmt.Sprintf("/user/repos?%s", opt.getURLQuery().Encode()), nil, nil, &repos)
 }
 
 // ListUserRepos list all repositories of one user by user's name
-func (c *Client) ListUserRepos(user string) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/repos", user), nil, nil, &repos)
+func (c *Client) ListUserRepos(user string, opt ListReposOptions) ([]*Repository, error) {
+	opt.setDefaults()
+	repos := make([]*Repository, 0, opt.PageSize)
+	return repos, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/repos?%s", user, opt.getURLQuery().Encode()), nil, nil, &repos)
+}
+
+// ListOrgReposOptions options for a organization's repositories
+type ListOrgReposOptions struct {
+	ListOptions
 }
 
 // ListOrgRepos list all repositories of one organization by organization's name
-func (c *Client) ListOrgRepos(org string) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/repos", org), nil, nil, &repos)
+func (c *Client) ListOrgRepos(org string, opt ListOrgReposOptions) ([]*Repository, error) {
+	opt.setDefaults()
+	repos := make([]*Repository, 0, opt.PageSize)
+	return repos, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/repos?%s", org, opt.getURLQuery().Encode()), nil, nil, &repos)
 }
 
 // SearchRepoOptions options for searching repositories
 type SearchRepoOptions struct {
+	ListOptions
 	Keyword         string
 	Topic           bool
 	IncludeDesc     bool
@@ -92,7 +106,7 @@ type SearchRepoOptions struct {
 
 // QueryEncode turns options into querystring argument
 func (opt *SearchRepoOptions) QueryEncode() string {
-	query := make(url.Values)
+	query := opt.getURLQuery()
 	if opt.Keyword != "" {
 		query.Add("q", opt.Keyword)
 	}
@@ -134,6 +148,7 @@ type searchRepoResponse struct {
 
 // SearchRepos searches for repositories matching the given filters
 func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, error) {
+	opt.setDefaults()
 	resp := new(searchRepoResponse)
 
 	link, _ := url.Parse("/repos/search")

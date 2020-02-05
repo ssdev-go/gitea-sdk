@@ -24,16 +24,23 @@ type Hook struct {
 	Created time.Time         `json:"created_at"`
 }
 
+// ListHooksOptions options for listing hooks
+type ListHooksOptions struct {
+	ListOptions
+}
+
 // ListOrgHooks list all the hooks of one organization
-func (c *Client) ListOrgHooks(org string) ([]*Hook, error) {
-	hooks := make([]*Hook, 0, 10)
-	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/hooks", org), nil, nil, &hooks)
+func (c *Client) ListOrgHooks(org string, opt ListHooksOptions) ([]*Hook, error) {
+	opt.setDefaults()
+	hooks := make([]*Hook, 0, opt.PageSize)
+	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/hooks?%s", org, opt.getURLQuery().Encode()), nil, nil, &hooks)
 }
 
 // ListRepoHooks list all the hooks of one repository
-func (c *Client) ListRepoHooks(user, repo string) ([]*Hook, error) {
-	hooks := make([]*Hook, 0, 10)
-	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), nil, nil, &hooks)
+func (c *Client) ListRepoHooks(user, repo string, opt ListHooksOptions) ([]*Hook, error) {
+	opt.setDefaults()
+	hooks := make([]*Hook, 0, opt.PageSize)
+	return hooks, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &hooks)
 }
 
 // GetOrgHook get a hook of an organization

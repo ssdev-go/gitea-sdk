@@ -10,10 +10,18 @@ import (
 	"fmt"
 )
 
+// ListCollaboratorsOptions options for listing a repository's collaborators
+type ListCollaboratorsOptions struct {
+	ListOptions
+}
+
 // ListCollaborators list a repository's collaborators
-func (c *Client) ListCollaborators(user, repo string) ([]*User, error) {
-	collaborators := make([]*User, 0, 10)
-	return collaborators, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/collaborators", user, repo), nil, nil, &collaborators)
+func (c *Client) ListCollaborators(user, repo string, opt ListCollaboratorsOptions) ([]*User, error) {
+	opt.setDefaults()
+	collaborators := make([]*User, 0, opt.PageSize)
+	return collaborators, c.getParsedResponse("GET",
+		fmt.Sprintf("/repos/%s/%s/collaborators?%s", user, repo, opt.getURLQuery().Encode()),
+		nil, nil, &collaborators)
 }
 
 // IsCollaborator check if a user is a collaborator of a repository

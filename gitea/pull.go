@@ -59,23 +59,16 @@ type PullRequest struct {
 
 // ListPullRequestsOptions options for listing pull requests
 type ListPullRequestsOptions struct {
-	Page  int       `json:"page"`
+	ListOptions
 	State StateType `json:"state"`
 	// oldest, recentupdate, leastupdate, mostcomment, leastcomment, priority
-	Sort      string `json:"sort"`
-	Milestone int64  `json:"milestone"`
+	Sort      string
+	Milestone int64
 }
 
-// ListRepoPullRequests list PRs of one repository
-func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOptions) ([]*PullRequest, error) {
-	// declare variables
-	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls", owner, repo))
-	prs := make([]*PullRequest, 0, 10)
-	query := make(url.Values)
-	// add options to query
-	if opt.Page > 0 {
-		query.Add("page", fmt.Sprintf("%d", opt.Page))
-	}
+// QueryEncode turns options into querystring argument
+func (opt *ListPullRequestsOptions) QueryEncode() string {
+	query := opt.getURLQuery()
 	if len(opt.State) > 0 {
 		query.Add("state", string(opt.State))
 	}
@@ -85,8 +78,16 @@ func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOp
 	if opt.Milestone > 0 {
 		query.Add("milestone", fmt.Sprintf("%d", opt.Milestone))
 	}
-	link.RawQuery = query.Encode()
-	// request
+	return query.Encode()
+}
+
+// ListRepoPullRequests list PRs of one repository
+func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOptions) ([]*PullRequest, error) {
+	opt.setDefaults()
+	prs := make([]*PullRequest, 0, opt.PageSize)
+
+	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls", owner, repo))
+	link.RawQuery = opt.QueryEncode()
 	return prs, c.getParsedResponse("GET", link.String(), jsonHeader, nil, &prs)
 }
 

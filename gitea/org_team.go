@@ -22,16 +22,23 @@ type Team struct {
 	Units []string `json:"units"`
 }
 
+// ListTeamsOptions options for listing teams
+type ListTeamsOptions struct {
+	ListOptions
+}
+
 // ListOrgTeams lists all teams of an organization
-func (c *Client) ListOrgTeams(org string) ([]*Team, error) {
-	teams := make([]*Team, 0, 10)
-	return teams, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/teams", org), nil, nil, &teams)
+func (c *Client) ListOrgTeams(org string, opt ListTeamsOptions) ([]*Team, error) {
+	opt.setDefaults()
+	teams := make([]*Team, 0, opt.PageSize)
+	return teams, c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/teams?%s", org, opt.getURLQuery().Encode()), nil, nil, &teams)
 }
 
 // ListMyTeams lists all the teams of the current user
-func (c *Client) ListMyTeams() ([]*Team, error) {
-	teams := make([]*Team, 0, 10)
-	return teams, c.getParsedResponse("GET", "/user/teams", nil, nil, &teams)
+func (c *Client) ListMyTeams(opt *ListTeamsOptions) ([]*Team, error) {
+	opt.setDefaults()
+	teams := make([]*Team, 0, opt.PageSize)
+	return teams, c.getParsedResponse("GET", fmt.Sprintf("/user/teams?%s", opt.getURLQuery().Encode()), nil, nil, &teams)
 }
 
 // GetTeam gets a team by ID
@@ -86,10 +93,16 @@ func (c *Client) DeleteTeam(id int64) error {
 	return err
 }
 
+// ListTeamMembersOptions options for listing team's members
+type ListTeamMembersOptions struct {
+	ListOptions
+}
+
 // ListTeamMembers lists all members of a team
-func (c *Client) ListTeamMembers(id int64) ([]*User, error) {
-	members := make([]*User, 0, 10)
-	return members, c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/members", id), nil, nil, &members)
+func (c *Client) ListTeamMembers(id int64, opt ListTeamMembersOptions) ([]*User, error) {
+	opt.setDefaults()
+	members := make([]*User, 0, opt.PageSize)
+	return members, c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/members?%s", id, opt.getURLQuery().Encode()), nil, nil, &members)
 }
 
 // GetTeamMember gets a member of a team
@@ -110,10 +123,16 @@ func (c *Client) RemoveTeamMember(id int64, user string) error {
 	return err
 }
 
+// ListTeamRepositoriesOptions options for listing team's repositories
+type ListTeamRepositoriesOptions struct {
+	ListOptions
+}
+
 // ListTeamRepositories lists all repositories of a team
-func (c *Client) ListTeamRepositories(id int64) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/repos", id), nil, nil, &repos)
+func (c *Client) ListTeamRepositories(id int64, opt ListTeamRepositoriesOptions) ([]*Repository, error) {
+	opt.setDefaults()
+	repos := make([]*Repository, 0, opt.PageSize)
+	return repos, c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/repos?%s", id, opt.getURLQuery().Encode()), nil, nil, &repos)
 }
 
 // AddTeamRepository adds a repository to a team

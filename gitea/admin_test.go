@@ -29,7 +29,7 @@ func TestAdminOrg(t *testing.T) {
 	assert.NotEmpty(t, newOrg)
 	assert.EqualValues(t, orgName, newOrg.UserName)
 
-	orgs, err := c.AdminListOrgs()
+	orgs, err := c.AdminListOrgs(AdminListOrgsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, orgs, 1)
 	assert.EqualValues(t, newOrg.ID, orgs[0].ID)

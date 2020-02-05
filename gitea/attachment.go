@@ -24,11 +24,17 @@ type Attachment struct {
 	DownloadURL   string    `json:"browser_download_url"`
 }
 
+// ListReleaseAttachmentsOptions options for listing release's attachments
+type ListReleaseAttachmentsOptions struct {
+	ListOptions
+}
+
 // ListReleaseAttachments list release's attachments
-func (c *Client) ListReleaseAttachments(user, repo string, release int64) ([]*Attachment, error) {
-	attachments := make([]*Attachment, 0, 10)
+func (c *Client) ListReleaseAttachments(user, repo string, release int64, opt ListReleaseAttachmentsOptions) ([]*Attachment, error) {
+	opt.setDefaults()
+	attachments := make([]*Attachment, 0, opt.PageSize)
 	err := c.getParsedResponse("GET",
-		fmt.Sprintf("/repos/%s/%s/releases/%d/assets", user, repo, release),
+		fmt.Sprintf("/repos/%s/%s/releases/%d/assets?%s", user, repo, release, opt.getURLQuery().Encode()),
 		nil, nil, &attachments)
 	return attachments, err
 }

@@ -18,6 +18,8 @@ func TestIssue(t *testing.T) {
 	c := newTestClient()
 
 	createIssue(t, c)
+	// Little sleep in order to give some time for gitea to properly store all information on database. Without this sleep, CI is a bit unstable
+	time.Sleep(100 * time.Millisecond)
 	editIssues(t, c)
 	listIssues(t, c)
 }

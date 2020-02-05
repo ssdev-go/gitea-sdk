@@ -29,7 +29,7 @@ func TestUserApp(t *testing.T) {
 	log.Println("== TestUserApp ==")
 	c := newTestClient()
 
-	result, err := c.ListAccessTokens(c.username, c.password)
+	result, err := c.ListAccessTokens(c.username, c.password, ListAccessTokensOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, result, 1)
 	assert.EqualValues(t, "gitea-admin", result[0].Name)
@@ -37,12 +37,12 @@ func TestUserApp(t *testing.T) {
 	t1, err := c.CreateAccessToken(c.username, c.password, CreateAccessTokenOption{Name: "TestCreateAccessToken"})
 	assert.NoError(t, err)
 	assert.EqualValues(t, "TestCreateAccessToken", t1.Name)
-	result, _ = c.ListAccessTokens(c.username, c.password)
+	result, _ = c.ListAccessTokens(c.username, c.password, ListAccessTokensOptions{})
 	assert.Len(t, result, 2)
 
 	err = c.DeleteAccessToken(c.username, c.password, t1.ID)
 	assert.NoError(t, err)
-	result, _ = c.ListAccessTokens(c.username, c.password)
+	result, _ = c.ListAccessTokens(c.username, c.password, ListAccessTokensOptions{})
 	assert.Len(t, result, 1)
 }
 
@@ -107,22 +107,22 @@ func TestUserFollow(t *testing.T) {
 
 	// ListMyFollowers of me
 	c.sudo = ""
-	f, err := c.ListMyFollowers(1)
+	f, err := c.ListMyFollowers(ListFollowersOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 2)
 
 	// ListFollowers of A
-	f, err = c.ListFollowers(uA, 1)
+	f, err = c.ListFollowers(uA, ListFollowersOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 1)
 
 	// ListMyFollowing of me
-	f, err = c.ListMyFollowing(1)
+	f, err = c.ListMyFollowing(ListFollowingOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 0)
 
 	// ListFollowing of A
-	f, err = c.ListFollowing(uA, 1)
+	f, err = c.ListFollowing(uA, ListFollowingOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 1)
 	assert.EqualValues(t, me.ID, f[0].ID)
@@ -139,7 +139,7 @@ func TestUserEmail(t *testing.T) {
 	c.sudo = userN
 
 	// ListEmails
-	el, err := c.ListEmails()
+	el, err := c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 1)
 	assert.EqualValues(t, "testuseremail@gitea.io", el[0].Email)
@@ -152,7 +152,7 @@ func TestUserEmail(t *testing.T) {
 	assert.Len(t, el, 2)
 	_, err = c.AddEmail(CreateEmailOption{Emails: []string{mails[1]}})
 	assert.Error(t, err)
-	el, err = c.ListEmails()
+	el, err = c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 3)
 
@@ -162,7 +162,7 @@ func TestUserEmail(t *testing.T) {
 	err = c.DeleteEmail(DeleteEmailOption{Emails: []string{"imaginary@e.de"}})
 	assert.Error(t, err)
 
-	el, err = c.ListEmails()
+	el, err = c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 2)
 	err = c.DeleteEmail(DeleteEmailOption{Emails: []string{mails[0]}})

@@ -23,16 +23,23 @@ type Organization struct {
 	Visibility  string `json:"visibility"`
 }
 
+// ListOrgsOptions options for listing organizations
+type ListOrgsOptions struct {
+	ListOptions
+}
+
 // ListMyOrgs list all of current user's organizations
-func (c *Client) ListMyOrgs() ([]*Organization, error) {
-	orgs := make([]*Organization, 0, 5)
-	return orgs, c.getParsedResponse("GET", "/user/orgs", nil, nil, &orgs)
+func (c *Client) ListMyOrgs(opt ListOrgsOptions) ([]*Organization, error) {
+	opt.setDefaults()
+	orgs := make([]*Organization, 0, opt.PageSize)
+	return orgs, c.getParsedResponse("GET", fmt.Sprintf("/user/orgs?%s", opt.getURLQuery().Encode()), nil, nil, &orgs)
 }
 
 // ListUserOrgs list all of some user's organizations
-func (c *Client) ListUserOrgs(user string) ([]*Organization, error) {
-	orgs := make([]*Organization, 0, 5)
-	return orgs, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/orgs", user), nil, nil, &orgs)
+func (c *Client) ListUserOrgs(user string, opt ListOrgsOptions) ([]*Organization, error) {
+	opt.setDefaults()
+	orgs := make([]*Organization, 0, opt.PageSize)
+	return orgs, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/orgs?%s", user, opt.getURLQuery().Encode()), nil, nil, &orgs)
 }
 
 // GetOrg get one organization by name

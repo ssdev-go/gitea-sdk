@@ -24,10 +24,16 @@ type DeployKey struct {
 	Repository  *Repository `json:"repository,omitempty"`
 }
 
+// ListDeployKeysOptions options for listing a repository's deploy keys
+type ListDeployKeysOptions struct {
+	ListOptions
+}
+
 // ListDeployKeys list all the deploy keys of one repository
-func (c *Client) ListDeployKeys(user, repo string) ([]*DeployKey, error) {
-	keys := make([]*DeployKey, 0, 10)
-	return keys, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/keys", user, repo), nil, nil, &keys)
+func (c *Client) ListDeployKeys(user, repo string, opt ListDeployKeysOptions) ([]*DeployKey, error) {
+	opt.setDefaults()
+	keys := make([]*DeployKey, 0, opt.PageSize)
+	return keys, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/keys?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &keys)
 }
 
 // GetDeployKey get one deploy key with key id
