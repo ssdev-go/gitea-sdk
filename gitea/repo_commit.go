@@ -7,6 +7,7 @@ package gitea
 
 import (
 	"fmt"
+	"net/url"
 )
 
 // Identity for a person's identity like an author or committer
@@ -50,4 +51,29 @@ type Commit struct {
 func (c *Client) GetSingleCommit(user, repo, commitID string) (*Commit, error) {
 	commit := new(Commit)
 	return commit, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/commits/%s", user, repo, commitID), nil, nil, &commit)
+}
+
+// ListCommitOptions list commit options
+type ListCommitOptions struct {
+	ListOptions
+	//SHA or branch to start listing commits from (usually 'master')
+	SHA string
+}
+
+// QueryEncode turns options into querystring argument
+func (opt *ListCommitOptions) QueryEncode() string {
+	query := opt.ListOptions.getURLQuery()
+	if opt.SHA != "" {
+		query.Add("sha", opt.SHA)
+	}
+	return query.Encode()
+}
+
+// ListRepoCommits return list of commits from a repo
+func (c *Client) ListRepoCommits(user, repo string, opt ListCommitOptions) ([]*Commit, error) {
+	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/commits", user, repo))
+	opt.setDefaults()
+	commits := make([]*Commit, 0, opt.PageSize)
+	link.RawQuery = opt.QueryEncode()
+	return commits, c.getParsedResponse("GET", link.String(), nil, nil, &commits)
 }

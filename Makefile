@@ -55,7 +55,7 @@ test:
 
 .PHONY: test-instance
 test-instance:
-	rm -r ${WORK_DIR}/test 2> /dev/null; \
+	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
 	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/
 	wget "https://dl.gitea.io/gitea/master/gitea-master-linux-amd64" -O ${WORK_DIR}/test/gitea-master; \
 	chmod +x ${WORK_DIR}/test/gitea-master; \
