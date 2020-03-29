@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.11.1](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1235) - 2020-03-29
+* BUGFIXES
+  * Fix SetRepoTopics (#276) (#274)
+  * Fix AddEmail (#260) (#261)
+  * Fix UserApp Functions (#247) (#256)
+* ENHANCEMENTS
+  * Add IssueType as filter for ListIssues (#288)
+  * Correct version (#259)
+
 ## [v0.11.0](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1222) - 2020-01-27
 * FEATURES
   * Add VersionCheck (#215)
