@@ -45,7 +45,7 @@ steps:
   commands:
   - make clean
   - make vet
-  - make revive
+  #- make revive #does not work now, activate it as soon as it works again
   - make build
   - curl --noproxy "*" http://gitea:3000/api/v1/version # verify connection to instance
   - make test
