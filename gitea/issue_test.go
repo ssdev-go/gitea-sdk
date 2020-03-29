@@ -18,6 +18,7 @@ func TestIssue(t *testing.T) {
 	c := newTestClient()
 
 	createIssue(t, c)
+	time.Sleep(time.Second)
 	listIssues(t, c)
 }
 
