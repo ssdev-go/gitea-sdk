@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -43,6 +44,7 @@ func TestNotifications(t *testing.T) {
 	assert.NoError(t, err)
 	issue, err := c.CreateIssue(repoB.Owner.UserName, repoB.Name, CreateIssueOption{Title: "B Issue", Closed: false})
 	assert.NoError(t, err)
+	time.Sleep(time.Second * 1)
 
 	// CheckNotifications of user2
 	c.sudo = user2.UserName
@@ -93,10 +95,16 @@ func TestNotifications(t *testing.T) {
 	c.sudo = ""
 	_, err = c.EditIssue(repoB.Owner.UserName, repoB.Name, issue.Index, EditIssueOption{State: &iState})
 	assert.NoError(t, err)
+	time.Sleep(time.Second * 1)
+
 	c.sudo = user2.UserName
 	nList, err = c.ListNotifications(ListNotificationOptions{})
 	assert.NoError(t, err)
-	assert.Len(t, nList, 1)
-	err = c.ReadNotification(nList[0].ID)
+	count, err = c.CheckNotifications()
 	assert.NoError(t, err)
+	assert.EqualValues(t, 1, count)
+	assert.Len(t, nList, 1)
+	if len(nList) > 0 {
+		assert.NoError(t, c.ReadNotification(nList[0].ID))
+	}
 }
