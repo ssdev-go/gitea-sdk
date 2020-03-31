@@ -110,6 +110,8 @@ func (c *Client) getResponse(method, path string, header http.Header, body io.Re
 		return nil, errors.New("409 Conflict")
 	case 422:
 		return nil, fmt.Errorf("422 Unprocessable Entity: %s", string(data))
+	case 500:
+		return nil, fmt.Errorf("500 Internal Server Error, request: '%s' with '%s' method and '%s' header", path, method, header)
 	}
 
 	if resp.StatusCode/100 != 2 {
