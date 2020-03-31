@@ -57,6 +57,7 @@ type Issue struct {
 type ListIssueOption struct {
 	ListOptions
 	State   StateType
+	Type    IssueType
 	Labels  []string
 	KeyWord string
 }
@@ -65,12 +66,24 @@ type ListIssueOption struct {
 type StateType string
 
 const (
-	// StateOpen pr is opend
+	// StateOpen pr/issue is opend
 	StateOpen StateType = "open"
-	// StateClosed pr is closed
+	// StateClosed pr/issue is closed
 	StateClosed StateType = "closed"
 	// StateAll is all
 	StateAll StateType = "all"
+)
+
+// IssueType is issue a pull or only an issue
+type IssueType string
+
+const (
+	// IssueTypeAll pr and issue
+	IssueTypeAll IssueType = ""
+	// IssueTypeIssue only issues
+	IssueTypeIssue IssueType = "issues"
+	// IssueTypePull only pulls
+	IssueTypePull IssueType = "pulls"
 )
 
 // QueryEncode turns options into querystring argument
@@ -92,6 +105,7 @@ func (opt *ListIssueOption) QueryEncode() string {
 	if len(opt.KeyWord) > 0 {
 		query.Add("q", opt.KeyWord)
 	}
+	query.Add("type", string(opt.Type))
 
 	return query.Encode()
 }
