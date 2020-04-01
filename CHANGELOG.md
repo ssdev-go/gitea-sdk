@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.11.2](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1256) - 2020-03-31
+* ENHANCEMENTS
+  * On Internal Server Error, show request witch caused this (#297)
+
 ## [v0.11.1](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1235) - 2020-03-29
 * BUGFIXES
   * Fix SetRepoTopics (#276) (#274)
