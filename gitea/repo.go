@@ -177,6 +177,8 @@ type CreateRepoOption struct {
 	License string `json:"license"`
 	// Readme of the repository to create
 	Readme string `json:"readme"`
+	// DefaultBranch of the repository (used when initializes and in template)
+	DefaultBranch string `json:"default_branch"`
 }
 
 // CreateRepo creates a repository for authenticated user.
