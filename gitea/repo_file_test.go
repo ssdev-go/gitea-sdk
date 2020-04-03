@@ -13,7 +13,7 @@ import (
 )
 
 func TestFileCreateUpdateGet(t *testing.T) {
-	log.Println("== TestFileCreateUpdateGet ==")
+	log.Println("== TestFileCRUD ==")
 	c := newTestClient()
 
 	repo, err := createTestRepo(t, "ChangeFiles", c)
@@ -50,4 +50,14 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, updatedFile.Content.SHA, file.SHA)
 	assert.EqualValues(t, &updatedFile.Content.Content, &file.Content)
+
+	err = c.DeleteFile(repo.Owner.UserName, repo.Name, "A", DeleteFileOptions{
+		FileOptions: FileOptions{
+			Message: "Delete File A",
+		},
+		SHA: updatedFile.Content.SHA,
+	})
+	assert.NoError(t, err)
+	_, err = c.GetFile(repo.Owner.UserName, repo.Name, "master", "A")
+	assert.EqualValues(t, "404 Not Found", err.Error())
 }

@@ -142,3 +142,19 @@ func (c *Client) UpdateFile(owner, repo, filepath string, opt UpdateFileOptions)
 	fr := new(FileResponse)
 	return fr, c.getParsedResponse("PUT", fmt.Sprintf("/repos/%s/%s/contents/%s", owner, repo, filepath), jsonHeader, bytes.NewReader(body), fr)
 }
+
+// DeleteFile delete a file from repository
+func (c *Client) DeleteFile(owner, repo, filepath string, opt DeleteFileOptions) error {
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return err
+	}
+	status, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/contents/%s", owner, repo, filepath), jsonHeader, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	if status != 200 && status != 204 {
+		return fmt.Errorf("unexpected Status: %d", status)
+	}
+	return nil
+}
