@@ -6,7 +6,6 @@ package gitea
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"time"
 )
@@ -67,18 +66,11 @@ func (c *Client) CheckNotifications() (int64, error) {
 	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
 		return 0, err
 	}
-	status, err := c.getStatusCode("GET", "/notifications/new", nil, nil)
-	if err != nil || status == http.StatusNoContent {
-		return 0, err
-	}
 	new := struct {
 		New int64 `json:"new"`
 	}{}
-	if err := c.getParsedResponse("GET", "/notifications/new", nil, nil, &new); err != nil {
-		return 0, err
-	}
-	return new.New, nil
 
+	return new.New, c.getParsedResponse("GET", "/notifications/new", jsonHeader, nil, &new)
 }
 
 // GetNotification get notification thread by ID

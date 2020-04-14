@@ -28,8 +28,8 @@ type ListOauth2Option struct {
 
 // CreateOauth2Option required options for creating an Application
 type CreateOauth2Option struct {
-	Name         string    `json:"name"`
-	RedirectURIs []string  `json:"redirect_uris"`
+	Name         string   `json:"name"`
+	RedirectURIs []string `json:"redirect_uris"`
 }
 
 // CreateOauth2 create an Oauth2 Application and returns a completed Oauth2 object.
@@ -56,7 +56,7 @@ func (c *Client) ListOauth2(opt ListOauth2Option) ([]*Oauth2, error) {
 }
 
 // DeleteOauth2 delete an Oauth2 application by name
-func (c *Client) DeleteOauth2(oauth2id int64)  error {
+func (c *Client) DeleteOauth2(oauth2id int64) error {
 	if e := c.CheckServerVersionConstraint(">=1.12.0"); e != nil {
 		return e
 	}

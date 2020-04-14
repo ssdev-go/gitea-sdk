@@ -18,7 +18,7 @@ func TestOauth2(t *testing.T) {
 	user := createTestUser(t, "oauth2_user", c)
 	c.SetSudo(user.UserName)
 
-	newApp, err := c.CreateOauth2(CreateOauth2Option{Name: "test", RedirectURIs: []string{"http://test/test",}})
+	newApp, err := c.CreateOauth2(CreateOauth2Option{Name: "test", RedirectURIs: []string{"http://test/test"}})
 	assert.NoError(t, err)
 	assert.NotNil(t, newApp)
 	assert.EqualValues(t, "test", newApp.Name)
