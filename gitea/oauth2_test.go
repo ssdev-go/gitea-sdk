@@ -28,5 +28,16 @@ func TestOauth2(t *testing.T) {
 	assert.Len(t, a, 1)
 	assert.EqualValues(t, newApp.Name, a[0].Name)
 
+	b, err := c.GetOauth2(newApp.ID)
+	assert.NoError(t, err)
+	assert.EqualValues(t, newApp.Name, b.Name)
+
+	b, err = c.UpdateOauth2(newApp.ID, CreateOauth2Option{Name: newApp.Name, RedirectURIs: []string{"https://test/login"}})
+	assert.NoError(t, err)
+	assert.EqualValues(t, newApp.Name, b.Name)
+	assert.EqualValues(t, "https://test/login", b.RedirectURIs[0])
+	assert.EqualValues(t, newApp.ID, b.ID)
+	assert.NotEqual(t, newApp.ClientSecret, b.ClientSecret)
+
 	assert.NoError(t, c.DeleteOauth2(newApp.ID))
 }
