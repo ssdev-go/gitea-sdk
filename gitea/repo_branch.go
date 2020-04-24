@@ -1,4 +1,5 @@
 // Copyright 2016 The Gogs Authors. All rights reserved.
+// Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
@@ -64,5 +65,20 @@ func (c *Client) ListRepoBranches(user, repo string, opt ListRepoBranchesOptions
 // GetRepoBranch get one branch's information of one repository
 func (c *Client) GetRepoBranch(user, repo, branch string) (*Branch, error) {
 	b := new(Branch)
-	return b, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/branches/%s", user, repo, branch), nil, nil, &b)
+	if err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/branches/%s", user, repo, branch), nil, nil, &b); err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// DeleteRepoBranch delete a branch in a repository
+func (c *Client) DeleteRepoBranch(user, repo, branch string) (bool, error) {
+	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
+		return false, err
+	}
+	status, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/branches/%s", user, repo, branch), nil, nil)
+	if err != nil {
+		return false, err
+	}
+	return status == 204, nil
 }
