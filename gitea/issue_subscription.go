@@ -42,10 +42,19 @@ func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user s
 	if err != nil {
 		return err
 	}
-	if status == http.StatusNoContent {
+	if status == http.StatusCreated {
 		return nil
 	}
 	return fmt.Errorf("unexpected Status: %d", status)
+}
+
+// CheckIssueSubscription check if current user is subscribed to an issue
+func (c *Client) CheckIssueSubscription(owner, repo string, index int64) (*WatchInfo, error) {
+	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
+		return nil, err
+	}
+	wi := new(WatchInfo)
+	return wi, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/check", owner, repo, index), nil, nil, wi)
 }
 
 // IssueSubscribe subscribe current user to an issue
