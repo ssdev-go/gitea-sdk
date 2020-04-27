@@ -8,6 +8,7 @@ package gitea
 import (
 	"fmt"
 	"net/url"
+	"regexp"
 	"time"
 )
 
@@ -54,10 +55,16 @@ type CommitDateOptions struct {
 	Committer time.Time `json:"committer"`
 }
 
+// SHAPattern can be used to determine if a string is an valid sha
+var SHAPattern = regexp.MustCompile(`^[0-9a-f]{4,40}$`)
+
 // GetSingleCommit returns a single commit
 func (c *Client) GetSingleCommit(user, repo, commitID string) (*Commit, error) {
 	commit := new(Commit)
-	return commit, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/commits/%s", user, repo, commitID), nil, nil, &commit)
+	if e := c.CheckServerVersionConstraint("<1.12.0"); e == nil || SHAPattern.MatchString(commitID) {
+		return commit, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/commits/%s", user, repo, commitID), nil, nil, &commit)
+	}
+	return commit, c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/commits/%s", user, repo, commitID), nil, nil, &commit)
 }
 
 // ListCommitOptions list commit options
