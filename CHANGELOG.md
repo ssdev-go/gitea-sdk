@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.11.3](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1259) - 2020-04-27
+* BUGFIXES
+  * Fix MergePullRequest (#278) (#316)
+  * Add missing JSON header to AddCollaborator() (#307)
+
 ## [v0.11.2](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1256) - 2020-03-31
 * ENHANCEMENTS
   * On Internal Server Error, show request witch caused this (#297)
