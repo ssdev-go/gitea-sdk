@@ -30,6 +30,9 @@ func (c *Client) AddIssueSubscription(owner, repo string, index int64, user stri
 	if status == http.StatusCreated {
 		return nil
 	}
+	if status == http.StatusOK {
+		return fmt.Errorf("already subscribed")
+	}
 	return fmt.Errorf("unexpected Status: %d", status)
 }
 
@@ -44,6 +47,9 @@ func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user s
 	}
 	if status == http.StatusCreated {
 		return nil
+	}
+	if status == http.StatusOK {
+		return fmt.Errorf("already unsubscribed")
 	}
 	return fmt.Errorf("unexpected Status: %d", status)
 }

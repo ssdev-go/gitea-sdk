@@ -29,7 +29,10 @@ func TestIssueSubscription(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, wi.Subscribed)
 
-	assert.NoError(t, c.IssueSubscribe(repo.Owner.UserName, repo.Name, 1))
+	err = c.IssueSubscribe(repo.Owner.UserName, repo.Name, 1)
+	if assert.Error(t, err) {
+		assert.EqualValues(t, "already subscribed", err.Error())
+	}
 	wi, err = c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
 	assert.NoError(t, err)
 	assert.True(t, wi.Subscribed)
