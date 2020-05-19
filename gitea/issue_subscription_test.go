@@ -14,7 +14,7 @@ import (
 // TestIssue is main func witch call all Tests for Issue API
 // (to make sure they are on correct order)
 func TestIssueSubscription(t *testing.T) {
-	log.Println("== TestCreateIssues ==")
+	log.Println("== TestIssueSubscription ==")
 
 	c := newTestClient()
 	repo, _ := createTestRepo(t, "IssueWatch", c)
