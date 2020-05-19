@@ -31,6 +31,7 @@ type Client struct {
 	accessToken   string
 	username      string
 	password      string
+	otp           string
 	sudo          string
 	client        *http.Client
 	serverVersion *version.Version
@@ -58,6 +59,11 @@ func (c *Client) SetBasicAuth(username, password string) {
 	c.username, c.password = username, password
 }
 
+// SetOTP sets OTP for 2FA
+func (c *Client) SetOTP(otp string) {
+	c.otp = otp
+}
+
 // SetHTTPClient replaces default http.Client with user given one.
 func (c *Client) SetHTTPClient(client *http.Client) {
 	c.client = client
@@ -76,10 +82,13 @@ func (c *Client) doRequest(method, path string, header http.Header, body io.Read
 	if len(c.accessToken) != 0 {
 		req.Header.Set("Authorization", "token "+c.accessToken)
 	}
+	if len(c.otp) != 0 {
+		req.Header.Set("X-GITEA-OTP", c.otp)
+	}
 	if len(c.username) != 0 {
 		req.SetBasicAuth(c.username, c.password)
 	}
-	if c.sudo != "" {
+	if len(c.sudo) != 0 {
 		req.Header.Set("Sudo", c.sudo)
 	}
 	for k, v := range header {

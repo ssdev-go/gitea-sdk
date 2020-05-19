@@ -7,16 +7,9 @@ package gitea
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
-
-// basicAuthEncode generate base64 of basic auth head
-func basicAuthEncode(user, pass string) string {
-	return base64.StdEncoding.EncodeToString([]byte(user + ":" + pass))
-}
 
 // AccessToken represents an API access token.
 type AccessToken struct {
@@ -32,11 +25,13 @@ type ListAccessTokensOptions struct {
 }
 
 // ListAccessTokens lists all the access tokens of user
-func (c *Client) ListAccessTokens(user, pass string, opts ListAccessTokensOptions) ([]*AccessToken, error) {
+func (c *Client) ListAccessTokens(opts ListAccessTokensOptions) ([]*AccessToken, error) {
+	if len(c.username) == 0 {
+		return nil, fmt.Errorf("\"username\" not set: only BasicAuth allowed")
+	}
 	opts.setDefaults()
 	tokens := make([]*AccessToken, 0, opts.PageSize)
-	return tokens, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens?%s", user, opts.getURLQuery().Encode()),
-		http.Header{"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}}, nil, &tokens)
+	return tokens, c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens?%s", c.username, opts.getURLQuery().Encode()), jsonHeader, nil, &tokens)
 }
 
 // CreateAccessTokenOption options when create access token
@@ -45,22 +40,23 @@ type CreateAccessTokenOption struct {
 }
 
 // CreateAccessToken create one access token with options
-func (c *Client) CreateAccessToken(user, pass string, opt CreateAccessTokenOption) (*AccessToken, error) {
+func (c *Client) CreateAccessToken(opt CreateAccessTokenOption) (*AccessToken, error) {
+	if len(c.username) == 0 {
+		return nil, fmt.Errorf("\"username\" not set: only BasicAuth allowed")
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
 	}
 	t := new(AccessToken)
-	return t, c.getParsedResponse("POST", fmt.Sprintf("/users/%s/tokens", user),
-		http.Header{
-			"content-type":  []string{"application/json"},
-			"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}},
-		bytes.NewReader(body), t)
+	return t, c.getParsedResponse("POST", fmt.Sprintf("/users/%s/tokens", c.username), jsonHeader, bytes.NewReader(body), t)
 }
 
 // DeleteAccessToken delete token with key id
-func (c *Client) DeleteAccessToken(user, pass string, keyID int64) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/users/%s/tokens/%d", user, keyID),
-		http.Header{"Authorization": []string{"Basic " + basicAuthEncode(user, pass)}}, nil)
+func (c *Client) DeleteAccessToken(keyID int64) error {
+	if len(c.username) == 0 {
+		return fmt.Errorf("\"username\" not set: only BasicAuth allowed")
+	}
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/users/%s/tokens/%d", c.username, keyID), jsonHeader, nil)
 	return err
 }
