@@ -31,6 +31,7 @@ type NotificationSubject struct {
 
 // ListNotificationOptions represents the filter options
 type ListNotificationOptions struct {
+	ListOptions
 	Since  time.Time
 	Before time.Time
 }
@@ -42,7 +43,7 @@ type MarkNotificationOptions struct {
 
 // QueryEncode encode options to url query
 func (opt *ListNotificationOptions) QueryEncode() string {
-	query := make(url.Values)
+	query := opt.getURLQuery()
 	if !opt.Since.IsZero() {
 		query.Add("since", opt.Since.Format(time.RFC3339))
 	}
@@ -75,10 +76,10 @@ func (c *Client) CheckNotifications() (int64, error) {
 
 // GetNotification get notification thread by ID
 func (c *Client) GetNotification(id int64) (*NotificationThread, error) {
-	thread := new(NotificationThread)
 	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
-		return thread, err
+		return nil, err
 	}
+	thread := new(NotificationThread)
 	return thread, c.getParsedResponse("GET", fmt.Sprintf("/notifications/threads/%d", id), nil, nil, thread)
 }
 
@@ -94,7 +95,7 @@ func (c *Client) ReadNotification(id int64) error {
 // ListNotifications list users's notification threads
 func (c *Client) ListNotifications(opt ListNotificationOptions) ([]*NotificationThread, error) {
 	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
-		return make([]*NotificationThread, 0, 1), err
+		return nil, err
 	}
 	link, _ := url.Parse("/notifications")
 	link.RawQuery = opt.QueryEncode()
@@ -116,7 +117,7 @@ func (c *Client) ReadNotifications(opt MarkNotificationOptions) error {
 // ListRepoNotifications list users's notification threads on a specific repo
 func (c *Client) ListRepoNotifications(owner, reponame string, opt ListNotificationOptions) ([]*NotificationThread, error) {
 	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
-		return make([]*NotificationThread, 0, 1), err
+		return nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/notifications", owner, reponame))
 	link.RawQuery = opt.QueryEncode()
