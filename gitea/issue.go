@@ -56,10 +56,11 @@ type Issue struct {
 // ListIssueOption list issue options
 type ListIssueOption struct {
 	ListOptions
-	State   StateType
-	Type    IssueType
-	Labels  []string
-	KeyWord string
+	State      StateType
+	Type       IssueType
+	Labels     []string
+	Milestones []string
+	KeyWord    string
 }
 
 // StateType issue state type
@@ -89,23 +90,24 @@ const (
 // QueryEncode turns options into querystring argument
 func (opt *ListIssueOption) QueryEncode() string {
 	query := opt.getURLQuery()
+
 	if len(opt.State) > 0 {
 		query.Add("state", string(opt.State))
 	}
+
 	if len(opt.Labels) > 0 {
-		var lq string
-		for _, l := range opt.Labels {
-			if len(lq) > 0 {
-				lq += ","
-			}
-			lq += l
-		}
-		query.Add("labels", lq)
+		query.Add("labels", strings.Join(opt.Labels, ","))
 	}
+
 	if len(opt.KeyWord) > 0 {
 		query.Add("q", opt.KeyWord)
 	}
+
 	query.Add("type", string(opt.Type))
+
+	if len(opt.Milestones) > 0 {
+		query.Add("milestones", strings.Join(opt.Milestones, ","))
+	}
 
 	return query.Encode()
 }
