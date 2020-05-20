@@ -66,6 +66,20 @@ type ListPullRequestsOptions struct {
 	Milestone int64
 }
 
+// MergeStyle is used specify how a pull is merged
+type MergeStyle string
+
+const (
+	// MergeStyleMerge merge pull as usual
+	MergeStyleMerge MergeStyle = "merge"
+	// MergeStyleRebase rebase pull
+	MergeStyleRebase MergeStyle = "rebase"
+	// MergeStyleRebaseMerge rebase and merge pull
+	MergeStyleRebaseMerge MergeStyle = "rebase-merge"
+	// MergeStyleSquash squash and merge pull
+	MergeStyleSquash MergeStyle = "squash"
+)
+
 // QueryEncode turns options into querystring argument
 func (opt *ListPullRequestsOptions) QueryEncode() string {
 	query := opt.getURLQuery()
@@ -146,16 +160,14 @@ func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRe
 
 // MergePullRequestOption options when merging a pull request
 type MergePullRequestOption struct {
-	// required: true
-	// enum: merge,rebase,rebase-merge,squash
-	Do                string `json:"Do" binding:"Required;In(merge,rebase,rebase-merge,squash)"`
-	MergeTitleField   string `json:"MergeTitleField"`
-	MergeMessageField string `json:"MergeMessageField"`
+	Style   MergeStyle `json:"Do"`
+	Title   string     `json:"MergeTitleField"`
+	Message string     `json:"MergeMessageField"`
 }
 
 // MergePullRequest merge a PR to repository by PR id
 func (c *Client) MergePullRequest(owner, repo string, index int64, opt MergePullRequestOption) (bool, error) {
-	if opt.Do == "squash" {
+	if opt.Style == MergeStyleSquash {
 		if err := c.CheckServerVersionConstraint(">=1.11.5"); err != nil {
 			return false, err
 		}
