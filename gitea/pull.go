@@ -155,6 +155,11 @@ type MergePullRequestOption struct {
 
 // MergePullRequest merge a PR to repository by PR id
 func (c *Client) MergePullRequest(owner, repo string, index int64, opt MergePullRequestOption) (bool, error) {
+	if opt.Do == "squash" {
+		if err := c.CheckServerVersionConstraint(">=1.11.5"); err != nil {
+			return false, err
+		}
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return false, err
