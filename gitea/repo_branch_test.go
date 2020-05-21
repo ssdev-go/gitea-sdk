@@ -49,6 +49,84 @@ func TestRepoBranches(t *testing.T) {
 	assert.Nil(t, b)
 }
 
+func TestRepoBranchProtection(t *testing.T) {
+	log.Println("== TestRepoBranchProtection ==")
+	c := newTestClient()
+	var repoName = "BranchProtection"
+
+	repo := prepareBranchTest(t, c, repoName)
+	if repo == nil {
+		return
+	}
+	assert.NotNil(t, repo)
+
+	// ListBranchProtections
+	bpl, err := c.ListBranchProtections(repo.Owner.UserName, repo.Name, ListBranchProtectionsOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, bpl, 0)
+
+	// CreateBranchProtection
+	bp, err := c.CreateBranchProtection(repo.Owner.UserName, repo.Name, CreateBranchProtectionOption{
+		BranchName:              "master",
+		EnablePush:              true,
+		EnablePushWhitelist:     true,
+		PushWhitelistUsernames:  []string{"test01"},
+		EnableMergeWhitelist:    true,
+		MergeWhitelistUsernames: []string{"test01"},
+		BlockOnOutdatedBranch:   true,
+	})
+	assert.NoError(t, err)
+	assert.EqualValues(t, "master", bp.BranchName)
+	assert.EqualValues(t, false, bp.EnableStatusCheck)
+	assert.EqualValues(t, true, bp.EnablePush)
+	assert.EqualValues(t, true, bp.EnablePushWhitelist)
+	assert.EqualValues(t, []string{"test01"}, bp.PushWhitelistUsernames)
+
+	bp, err = c.CreateBranchProtection(repo.Owner.UserName, repo.Name, CreateBranchProtectionOption{
+		BranchName:              "update",
+		EnablePush:              false,
+		EnableMergeWhitelist:    true,
+		MergeWhitelistUsernames: []string{"test01"},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, bp)
+
+	bpl, err = c.ListBranchProtections(repo.Owner.UserName, repo.Name, ListBranchProtectionsOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, bpl, 2)
+
+	// GetBranchProtection
+	bp, err = c.GetBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName)
+	assert.NoError(t, err)
+	assert.EqualValues(t, bpl[0], bp)
+
+	optTrue := true
+	optFalse := false
+	one := int64(1)
+
+	// EditBranchProtection
+	bp, err = c.EditBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName, EditBranchProtectionOption{
+		EnablePush:                  &optFalse,
+		EnablePushWhitelist:         &optFalse,
+		PushWhitelistUsernames:      nil,
+		RequiredApprovals:           &one,
+		EnableApprovalsWhitelist:    &optTrue,
+		ApprovalsWhitelistUsernames: []string{"test01"},
+	})
+	assert.NoError(t, err)
+	assert.NotEqual(t, bpl[0], bp)
+	assert.EqualValues(t, bpl[0].BranchName, bp.BranchName)
+	assert.EqualValues(t, bpl[0].EnableMergeWhitelist, bp.EnableMergeWhitelist)
+	assert.EqualValues(t, bpl[0].Created, bp.Created)
+
+	// DeleteBranchProtection
+	err = c.DeleteBranchProtection(repo.Owner.UserName, repo.Name, bpl[1].BranchName)
+	assert.NoError(t, err)
+	bpl, err = c.ListBranchProtections(repo.Owner.UserName, repo.Name, ListBranchProtectionsOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, bpl, 1)
+}
+
 func prepareBranchTest(t *testing.T, c *Client, repoName string) *Repository {
 	origRepo, err := createTestRepo(t, repoName, c)
 	if !assert.NoError(t, err) {
