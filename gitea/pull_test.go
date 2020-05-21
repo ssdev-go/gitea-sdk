@@ -134,14 +134,12 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 	}
 
 	updatedFile, err := c.UpdateFile(forkRepo.Owner.UserName, forkRepo.Name, "LICENSE", UpdateFileOptions{
-		DeleteFileOptions: DeleteFileOptions{
-			FileOptions: FileOptions{
-				Message:       "Overwrite",
-				BranchName:    "master",
-				NewBranchName: "overwrite_licence",
-			},
-			SHA: masterLicence.SHA,
+		FileOptions: FileOptions{
+			Message:       "Overwrite",
+			BranchName:    "master",
+			NewBranchName: "overwrite_licence",
 		},
+		SHA:     masterLicence.SHA,
 		Content: "Tk9USElORyBJUyBIRVJFIEFOWU1PUkUKSUYgWU9VIExJS0UgVE8gRklORCBTT01FVEhJTkcKV0FJVCBGT1IgVEhFIEZVVFVSRQo=",
 	})
 	if !assert.NoError(t, err) || !assert.NotNil(t, updatedFile) {

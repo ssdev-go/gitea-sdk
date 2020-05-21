@@ -35,12 +35,10 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	assert.EqualValues(t, "ZmlsZUEK", base64.StdEncoding.EncodeToString(raw))
 
 	updatedFile, err := c.UpdateFile(repo.Owner.UserName, repo.Name, "A", UpdateFileOptions{
-		DeleteFileOptions: DeleteFileOptions{
-			FileOptions: FileOptions{
-				Message: "add a new line",
-			},
-			SHA: newFile.Content.SHA,
+		FileOptions: FileOptions{
+			Message: "add a new line",
 		},
+		SHA:     newFile.Content.SHA,
 		Content: "ZmlsZUEKCmFuZCBhIG5ldyBsaW5lCg==",
 	})
 	assert.NoError(t, err)

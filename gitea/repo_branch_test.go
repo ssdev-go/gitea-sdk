@@ -61,14 +61,12 @@ func prepareBranchTest(t *testing.T, c *Client, repoName string) *Repository {
 	}
 
 	updatedFile, err := c.UpdateFile(origRepo.Owner.UserName, origRepo.Name, "README.md", UpdateFileOptions{
-		DeleteFileOptions: DeleteFileOptions{
-			FileOptions: FileOptions{
-				Message:       "update it",
-				BranchName:    "master",
-				NewBranchName: "update",
-			},
-			SHA: masterLicence.SHA,
+		FileOptions: FileOptions{
+			Message:       "update it",
+			BranchName:    "master",
+			NewBranchName: "update",
 		},
+		SHA:     masterLicence.SHA,
 		Content: "Tk9USElORyBJUyBIRVJFIEFOWU1PUkUKSUYgWU9VIExJS0UgVE8gRklORCBTT01FVEhJTkcKV0FJVCBGT1IgVEhFIEZVVFVSRQo=",
 	})
 	if !assert.NoError(t, err) || !assert.NotNil(t, updatedFile) {

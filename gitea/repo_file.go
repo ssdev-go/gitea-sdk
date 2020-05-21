@@ -46,7 +46,10 @@ type DeleteFileOptions struct {
 // UpdateFileOptions options for updating files
 // Note: `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
 type UpdateFileOptions struct {
-	DeleteFileOptions
+	FileOptions
+	// sha is the SHA for the file that already exists
+	// required: true
+	SHA string `json:"sha"`
 	// content must be base64 encoded
 	// required: true
 	Content string `json:"content"`
