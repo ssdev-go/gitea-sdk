@@ -1,5 +1,50 @@
 # Changelog
 
+## [v0.12.0](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1223) - 2020-05-21
+
+* BREAKING
+  * Support 2FA for basic auth & refactor Token functions (#335)
+  * PullMerge: use enum for MergeStyle (#328)
+  * Refactor List/SetRepoTopics (#276)
+  * Remove ListUserIssues() ... (#262)
+  * Extend SearchUsers (#248)
+  * Fix & Refactor UserApp Functions (#247)
+  * Add ListMilestoneOption to ListRepoMilestones (#244)
+  * Add ListIssueCommentOptions for optional param (#243)
+  * Refactor RepoWatch (#241)
+  * Add Pagination Options for List Requests (#205)
+* FEATURES
+  * Add BranchProtection functions (#341)
+  * Add PullReview functions (#338)
+  * Add Issue Subscription Check & Fix DeleteIssueSubscription (#318)
+  * Add Branch Deletion (#317)
+  * Add Get/Update for oauth2 apps (#311)
+  * Add Create/Get/Delete for oauth2 apps (#305)
+  * Add DeleteFile() (#302)
+  * Add Get/Update/Create File (#281)
+  * Add List/Check/SetPublic/Delete OrgMembership functions (#275)
+  * Add ListRepoCommits (#266)
+  * Add TransferRepo (#264)
+  * Add SearchRepo API Call (#254)
+  * Add ListOptions struct (#249)
+  * Add Notification functions (#226)
+  * Add GetIssueComment (#216)
+* BUGFIXES
+  * Add missing JSON header to AddCollaborator() (#306)
+  * On Internal Server Error, show request witch caused this (#296)
+  * Fix MergePullRequest & extend Tests (#278)
+  * Fix AddEmail (#260)
+* ENHANCEMENTS
+  * Check if gitea is able to squash-merge via API (#336)
+  * ListIssues: add milestones filter (#327)
+  * Update CreateRepoOption struct (#300)
+  * Add IssueType as filter for ListIssues (#286)
+  * Extend ListDeployKeys (#268)
+  * Use RepositoryMeta struct on Issues (#267)
+  * Use StateType (#265)
+  * Extend Issue Struct (#258)
+  * IssueSubscribtion: Check http Status responce (#242)
+
 ## [v0.11.3](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1259) - 2020-04-27
 * BUGFIXES
   * Fix MergePullRequest (#278) (#316)
