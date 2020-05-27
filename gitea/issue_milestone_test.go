@@ -53,5 +53,6 @@ func TestMilestones(t *testing.T) {
 	_, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m4.ID)
 	assert.Error(t, err)
 	m, err := c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
+	assert.NoError(t, err)
 	assert.EqualValues(t, m1, m)
 }

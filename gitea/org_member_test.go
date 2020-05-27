@@ -36,6 +36,7 @@ func TestOrgMembership(t *testing.T) {
 	assert.True(t, check)
 
 	err = c.SetPublicOrgMembership(newOrg.UserName, user.UserName, true)
+	assert.NoError(t, err)
 	check, err = c.CheckPublicOrgMembership(newOrg.UserName, user.UserName)
 	assert.NoError(t, err)
 	assert.True(t, check)

@@ -104,6 +104,8 @@ func TestPull(t *testing.T) {
 		Title: "confl",
 		State: &state,
 	})
+	assert.NoError(t, err)
+	assert.EqualValues(t, state, pr.State)
 
 	pulls, err = c.ListRepoPullRequests(user.UserName, repoName, ListPullRequestsOptions{
 		State: StateClosed,

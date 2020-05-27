@@ -22,6 +22,7 @@ func TestIssueComment(t *testing.T) {
 	repo, err := createTestRepo(t, "TestIssueCommentRepo", c)
 	assert.NoError(t, err)
 	issue1, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
+	assert.NoError(t, err)
 	assert.EqualValues(t, 1, issue1.Index)
 	issue2, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
 	assert.EqualValues(t, 2, issue2.Index)
