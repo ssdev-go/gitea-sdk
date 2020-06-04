@@ -20,6 +20,7 @@ func TestMilestones(t *testing.T) {
 	now := time.Now()
 	future := time.Unix(1896134400, 0) //2030-02-01
 	closed := "closed"
+	sClosed := StateClosed
 
 	// CreateMilestone 4x
 	m1, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v1.0", Description: "First Version", Deadline: &now})
@@ -32,7 +33,7 @@ func TestMilestones(t *testing.T) {
 	assert.NoError(t, err)
 
 	// EditMilestone
-	m1, err = c.EditMilestone(repo.Owner.UserName, repo.Name, m1.ID, EditMilestoneOption{Description: &closed, State: &closed})
+	m1, err = c.EditMilestone(repo.Owner.UserName, repo.Name, m1.ID, EditMilestoneOption{Description: &closed, State: &sClosed})
 	assert.NoError(t, err)
 
 	// DeleteMilestone
@@ -42,10 +43,10 @@ func TestMilestones(t *testing.T) {
 	ml, err := c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 2)
-	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: "closed"})
+	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateClosed})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 1)
-	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: "all"})
+	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 3)
 

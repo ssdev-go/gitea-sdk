@@ -77,7 +77,7 @@ func (c *Client) CreateMilestone(owner, repo string, opt CreateMilestoneOption) 
 type EditMilestoneOption struct {
 	Title       string     `json:"title"`
 	Description *string    `json:"description"`
-	State       *string    `json:"state"`
+	State       *StateType `json:"state"`
 	Deadline    *time.Time `json:"due_on"`
 }
 
