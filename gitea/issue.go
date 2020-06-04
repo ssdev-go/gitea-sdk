@@ -44,6 +44,7 @@ type Issue struct {
 	Assignees        []*User    `json:"assignees"`
 	// Whether the issue is open or closed
 	State       StateType        `json:"state"`
+	IsLocked    bool             `json:"is_locked"`
 	Comments    int              `json:"comments"`
 	Created     time.Time        `json:"created_at"`
 	Updated     time.Time        `json:"updated_at"`
