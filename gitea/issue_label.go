@@ -49,6 +49,11 @@ type CreateLabelOption struct {
 
 // CreateLabel create one label of repository
 func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*Label, error) {
+	if len(opt.Color) == 6 {
+		if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
+			opt.Color = "#" + opt.Color
+		}
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
