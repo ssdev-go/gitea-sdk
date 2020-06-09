@@ -56,12 +56,30 @@ type CreateOrgOption struct {
 	Website     string `json:"website"`
 	Location    string `json:"location"`
 	// possible values are `public` (default), `limited` or `private`
-	// enum: public,limited,private
 	Visibility string `json:"visibility"`
+}
+
+// checkVisibilityOpt check if mode exist
+func checkVisibilityOpt(v string) bool {
+	return v == "public" || v == "limited" || v == "private"
+}
+
+// Validate the CreateOrgOption struct
+func (opt CreateOrgOption) Validate() error {
+	if len(opt.UserName) == 0 {
+		return fmt.Errorf("empty org name")
+	}
+	if len(opt.Visibility) != 0 && !checkVisibilityOpt(opt.Visibility) {
+		return fmt.Errorf("infalid bisibility option")
+	}
+	return nil
 }
 
 // CreateOrg creates an organization
 func (c *Client) CreateOrg(opt CreateOrgOption) (*Organization, error) {
+	if err := opt.Validate(); err != nil {
+		return nil, err
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -77,12 +95,22 @@ type EditOrgOption struct {
 	Website     string `json:"website"`
 	Location    string `json:"location"`
 	// possible values are `public`, `limited` or `private`
-	// enum: public,limited,private
 	Visibility string `json:"visibility"`
+}
+
+// Validate the EditOrgOption struct
+func (opt EditOrgOption) Validate() error {
+	if len(opt.Visibility) != 0 && !checkVisibilityOpt(opt.Visibility) {
+		return fmt.Errorf("infalid bisibility option")
+	}
+	return nil
 }
 
 // EditOrg modify one organization via options
 func (c *Client) EditOrg(orgname string, opt EditOrgOption) error {
+	if err := opt.Validate(); err != nil {
+		return err
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
@@ -93,6 +121,6 @@ func (c *Client) EditOrg(orgname string, opt EditOrgOption) error {
 
 // DeleteOrg deletes an organization
 func (c *Client) DeleteOrg(orgname string) error {
-	_, err := c.getResponse("DELETE", fmt.Sprintf("/orgs/%s", orgname), nil, nil)
+	_, err := c.getResponse("DELETE", fmt.Sprintf("/orgs/%s", orgname), jsonHeader, nil)
 	return err
 }

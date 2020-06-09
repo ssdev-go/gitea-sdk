@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -161,7 +162,6 @@ func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, error) {
 // CreateRepoOption options when creating repository
 type CreateRepoOption struct {
 	// Name of the repository to create
-	//
 	Name string `json:"name"`
 	// Description of the repository to create
 	Description string `json:"description"`
@@ -181,8 +181,19 @@ type CreateRepoOption struct {
 	DefaultBranch string `json:"default_branch"`
 }
 
+// Validate the CreateRepoOption struct
+func (opt CreateRepoOption) Validate() error {
+	if len(strings.TrimSpace(opt.Name)) == 0 {
+		return fmt.Errorf("name is empty")
+	}
+	return nil
+}
+
 // CreateRepo creates a repository for authenticated user.
 func (c *Client) CreateRepo(opt CreateRepoOption) (*Repository, error) {
+	if err := opt.Validate(); err != nil {
+		return nil, err
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -193,6 +204,9 @@ func (c *Client) CreateRepo(opt CreateRepoOption) (*Repository, error) {
 
 // CreateOrgRepo creates an organization repository for authenticated user.
 func (c *Client) CreateOrgRepo(org string, opt CreateRepoOption) (*Repository, error) {
+	if err := opt.Validate(); err != nil {
+		return nil, err
+	}
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
