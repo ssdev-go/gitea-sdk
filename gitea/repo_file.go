@@ -128,6 +128,11 @@ func (c *Client) GetContents(owner, repo, ref, filepath string) (*ContentsRespon
 
 // CreateFile create a file in a repository
 func (c *Client) CreateFile(owner, repo, filepath string, opt CreateFileOptions) (*FileResponse, error) {
+	var err error
+	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
+		return nil, err
+	}
+
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -138,6 +143,11 @@ func (c *Client) CreateFile(owner, repo, filepath string, opt CreateFileOptions)
 
 // UpdateFile update a file in a repository
 func (c *Client) UpdateFile(owner, repo, filepath string, opt UpdateFileOptions) (*FileResponse, error) {
+	var err error
+	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
+		return nil, err
+	}
+
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -148,6 +158,11 @@ func (c *Client) UpdateFile(owner, repo, filepath string, opt UpdateFileOptions)
 
 // DeleteFile delete a file from repository
 func (c *Client) DeleteFile(owner, repo, filepath string, opt DeleteFileOptions) error {
+	var err error
+	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
+		return err
+	}
+
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return err
@@ -160,4 +175,18 @@ func (c *Client) DeleteFile(owner, repo, filepath string, opt DeleteFileOptions)
 		return fmt.Errorf("unexpected Status: %d", status)
 	}
 	return nil
+}
+
+func (c *Client) setDefaultBranchForOldVersions(owner, repo, branch string) (string, error) {
+	if len(branch) == 0 {
+		// Gitea >= 1.12.0 Use DefaultBranch on "", mimic this for older versions
+		if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
+			r, err := c.GetRepo(owner, repo)
+			if err != nil {
+				return "", err
+			}
+			return r.DefaultBranch, nil
+		}
+	}
+	return branch, nil
 }
