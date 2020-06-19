@@ -60,6 +60,7 @@ func (c *Client) GetMilestone(owner, repo string, id int64) (*Milestone, error) 
 type CreateMilestoneOption struct {
 	Title       string     `json:"title"`
 	Description string     `json:"description"`
+	State       StateType  `json:"state"`
 	Deadline    *time.Time `json:"due_on"`
 }
 
@@ -70,7 +71,18 @@ func (c *Client) CreateMilestone(owner, repo string, opt CreateMilestoneOption) 
 		return nil, err
 	}
 	milestone := new(Milestone)
-	return milestone, c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/milestones", owner, repo), jsonHeader, bytes.NewReader(body), milestone)
+	err = c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/milestones", owner, repo), jsonHeader, bytes.NewReader(body), milestone)
+
+	// make creating closed milestones need gitea >= v1.13.0
+	// this make it backwards compatible
+	if err == nil && opt.State == StateClosed && milestone.State != StateClosed {
+		closed := "closed"
+		return c.EditMilestone(owner, repo, milestone.ID, EditMilestoneOption{
+			State: &closed,
+		})
+	}
+
+	return milestone, err
 }
 
 // EditMilestoneOption options for editing a milestone
