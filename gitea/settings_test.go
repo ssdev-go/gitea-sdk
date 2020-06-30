@@ -14,8 +14,14 @@ import (
 func TestGetGlobalSettings(t *testing.T) {
 	log.Println("== TestGetGlobalSettings ==")
 	c := newTestClient()
-	settings, err := c.GetGlobalSettings()
+
+	uiSettings, err := c.GetGlobalUISettings()
 	assert.NoError(t, err)
 	expectedAllowedReactions := []string{"+1", "-1", "laugh", "hooray", "confused", "heart", "rocket", "eyes"}
-	assert.ElementsMatch(t, expectedAllowedReactions, settings.AllowedReactions)
+	assert.ElementsMatch(t, expectedAllowedReactions, uiSettings.AllowedReactions)
+
+	repoSettings, err := c.GetGlobalRepoSettings()
+	assert.NoError(t, err)
+	assert.False(t, repoSettings.HTTPGitDisabled)
+	assert.False(t, repoSettings.MirrorsDisabled)
 }
