@@ -119,8 +119,6 @@ func (c *Client) getResponse(method, path string, header http.Header, body io.Re
 		return nil, errors.New("409 Conflict")
 	case 422:
 		return nil, fmt.Errorf("422 Unprocessable Entity: %s", string(data))
-	case 500:
-		return nil, fmt.Errorf("500 Internal Server Error, request: '%s' with '%s' method and '%s' header", path, method, header)
 	}
 
 	if resp.StatusCode/100 != 2 {
@@ -128,7 +126,7 @@ func (c *Client) getResponse(method, path string, header http.Header, body io.Re
 		if err = json.Unmarshal(data, &errMap); err != nil {
 			// when the JSON can't be parsed, data was probably empty or a plain string,
 			// so we try to return a helpful error anyway
-			return nil, fmt.Errorf("Unknown API Error: %d %s", resp.StatusCode, string(data))
+			return nil, fmt.Errorf("Unknown API Error: %d\nRequest: '%s' with '%s' method '%s' header and '%s' body", resp.StatusCode, path, method, header, string(data))
 		}
 		return nil, errors.New(errMap["message"].(string))
 	}
