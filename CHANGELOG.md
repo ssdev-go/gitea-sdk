@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.12.1](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1268) - 2020-07-09
+
+* ENHANCEMENTS
+  * Improve Error Handling (#351) (#377)
+  * Allow Creating Closed Milestones (#373) (#375)
+  * File Create/Update/Delete detect DefaultBranch if Branch not set for old Versions (#352) (#372)
+  * CreateLabel correct Color if needed for old versions (#365) (#371)
+  * Update EditPullRequestOption Add Base (#353) (#363)
+
 ## [v0.12.0](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1223) - 2020-05-21
 
 * BREAKING
