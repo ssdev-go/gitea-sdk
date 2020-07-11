@@ -45,32 +45,32 @@ func TestSearchRepo(t *testing.T) {
 	assert.NoError(t, c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic1"))
 
 	repos, err := c.SearchRepos(SearchRepoOptions{
-		Keyword:     "Search1",
-		IncludeDesc: true,
+		Keyword:              "Search1",
+		KeywordInDescription: true,
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 1)
 
 	repos, err = c.SearchRepos(SearchRepoOptions{
-		Keyword:     "Search",
-		IncludeDesc: true,
+		Keyword:              "Search",
+		KeywordInDescription: true,
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 2)
 
 	repos, err = c.SearchRepos(SearchRepoOptions{
-		Keyword: "TestTopic1",
-		Topic:   true,
+		Keyword:              "TestTopic1",
+		KeywordInDescription: true,
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 2)
 
 	repos, err = c.SearchRepos(SearchRepoOptions{
-		Keyword: "TestTopic2",
-		Topic:   true,
+		Keyword:              "TestTopic2",
+		KeywordInDescription: true,
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, repos)
