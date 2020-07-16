@@ -23,6 +23,20 @@ type Organization struct {
 	Visibility  string `json:"visibility"`
 }
 
+// VisibleType defines the visibility
+type VisibleType string
+
+const (
+	// VisibleTypePublic Visible for everyone
+	VisibleTypePublic VisibleType = "public"
+
+	// VisibleTypeLimited Visible for every connected user
+	VisibleTypeLimited VisibleType = "limited"
+
+	// VisibleTypePrivate Visible only for organization's members
+	VisibleTypePrivate VisibleType = "private"
+)
+
 // ListOrgsOptions options for listing organizations
 type ListOrgsOptions struct {
 	ListOptions
@@ -50,18 +64,17 @@ func (c *Client) GetOrg(orgname string) (*Organization, error) {
 
 // CreateOrgOption options for creating an organization
 type CreateOrgOption struct {
-	UserName    string `json:"username"`
-	FullName    string `json:"full_name"`
-	Description string `json:"description"`
-	Website     string `json:"website"`
-	Location    string `json:"location"`
-	// possible values are `public` (default), `limited` or `private`
-	Visibility string `json:"visibility"`
+	UserName    string      `json:"username"`
+	FullName    string      `json:"full_name"`
+	Description string      `json:"description"`
+	Website     string      `json:"website"`
+	Location    string      `json:"location"`
+	Visibility  VisibleType `json:"visibility"`
 }
 
 // checkVisibilityOpt check if mode exist
-func checkVisibilityOpt(v string) bool {
-	return v == "public" || v == "limited" || v == "private"
+func checkVisibilityOpt(v VisibleType) bool {
+	return v == VisibleTypePublic || v == VisibleTypeLimited || v == VisibleTypePrivate
 }
 
 // Validate the CreateOrgOption struct
@@ -90,12 +103,11 @@ func (c *Client) CreateOrg(opt CreateOrgOption) (*Organization, error) {
 
 // EditOrgOption options for editing an organization
 type EditOrgOption struct {
-	FullName    string `json:"full_name"`
-	Description string `json:"description"`
-	Website     string `json:"website"`
-	Location    string `json:"location"`
-	// possible values are `public`, `limited` or `private`
-	Visibility string `json:"visibility"`
+	FullName    string      `json:"full_name"`
+	Description string      `json:"description"`
+	Website     string      `json:"website"`
+	Location    string      `json:"location"`
+	Visibility  VisibleType `json:"visibility"`
 }
 
 // Validate the EditOrgOption struct

@@ -22,8 +22,7 @@ func TestAdminOrg(t *testing.T) {
 		UserName:    orgName,
 		FullName:    orgName + " FullName",
 		Description: "test adminCreateOrg",
-		// enum: public,limited,private
-		Visibility: "public",
+		Visibility:  VisibleTypePublic,
 	})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, newOrg)
