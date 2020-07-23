@@ -107,4 +107,17 @@ func TestNotifications(t *testing.T) {
 	if len(nList) > 0 {
 		assert.NoError(t, c.ReadNotification(nList[0].ID))
 	}
+
+	c.sudo = ""
+	err = c.ReadNotifications(MarkNotificationOptions{})
+	assert.NoError(t, err)
+	nList, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusRead}})
+	assert.NoError(t, err)
+	assert.Len(t, nList, 4)
+
+	assert.NoError(t, c.ReadNotification(nList[2].ID, NotifyStatusPinned))
+	assert.NoError(t, c.ReadNotification(nList[3].ID, NotifyStatusUnread))
+	nList, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusPinned, NotifyStatusUnread}})
+	assert.NoError(t, err)
+	assert.Len(t, nList, 2)
 }
