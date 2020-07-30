@@ -15,7 +15,7 @@ func TestRepoTransfer(t *testing.T) {
 	log.Printf("== TestRepoTransfer ==")
 	c := newTestClient()
 
-	org, err := c.AdminCreateOrg(c.username, CreateOrgOption{UserName: "TransferOrg"})
+	org, err := c.AdminCreateOrg(c.username, CreateOrgOption{Name: "TransferOrg"})
 	assert.NoError(t, err)
 	repo, err := createTestRepo(t, "ToMove", c)
 	assert.NoError(t, err)

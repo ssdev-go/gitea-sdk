@@ -23,7 +23,7 @@ func TestOrgMembership(t *testing.T) {
 
 	user := createTestUser(t, "org_mem_user", c)
 	c.SetSudo(user.UserName)
-	newOrg, err := c.CreateOrg(CreateOrgOption{UserName: "MemberOrg"})
+	newOrg, err := c.CreateOrg(CreateOrgOption{Name: "MemberOrg"})
 	assert.NoError(t, err)
 	assert.NotNil(t, newOrg)
 

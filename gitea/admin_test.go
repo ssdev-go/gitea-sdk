@@ -19,7 +19,7 @@ func TestAdminOrg(t *testing.T) {
 
 	orgName := "NewTestOrg"
 	newOrg, err := c.AdminCreateOrg(user.UserName, CreateOrgOption{
-		UserName:    orgName,
+		Name:        orgName,
 		FullName:    orgName + " FullName",
 		Description: "test adminCreateOrg",
 		Visibility:  VisibleTypePublic,

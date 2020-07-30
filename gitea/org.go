@@ -64,7 +64,7 @@ func (c *Client) GetOrg(orgname string) (*Organization, error) {
 
 // CreateOrgOption options for creating an organization
 type CreateOrgOption struct {
-	UserName    string      `json:"username"`
+	Name        string      `json:"username"`
 	FullName    string      `json:"full_name"`
 	Description string      `json:"description"`
 	Website     string      `json:"website"`
@@ -79,7 +79,7 @@ func checkVisibilityOpt(v VisibleType) bool {
 
 // Validate the CreateOrgOption struct
 func (opt CreateOrgOption) Validate() error {
-	if len(opt.UserName) == 0 {
+	if len(opt.Name) == 0 {
 		return fmt.Errorf("empty org name")
 	}
 	if len(opt.Visibility) != 0 && !checkVisibilityOpt(opt.Visibility) {

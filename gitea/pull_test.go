@@ -124,7 +124,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 	if !assert.NoError(t, err) {
 		return false
 	}
-	org, err := c.CreateOrg(CreateOrgOption{UserName: forkOrg})
+	org, err := c.CreateOrg(CreateOrgOption{Name: forkOrg})
 	assert.NoError(t, err)
 	forkRepo, err := c.CreateFork(origRepo.Owner.UserName, origRepo.Name, CreateForkOption{Organization: &org.UserName})
 	assert.NoError(t, err)

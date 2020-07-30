@@ -9,6 +9,7 @@ feel free to create an issue.
 
 -   [EditMilestoneOption use StateType (#350)](#EditMilestoneOption-use-StateType)
 -   [RepoSearch Options Struct was rewritten (#346)](#RepoSearch-Options-Struct-was-rewritten)
+-   [Variable Renames (#386)](#Variable-Renames)
 
 <!-- tocstop -->
 
@@ -36,3 +37,13 @@ If there is a special edgecase you have you can pass a `RawQuery` to the API end
 Pulls:
 
 -   [#346 Refactor RepoSearch to be easy usable](https://gitea.com/gitea/go-sdk/pulls/346)
+
+
+## Variable Renames
+
+Some names of strcut options have been renamed to describe there function/usecase more precisely.
+if you use `CreateOrgOption` somewhere just rename `UserName` to `Name`.
+
+Pulls:
+
+-   [#386 CreateOrgOption rename UserName to Name](https://gitea.com/gitea/go-sdk/pulls/386)
