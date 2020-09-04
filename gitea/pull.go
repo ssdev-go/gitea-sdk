@@ -220,3 +220,13 @@ func (c *Client) IsPullRequestMerged(owner, repo string, index int64) (bool, err
 
 	return statusCode == 204, nil
 }
+
+// GetPullRequestPatch gets the .patch file as bytes for a PR
+func (c *Client) GetPullRequestPatch(owner, repo string, index int64) ([]byte, error) {
+	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d.patch", owner, repo, index), nil, nil)
+}
+
+// GetPullRequestDiff gets the .diff file as bytes for a PR
+func (c *Client) GetPullRequestDiff(owner, repo string, index int64) ([]byte, error) {
+	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d.diff", owner, repo, index), nil, nil)
+}
