@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.12.2](https://gitea.com/gitea/go-sdk/releases/tag/v0.12.2) - 2020-09-05
+
+* ENHANCEMENTS
+  * Extend Notification Functions (#381) (#385)
+
 ## [v0.12.1](https://gitea.com/gitea/go-sdk/pulls?q=&type=all&state=closed&milestone=1268) - 2020-07-09
 
 * ENHANCEMENTS
