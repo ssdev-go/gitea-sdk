@@ -30,6 +30,7 @@ type ListMilestoneOption struct {
 	ListOptions
 	// open, closed, all
 	State StateType
+	Name  string
 }
 
 // QueryEncode turns options into querystring argument
@@ -37,6 +38,9 @@ func (opt *ListMilestoneOption) QueryEncode() string {
 	query := opt.getURLQuery()
 	if opt.State != "" {
 		query.Add("state", string(opt.State))
+	}
+	if len(opt.Name) != 0 {
+		query.Add("name", opt.Name)
 	}
 	return query.Encode()
 }

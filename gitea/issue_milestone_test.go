@@ -49,6 +49,10 @@ func TestMilestones(t *testing.T) {
 	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 3)
+	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll, Name: "V3.0"})
+	assert.NoError(t, err)
+	assert.Len(t, ml, 1)
+	assert.EqualValues(t, "v3.0", ml[0].Title)
 
 	// GetMilestone
 	_, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m4.ID)
