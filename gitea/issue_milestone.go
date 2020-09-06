@@ -21,6 +21,8 @@ type Milestone struct {
 	State        StateType  `json:"state"`
 	OpenIssues   int        `json:"open_issues"`
 	ClosedIssues int        `json:"closed_issues"`
+	Created      time.Time  `json:"created_at"`
+	Updated      *time.Time `json:"updated_at"`
 	Closed       *time.Time `json:"closed_at"`
 	Deadline     *time.Time `json:"due_on"`
 }
