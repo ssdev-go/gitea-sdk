@@ -376,3 +376,17 @@ func (c *Client) MirrorSync(owner, repo string) error {
 	_, err := c.getResponse("POST", fmt.Sprintf("/repos/%s/%s/mirror-sync", owner, repo), nil, nil)
 	return err
 }
+
+// GetRepoLanguages return language stats of a repo
+func (c *Client) GetRepoLanguages(owner, repo string) (map[string]int64, error) {
+	langMap := make(map[string]int64)
+
+	data, err := c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/languages", owner, repo), jsonHeader, nil)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(data, &langMap); err != nil {
+		return nil, err
+	}
+	return langMap, nil
+}

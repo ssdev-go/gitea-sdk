@@ -7,6 +7,7 @@ package gitea
 import (
 	"log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -29,6 +30,43 @@ func TestCreateRepo(t *testing.T) {
 
 	err = c.DeleteRepo(user.UserName, repoName)
 	assert.NoError(t, err)
+}
+
+func TestRepoMigrateAndLanguages(t *testing.T) {
+	log.Println("== TestMigrateRepo ==")
+	c := newTestClient()
+	user, uErr := c.GetMyUserInfo()
+	assert.NoError(t, uErr)
+	_, err := c.GetRepo(user.UserName, "sdk-mirror")
+	if err == nil {
+		_ = c.DeleteRepo(user.UserName, "sdk-mirror")
+	}
+
+	repoM, err := c.MigrateRepo(MigrateRepoOption{
+		CloneAddr:   "https://gitea.com/gitea/go-sdk.git",
+		RepoName:    "sdk-mirror",
+		UID:         int(user.ID),
+		Mirror:      true,
+		Private:     false,
+		Description: "mirror sdk",
+	})
+	assert.NoError(t, err)
+
+	repoG, err := c.GetRepo(repoM.Owner.UserName, repoM.Name)
+	assert.NoError(t, err)
+	assert.EqualValues(t, repoM.ID, repoG.ID)
+	assert.EqualValues(t, "master", repoG.DefaultBranch)
+	assert.True(t, repoG.Mirror)
+	assert.False(t, repoG.Empty)
+	assert.EqualValues(t, 1, repoG.Watchers)
+
+	log.Println("== TestRepoLanguages ==")
+	time.Sleep(time.Second)
+	lang, err := c.GetRepoLanguages(repoM.Owner.UserName, repoM.Name)
+	assert.NoError(t, err)
+	assert.Len(t, lang, 2)
+	assert.True(t, 217441 < lang["Go"])
+	assert.EqualValues(t, 3578, lang["Makefile"])
 }
 
 func TestSearchRepo(t *testing.T) {
