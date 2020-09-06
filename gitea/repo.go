@@ -390,3 +390,19 @@ func (c *Client) GetRepoLanguages(owner, repo string) (map[string]int64, error) 
 	}
 	return langMap, nil
 }
+
+// ArchiveType represent supported archive formats by gitea
+type ArchiveType string
+
+const (
+	// ZipArchive represent zip format
+	ZipArchive ArchiveType = ".zip"
+	// TarGZArchive represent tar.gz format
+	TarGZArchive ArchiveType = ".tar.gz"
+)
+
+// GetArchive get an archive of a repository by git reference
+// e.g.: ref -> master, 70b7c74b33, v1.2.1, ...
+func (c *Client) GetArchive(owner, repo, ref string, ext ArchiveType) ([]byte, error) {
+	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/archive/%s%s", owner, repo, url.PathEscape(ref), ext), nil, nil)
+}

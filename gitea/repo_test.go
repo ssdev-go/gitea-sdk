@@ -125,6 +125,16 @@ func TestDeleteRepo(t *testing.T) {
 	assert.NoError(t, c.DeleteRepo(repo.Owner.UserName, repo.Name))
 }
 
+func TestGetArchive(t *testing.T) {
+	log.Println("== TestGetArchive ==")
+	c := newTestClient()
+	repo, _ := createTestRepo(t, "ToDownload", c)
+	time.Sleep(time.Second / 2)
+	archive, err := c.GetArchive(repo.Owner.UserName, repo.Name, "master", ZipArchive)
+	assert.NoError(t, err)
+	assert.EqualValues(t, 1620, len(archive))
+}
+
 // standard func to create a init repo for test routines
 func createTestRepo(t *testing.T, name string, c *Client) (*Repository, error) {
 	user, uErr := c.GetMyUserInfo()
