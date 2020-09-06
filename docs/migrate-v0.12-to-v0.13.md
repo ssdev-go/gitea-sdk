@@ -10,6 +10,7 @@ feel free to create an issue.
 -   [EditMilestoneOption use StateType (#350)](#EditMilestoneOption-use-StateType)
 -   [RepoSearch Options Struct was rewritten (#346)](#RepoSearch-Options-Struct-was-rewritten)
 -   [Variable Renames (#386)](#Variable-Renames)
+-   [Change Type of Permission Field (#408)](#Change-Type-of-Permission-Field)
 
 <!-- tocstop -->
 
@@ -47,3 +48,14 @@ if you use `CreateOrgOption` somewhere just rename `UserName` to `Name`.
 Pulls:
 
 -   [#386 CreateOrgOption rename UserName to Name](https://gitea.com/gitea/go-sdk/pulls/386)
+
+## Change Type of Permission Field
+
+The following functions are affected:  ListOrgTeams, ListMyTeams, GetTeam, CreateTeam, EditTeam and AddCollaborator
+
+The `Permission` field has changed type from `string` to `AccessMode`, which represent the raw strings you must use before.
+Just replace the string with the AccessMode equivalent.
+
+Pulls:
+
+-   [#408 Use enum AccessMode for OrgTeam and Collaborator functions](https://gitea.com/gitea/go-sdk/pulls/408)

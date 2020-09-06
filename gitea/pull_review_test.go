@@ -142,7 +142,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 	}
 
 	pullSubmitter := createTestUser(t, "pull_submitter", c)
-	write := "write"
+	write := AccessModeWrite
 	c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &write,
 	})
@@ -173,7 +173,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 	c.SetSudo("")
 
 	reviewer := createTestUser(t, "pull_reviewer", c)
-	admin := "admin"
+	admin := AccessModeAdmin
 	c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &admin,
 	})
