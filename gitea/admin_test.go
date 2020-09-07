@@ -36,3 +36,14 @@ func TestAdminOrg(t *testing.T) {
 	err = c.DeleteOrg(orgName)
 	assert.NoError(t, err)
 }
+
+func TestAdminCronTasks(t *testing.T) {
+	log.Println("== TestAdminCronTasks ==")
+	c := newTestClient()
+
+	tasks, err := c.ListCronTasks(ListCronTaskOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, tasks, 15)
+
+	assert.NoError(t, c.RunCronTasks(tasks[0].Name))
+}
