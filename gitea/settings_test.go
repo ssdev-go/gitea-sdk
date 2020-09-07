@@ -22,6 +22,17 @@ func TestGetGlobalSettings(t *testing.T) {
 
 	repoSettings, err := c.GetGlobalRepoSettings()
 	assert.NoError(t, err)
-	assert.False(t, repoSettings.HTTPGitDisabled)
-	assert.False(t, repoSettings.MirrorsDisabled)
+	assert.EqualValues(t, &GlobalRepoSettings{
+		HTTPGitDisabled: false,
+		MirrorsDisabled: false,
+	}, repoSettings)
+
+	apiSettings, err := c.GetGlobalAPISettings()
+	assert.NoError(t, err)
+	assert.EqualValues(t, &GlobalAPISettings{
+		MaxResponseItems:       50,
+		DefaultPagingNum:       30,
+		DefaultGitTreesPerPage: 1000,
+		DefaultMaxBlobSize:     10485760,
+	}, apiSettings)
 }
