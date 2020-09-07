@@ -35,4 +35,13 @@ func TestGetGlobalSettings(t *testing.T) {
 		DefaultGitTreesPerPage: 1000,
 		DefaultMaxBlobSize:     10485760,
 	}, apiSettings)
+
+	attachSettings, err := c.GetGlobalAttachmentSettings()
+	assert.NoError(t, err)
+	assert.EqualValues(t, &GlobalAttachmentSettings{
+		Enabled:      true,
+		AllowedTypes: "image/jpeg,image/png,application/zip,application/gzip",
+		MaxSize:      4,
+		MaxFiles:     5,
+	}, attachSettings)
 }
