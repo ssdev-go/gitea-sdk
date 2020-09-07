@@ -47,6 +47,13 @@ func TestRepoBranches(t *testing.T) {
 	b, err = c.GetRepoBranch(repo.Owner.UserName, repo.Name, "feature")
 	assert.Error(t, err)
 	assert.Nil(t, b)
+
+	bNew, err := c.CreateBranch(repo.Owner.UserName, repo.Name, CreateBranchOption{BranchName: "NewBranch"})
+	assert.NoError(t, err)
+
+	b, err = c.GetRepoBranch(repo.Owner.UserName, repo.Name, bNew.Name)
+	assert.NoError(t, err)
+	assert.EqualValues(t, bNew, b)
 }
 
 func TestRepoBranchProtection(t *testing.T) {
