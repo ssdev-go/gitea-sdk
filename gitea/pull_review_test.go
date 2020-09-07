@@ -120,11 +120,11 @@ func TestPullReview(t *testing.T) {
 	assert.EqualValues(t, ReviewStateRequestChanges, r.State)
 
 	// ListPullReviewComments
-	rcl, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID, ListPullReviewsCommentsOptions{})
+	rcl, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, r.CodeCommentsCount, len(rcl))
 	for _, rc := range rcl {
-		//assert.EqualValues(t, pull.HTMLURL, rc.HTMLPullURL) https://github.com/go-gitea/gitea/issues/11499
+		assert.EqualValues(t, pull.HTMLURL, rc.HTMLPullURL)
 		if rc.LineNum == 3 {
 			assert.EqualValues(t, "hehe and here it is", rc.Body)
 		} else {
@@ -143,9 +143,10 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 
 	pullSubmitter := createTestUser(t, "pull_submitter", c)
 	write := AccessModeWrite
-	c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
+	err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &write,
 	})
+	assert.NoError(t, err)
 
 	c.SetSudo("pull_submitter")
 
@@ -174,9 +175,10 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 
 	reviewer := createTestUser(t, "pull_reviewer", c)
 	admin := AccessModeAdmin
-	c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
+	err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &admin,
 	})
+	assert.NoError(t, err)
 
 	return repo, pull, pullSubmitter, reviewer, pull.Poster.ID == pullSubmitter.ID
 }
