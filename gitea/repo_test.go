@@ -45,7 +45,7 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 	repoM, err := c.MigrateRepo(MigrateRepoOption{
 		CloneAddr:   "https://gitea.com/gitea/go-sdk.git",
 		RepoName:    "sdk-mirror",
-		UID:         int(user.ID),
+		RepoOwner:   user.UserName,
 		Mirror:      true,
 		Private:     false,
 		Description: "mirror sdk",

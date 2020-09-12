@@ -1,4 +1,5 @@
 // Copyright 2014 The Gogs Authors. All rights reserved.
+// Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
@@ -343,32 +344,6 @@ func (c *Client) EditRepo(owner, reponame string, opt EditRepoOption) (*Reposito
 func (c *Client) DeleteRepo(owner, repo string) error {
 	_, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s", owner, repo), nil, nil)
 	return err
-}
-
-// MigrateRepoOption options for migrating a repository from an external service
-type MigrateRepoOption struct {
-	CloneAddr    string `json:"clone_addr"`
-	AuthUsername string `json:"auth_username"`
-	AuthPassword string `json:"auth_password"`
-	UID          int    `json:"uid"`
-	RepoName     string `json:"repo_name"`
-	Mirror       bool   `json:"mirror"`
-	Private      bool   `json:"private"`
-	Description  string `json:"description"`
-}
-
-// MigrateRepo migrates a repository from other Git hosting sources for the
-// authenticated user.
-//
-// To migrate a repository for a organization, the authenticated user must be a
-// owner of the specified organization.
-func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, error) {
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-	repo := new(Repository)
-	return repo, c.getParsedResponse("POST", "/repos/migrate", jsonHeader, bytes.NewReader(body), repo)
 }
 
 // MirrorSync adds a mirrored repository to the mirror sync queue.
