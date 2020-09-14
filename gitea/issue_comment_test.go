@@ -16,15 +16,15 @@ func TestIssueComment(t *testing.T) {
 
 	c := newTestClient()
 
-	user, err := c.GetMyUserInfo()
+	user, _, err := c.GetMyUserInfo()
 
 	assert.NoError(t, err)
 	repo, err := createTestRepo(t, "TestIssueCommentRepo", c)
 	assert.NoError(t, err)
-	issue1, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
+	issue1, _, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1, issue1.Index)
-	issue2, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
+	issue2, _, err := c.CreateIssue(user.UserName, repo.Name, CreateIssueOption{Title: "issue1", Body: "body", Closed: false})
 	assert.EqualValues(t, 2, issue2.Index)
 	assert.NoError(t, err)
 	tUser2 := createTestUser(t, "Commenter2", c)
@@ -32,7 +32,7 @@ func TestIssueComment(t *testing.T) {
 
 	createOne := func(u *User, issue int64, text string) {
 		c.sudo = u.UserName
-		comment, e := c.CreateIssueComment(user.UserName, repo.Name, issue, CreateIssueCommentOption{Body: text})
+		comment, _, e := c.CreateIssueComment(user.UserName, repo.Name, issue, CreateIssueCommentOption{Body: text})
 		c.sudo = ""
 		assert.NoError(t, e)
 		assert.NotEmpty(t, comment)
@@ -49,34 +49,36 @@ func TestIssueComment(t *testing.T) {
 	createOne(tUser2, 2, "second")
 	createOne(user, 2, "3")
 
-	assert.NoError(t, c.AdminDeleteUser(tUser3.UserName))
+	_, err = c.AdminDeleteUser(tUser3.UserName)
+	assert.NoError(t, err)
 
 	// ListRepoIssueComments
-	comments, err := c.ListRepoIssueComments(user.UserName, repo.Name, ListIssueCommentOptions{})
+	comments, _, err := c.ListRepoIssueComments(user.UserName, repo.Name, ListIssueCommentOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, comments, 7)
 
 	// ListIssueComments
-	comments, err = c.ListIssueComments(user.UserName, repo.Name, 2, ListIssueCommentOptions{})
+	comments, _, err = c.ListIssueComments(user.UserName, repo.Name, 2, ListIssueCommentOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, comments, 3)
 
 	// GetIssueComment
-	comment, err := c.GetIssueComment(user.UserName, repo.Name, comments[1].ID)
+	comment, _, err := c.GetIssueComment(user.UserName, repo.Name, comments[1].ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, comment.Poster.ID, comments[1].Poster.ID)
 	assert.EqualValues(t, comment.Body, comments[1].Body)
 	assert.EqualValues(t, comment.Updated.Unix(), comments[1].Updated.Unix())
 
 	// EditIssueComment
-	comment, err = c.EditIssueComment(user.UserName, repo.Name, comments[1].ID, EditIssueCommentOption{
+	comment, _, err = c.EditIssueComment(user.UserName, repo.Name, comments[1].ID, EditIssueCommentOption{
 		Body: "changed my mind",
 	})
 	assert.NoError(t, err)
 	assert.EqualValues(t, "changed my mind", comment.Body)
 
 	// DeleteIssueComment
-	assert.NoError(t, c.DeleteIssueComment(user.UserName, repo.Name, comments[1].ID))
-	_, err = c.GetIssueComment(user.UserName, repo.Name, comments[1].ID)
+	_, err = c.DeleteIssueComment(user.UserName, repo.Name, comments[1].ID)
+	assert.NoError(t, err)
+	_, _, err = c.GetIssueComment(user.UserName, repo.Name, comments[1].ID)
 	assert.Error(t, err)
 }

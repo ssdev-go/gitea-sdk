@@ -32,7 +32,7 @@ func TestLabels(t *testing.T) {
 	assert.EqualValues(t, "empty name not allowed", err.Error())
 	createOpts.Name = "label one"
 
-	label1, err := c.CreateLabel(repo.Owner.UserName, repo.Name, createOpts)
+	label1, _, err := c.CreateLabel(repo.Owner.UserName, repo.Name, createOpts)
 	assert.NoError(t, err)
 	assert.EqualValues(t, createOpts.Name, label1.Name)
 	assert.EqualValues(t, createOpts.Color, label1.Color)

@@ -14,7 +14,7 @@ import (
 func TestVersion(t *testing.T) {
 	log.Printf("== TestVersion ==")
 	c := newTestClient()
-	rawVersion, err := c.ServerVersion()
+	rawVersion, _, err := c.ServerVersion()
 	assert.NoError(t, err)
 	assert.True(t, true, rawVersion != "")
 

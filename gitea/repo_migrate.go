@@ -77,9 +77,9 @@ func (opt *MigrateRepoOption) Validate() error {
 //
 // To migrate a repository for a organization, the authenticated user must be a
 // owner of the specified organization.
-func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, error) {
+func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, *Response, error) {
 	if err := opt.Validate(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if err := c.CheckServerVersionConstraint(">=1.13.0"); err != nil {
@@ -90,16 +90,16 @@ func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, error) {
 		}
 		if len(opt.RepoOwner) != 0 {
 			// gitea <= 1.12 dont understand RepoOwner
-			u, err := c.GetUserInfo(opt.RepoOwner)
+			u, _, err := c.GetUserInfo(opt.RepoOwner)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			opt.RepoOwnerID = u.ID
 		} else if opt.RepoOwnerID == 0 {
 			// gitea <= 1.12 require RepoOwnerID
-			u, err := c.GetMyUserInfo()
+			u, _, err := c.GetMyUserInfo()
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			opt.RepoOwnerID = u.ID
 		}
@@ -107,8 +107,9 @@ func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, error) {
 
 	body, err := json.Marshal(&opt)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	repo := new(Repository)
-	return repo, c.getParsedResponse("POST", "/repos/migrate", jsonHeader, bytes.NewReader(body), repo)
+	resp, err := c.getParsedResponse("POST", "/repos/migrate", jsonHeader, bytes.NewReader(body), repo)
+	return repo, resp, err
 }

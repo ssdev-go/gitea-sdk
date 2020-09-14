@@ -20,21 +20,21 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, repo)
 
-	raw, err := c.GetFile(repo.Owner.UserName, repo.Name, "master", "README.md")
+	raw, _, err := c.GetFile(repo.Owner.UserName, repo.Name, "master", "README.md")
 	assert.NoError(t, err)
 	assert.EqualValues(t, "IyBDaGFuZ2VGaWxlcwoKQSB0ZXN0IFJlcG86IENoYW5nZUZpbGVz", base64.StdEncoding.EncodeToString(raw))
 
-	newFile, err := c.CreateFile(repo.Owner.UserName, repo.Name, "A", CreateFileOptions{
+	newFile, _, err := c.CreateFile(repo.Owner.UserName, repo.Name, "A", CreateFileOptions{
 		FileOptions: FileOptions{
 			Message: "create file A",
 		},
 		Content: "ZmlsZUEK",
 	})
 	assert.NoError(t, err)
-	raw, _ = c.GetFile(repo.Owner.UserName, repo.Name, "master", "A")
+	raw, _, _ = c.GetFile(repo.Owner.UserName, repo.Name, "master", "A")
 	assert.EqualValues(t, "ZmlsZUEK", base64.StdEncoding.EncodeToString(raw))
 
-	updatedFile, err := c.UpdateFile(repo.Owner.UserName, repo.Name, "A", UpdateFileOptions{
+	updatedFile, _, err := c.UpdateFile(repo.Owner.UserName, repo.Name, "A", UpdateFileOptions{
 		FileOptions: FileOptions{
 			Message: "add a new line",
 		},
@@ -44,18 +44,18 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, updatedFile)
 
-	file, err := c.GetContents(repo.Owner.UserName, repo.Name, "master", "A")
+	file, _, err := c.GetContents(repo.Owner.UserName, repo.Name, "master", "A")
 	assert.NoError(t, err)
 	assert.EqualValues(t, updatedFile.Content.SHA, file.SHA)
 	assert.EqualValues(t, &updatedFile.Content.Content, &file.Content)
 
-	err = c.DeleteFile(repo.Owner.UserName, repo.Name, "A", DeleteFileOptions{
+	_, err = c.DeleteFile(repo.Owner.UserName, repo.Name, "A", DeleteFileOptions{
 		FileOptions: FileOptions{
 			Message: "Delete File A",
 		},
 		SHA: updatedFile.Content.SHA,
 	})
 	assert.NoError(t, err)
-	_, err = c.GetFile(repo.Owner.UserName, repo.Name, "master", "A")
+	_, _, err = c.GetFile(repo.Owner.UserName, repo.Name, "master", "A")
 	assert.EqualValues(t, "404 Not Found", err.Error())
 }

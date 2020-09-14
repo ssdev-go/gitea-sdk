@@ -19,34 +19,34 @@ func TestRepoTopics(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Add
-	err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "best")
+	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "best")
 	assert.NoError(t, err)
-	err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "git")
+	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "git")
 	assert.NoError(t, err)
-	err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "gitea")
+	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "gitea")
 	assert.NoError(t, err)
-	err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "drone")
+	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "drone")
 	assert.NoError(t, err)
 
 	// Get List
-	tl, err := c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
+	tl, _, err := c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, tl, 4)
 
 	// Del
-	err = c.DeleteRepoTopic(repo.Owner.UserName, repo.Name, "drone")
+	_, err = c.DeleteRepoTopic(repo.Owner.UserName, repo.Name, "drone")
 	assert.NoError(t, err)
-	err = c.DeleteRepoTopic(repo.Owner.UserName, repo.Name, "best")
+	_, err = c.DeleteRepoTopic(repo.Owner.UserName, repo.Name, "best")
 	assert.NoError(t, err)
-	tl, err = c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
+	tl, _, err = c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, tl, 2)
 
 	// Set List
 	newTopics := []string{"analog", "digital", "cat"}
-	err = c.SetRepoTopics(repo.Owner.UserName, repo.Name, newTopics)
+	_, err = c.SetRepoTopics(repo.Owner.UserName, repo.Name, newTopics)
 	assert.NoError(t, err)
-	tl, _ = c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
+	tl, _, _ = c.ListRepoTopics(repo.Owner.UserName, repo.Name, ListRepoTopicsOptions{})
 	assert.Len(t, tl, 3)
 
 	sort.Strings(tl)

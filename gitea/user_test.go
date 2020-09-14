@@ -14,7 +14,7 @@ import (
 func TestMyUser(t *testing.T) {
 	log.Println("== TestMyUser ==")
 	c := newTestClient()
-	user, err := c.GetMyUserInfo()
+	user, _, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
 
 	assert.EqualValues(t, 1, user.ID)
@@ -29,20 +29,20 @@ func TestUserApp(t *testing.T) {
 	log.Println("== TestUserApp ==")
 	c := newTestClient()
 
-	result, err := c.ListAccessTokens(ListAccessTokensOptions{})
+	result, _, err := c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, result, 1)
 	assert.EqualValues(t, "gitea-admin", result[0].Name)
 
-	t1, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})
+	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})
 	assert.NoError(t, err)
 	assert.EqualValues(t, "TestCreateAccessToken", t1.Name)
-	result, _ = c.ListAccessTokens(ListAccessTokensOptions{})
+	result, _, _ = c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.Len(t, result, 2)
 
-	err = c.DeleteAccessToken(t1.ID)
+	_, err = c.DeleteAccessToken(t1.ID)
 	assert.NoError(t, err)
-	result, _ = c.ListAccessTokens(ListAccessTokensOptions{})
+	result, _, _ = c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.Len(t, result, 1)
 }
 
@@ -57,15 +57,15 @@ func TestUserSearch(t *testing.T) {
 	createTestUser(t, "1n2n3n", c)
 	createTestUser(t, "otherIt", c)
 
-	ul, err := c.SearchUsers(SearchUsersOption{KeyWord: "other"})
+	ul, _, err := c.SearchUsers(SearchUsersOption{KeyWord: "other"})
 	assert.NoError(t, err)
 	assert.Len(t, ul, 1)
 
-	ul, err = c.SearchUsers(SearchUsersOption{KeyWord: "notInTESTcase"})
+	ul, _, err = c.SearchUsers(SearchUsersOption{KeyWord: "notInTESTcase"})
 	assert.NoError(t, err)
 	assert.Len(t, ul, 0)
 
-	ul, err = c.SearchUsers(SearchUsersOption{KeyWord: "It"})
+	ul, _, err = c.SearchUsers(SearchUsersOption{KeyWord: "It"})
 	assert.NoError(t, err)
 	assert.Len(t, ul, 2)
 }
@@ -73,7 +73,7 @@ func TestUserSearch(t *testing.T) {
 func TestUserFollow(t *testing.T) {
 	log.Println("== TestUserFollow ==")
 	c := newTestClient()
-	me, _ := c.GetMyUserInfo()
+	me, _, _ := c.GetMyUserInfo()
 
 	uA := "uFollow_A"
 	uB := "uFollow_B"
@@ -86,49 +86,51 @@ func TestUserFollow(t *testing.T) {
 	// B follow C & ME
 	// C follow A & B & ME
 	c.sudo = uA
-	err := c.Follow(me.UserName)
+	_, err := c.Follow(me.UserName)
 	assert.NoError(t, err)
 	c.sudo = uB
-	err = c.Follow(me.UserName)
+	_, err = c.Follow(me.UserName)
 	assert.NoError(t, err)
-	err = c.Follow(uC)
+	_, err = c.Follow(uC)
 	assert.NoError(t, err)
 	c.sudo = uC
-	err = c.Follow(me.UserName)
+	_, err = c.Follow(me.UserName)
 	assert.NoError(t, err)
-	err = c.Follow(uA)
+	_, err = c.Follow(uA)
 	assert.NoError(t, err)
-	err = c.Follow(uB)
+	_, err = c.Follow(uB)
 	assert.NoError(t, err)
 
 	// C unfollow me
-	err = c.Unfollow(me.UserName)
+	_, err = c.Unfollow(me.UserName)
 	assert.NoError(t, err)
 
 	// ListMyFollowers of me
 	c.sudo = ""
-	f, err := c.ListMyFollowers(ListFollowersOptions{})
+	f, _, err := c.ListMyFollowers(ListFollowersOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 2)
 
 	// ListFollowers of A
-	f, err = c.ListFollowers(uA, ListFollowersOptions{})
+	f, _, err = c.ListFollowers(uA, ListFollowersOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 1)
 
 	// ListMyFollowing of me
-	f, err = c.ListMyFollowing(ListFollowingOptions{})
+	f, _, err = c.ListMyFollowing(ListFollowingOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 0)
 
 	// ListFollowing of A
-	f, err = c.ListFollowing(uA, ListFollowingOptions{})
+	f, _, err = c.ListFollowing(uA, ListFollowingOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, f, 1)
 	assert.EqualValues(t, me.ID, f[0].ID)
 
-	assert.False(t, c.IsFollowing(uA))
-	assert.True(t, c.IsUserFollowing(uB, uC))
+	isFollow, _ := c.IsFollowing(uA)
+	assert.False(t, isFollow)
+	isFollow, _ = c.IsUserFollowing(uB, uC)
+	assert.True(t, isFollow)
 }
 
 func TestUserEmail(t *testing.T) {
@@ -139,7 +141,7 @@ func TestUserEmail(t *testing.T) {
 	c.sudo = userN
 
 	// ListEmails
-	el, err := c.ListEmails(ListEmailsOptions{})
+	el, _, err := c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 1)
 	assert.EqualValues(t, "testuseremail@gitea.io", el[0].Email)
@@ -147,35 +149,35 @@ func TestUserEmail(t *testing.T) {
 
 	// AddEmail
 	mails := []string{"wow@mail.send", "speed@mail.me"}
-	el, err = c.AddEmail(CreateEmailOption{Emails: mails})
+	el, _, err = c.AddEmail(CreateEmailOption{Emails: mails})
 	assert.NoError(t, err)
 	assert.Len(t, el, 2)
-	_, err = c.AddEmail(CreateEmailOption{Emails: []string{mails[1]}})
+	_, _, err = c.AddEmail(CreateEmailOption{Emails: []string{mails[1]}})
 	assert.Error(t, err)
-	el, err = c.ListEmails(ListEmailsOptions{})
+	el, _, err = c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 3)
 
 	// DeleteEmail
-	err = c.DeleteEmail(DeleteEmailOption{Emails: []string{mails[1]}})
+	_, err = c.DeleteEmail(DeleteEmailOption{Emails: []string{mails[1]}})
 	assert.NoError(t, err)
-	err = c.DeleteEmail(DeleteEmailOption{Emails: []string{"imaginary@e.de"}})
+	_, err = c.DeleteEmail(DeleteEmailOption{Emails: []string{"imaginary@e.de"}})
 	assert.Error(t, err)
 
-	el, err = c.ListEmails(ListEmailsOptions{})
+	el, _, err = c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 2)
-	err = c.DeleteEmail(DeleteEmailOption{Emails: []string{mails[0]}})
+	_, err = c.DeleteEmail(DeleteEmailOption{Emails: []string{mails[0]}})
 	assert.NoError(t, err)
 }
 
 func createTestUser(t *testing.T, username string, client *Client) *User {
 	bFalse := false
-	user, _ := client.GetUserInfo(username)
+	user, _, _ := client.GetUserInfo(username)
 	if user.ID != 0 {
 		return user
 	}
-	user, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: &bFalse, SendNotify: bFalse})
+	user, _, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: &bFalse, SendNotify: bFalse})
 	assert.NoError(t, err)
 	return user
 }

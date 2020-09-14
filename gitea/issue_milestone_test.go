@@ -23,41 +23,42 @@ func TestMilestones(t *testing.T) {
 	sClosed := StateClosed
 
 	// CreateMilestone 4x
-	m1, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v1.0", Description: "First Version", Deadline: &now})
+	m1, _, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v1.0", Description: "First Version", Deadline: &now})
 	assert.NoError(t, err)
-	_, err = c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v2.0", Description: "Second Version", Deadline: &future})
+	_, _, err = c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v2.0", Description: "Second Version", Deadline: &future})
 	assert.NoError(t, err)
-	_, err = c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v3.0", Description: "Third Version", Deadline: nil})
+	_, _, err = c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v3.0", Description: "Third Version", Deadline: nil})
 	assert.NoError(t, err)
-	m4, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "temp", Description: "part time milestone"})
+	m4, _, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "temp", Description: "part time milestone"})
 	assert.NoError(t, err)
 
 	// EditMilestone
-	m1, err = c.EditMilestone(repo.Owner.UserName, repo.Name, m1.ID, EditMilestoneOption{Description: &closed, State: &sClosed})
+	m1, _, err = c.EditMilestone(repo.Owner.UserName, repo.Name, m1.ID, EditMilestoneOption{Description: &closed, State: &sClosed})
 	assert.NoError(t, err)
 
 	// DeleteMilestone
-	assert.NoError(t, c.DeleteMilestone(repo.Owner.UserName, repo.Name, m4.ID))
+	_, err = c.DeleteMilestone(repo.Owner.UserName, repo.Name, m4.ID)
+	assert.NoError(t, err)
 
 	// ListRepoMilestones
-	ml, err := c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{})
+	ml, _, err := c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 2)
-	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateClosed})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateClosed})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 1)
-	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 3)
-	ml, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll, Name: "V3.0"})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll, Name: "V3.0"})
 	assert.NoError(t, err)
 	assert.Len(t, ml, 1)
 	assert.EqualValues(t, "v3.0", ml[0].Title)
 
 	// GetMilestone
-	_, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m4.ID)
+	_, _, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m4.ID)
 	assert.Error(t, err)
-	m, err := c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
+	m, _, err := c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, m1, m)
 }

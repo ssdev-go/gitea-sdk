@@ -14,7 +14,7 @@ import (
 func TestRepoWatch(t *testing.T) {
 	log.Printf("== TestRepoWatch ==")
 	c := newTestClient()
-	rawVersion, err := c.ServerVersion()
+	rawVersion, _, err := c.ServerVersion()
 	assert.NoError(t, err)
 	assert.True(t, true, rawVersion != "")
 
@@ -23,30 +23,30 @@ func TestRepoWatch(t *testing.T) {
 	assert.NotEqual(t, repo1, repo2)
 
 	//GetWatchedRepos
-	wl, err := c.GetWatchedRepos("test01")
+	wl, _, err := c.GetWatchedRepos("test01")
 	assert.NoError(t, err)
 	assert.NotNil(t, wl)
 	maxcount := len(wl)
 
 	//GetMyWatchedRepos
-	wl, err = c.GetMyWatchedRepos()
+	wl, _, err = c.GetMyWatchedRepos()
 	assert.NoError(t, err)
 	assert.Len(t, wl, maxcount)
 
 	//CheckRepoWatch
-	isWatching, err := c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
+	isWatching, _, err := c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
 	assert.NoError(t, err)
 	assert.True(t, isWatching)
 
 	//UnWatchRepo
-	err = c.UnWatchRepo(repo1.Owner.UserName, repo1.Name)
+	_, err = c.UnWatchRepo(repo1.Owner.UserName, repo1.Name)
 	assert.NoError(t, err)
-	isWatching, _ = c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
+	isWatching, _, _ = c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
 	assert.False(t, isWatching)
 
 	//WatchRepo
-	err = c.WatchRepo(repo1.Owner.UserName, repo1.Name)
+	_, err = c.WatchRepo(repo1.Owner.UserName, repo1.Name)
 	assert.NoError(t, err)
-	isWatching, _ = c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
+	isWatching, _, _ = c.CheckRepoWatch(repo1.Owner.UserName, repo1.Name)
 	assert.True(t, isWatching)
 }

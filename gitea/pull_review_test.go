@@ -24,7 +24,7 @@ func TestPullReview(t *testing.T) {
 	defer c.AdminDeleteUser(submitter.UserName)
 
 	// CreatePullReview
-	r1, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r1, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		State: ReviewStateComment,
 		Body:  "I'll have a look at it later",
 	})
@@ -35,12 +35,12 @@ func TestPullReview(t *testing.T) {
 	}
 
 	c.SetSudo(submitter.UserName)
-	r2, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r2, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		State: ReviewStateApproved,
 		Body:  "lgtm it myself",
 	})
 	assert.Error(t, err)
-	r2, err = c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r2, _, err = c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		State: ReviewStateComment,
 		Body:  "no seriously please have a look at it",
 	})
@@ -48,7 +48,7 @@ func TestPullReview(t *testing.T) {
 	assert.NotNil(t, r2)
 
 	c.SetSudo(reviewer.UserName)
-	r3, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r3, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		State: ReviewStateApproved,
 		Body:  "lgtm",
 		Comments: []CreatePullReviewComment{{
@@ -63,7 +63,7 @@ func TestPullReview(t *testing.T) {
 
 	// ListPullReviews
 	c.SetSudo("")
-	rl, err := c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
+	rl, _, err := c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -76,20 +76,20 @@ func TestPullReview(t *testing.T) {
 	}
 
 	// GetPullReview
-	rNew, err := c.GetPullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
+	rNew, _, err := c.GetPullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, r3, rNew)
 
 	// DeletePullReview
 	c.SetSudo(submitter.UserName)
-	err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r2.ID)
+	_, err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r2.ID)
 	assert.NoError(t, err)
-	err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
+	_, err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
 	assert.Error(t, err)
 
 	// SubmitPullReview
 	c.SetSudo("")
-	r4, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r4, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		Body: "...",
 		Comments: []CreatePullReviewComment{{
 			Path:       "WOW-file",
@@ -99,7 +99,7 @@ func TestPullReview(t *testing.T) {
 		},
 	})
 	assert.NoError(t, err)
-	r5, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
+	r5, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		Body: "...",
 		Comments: []CreatePullReviewComment{{
 			Path:       "WOW-file",
@@ -111,7 +111,7 @@ func TestPullReview(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, r4.ID, r5.ID)
 
-	r, err := c.SubmitPullReview(repo.Owner.UserName, repo.Name, pull.Index, r4.ID, SubmitPullReviewOptions{
+	r, _, err := c.SubmitPullReview(repo.Owner.UserName, repo.Name, pull.Index, r4.ID, SubmitPullReviewOptions{
 		State: ReviewStateRequestChanges,
 		Body:  "one nit",
 	})
@@ -120,7 +120,7 @@ func TestPullReview(t *testing.T) {
 	assert.EqualValues(t, ReviewStateRequestChanges, r.State)
 
 	// ListPullReviewComments
-	rcl, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
+	rcl, _, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, r.CodeCommentsCount, len(rcl))
 	for _, rc := range rcl {
@@ -143,14 +143,14 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 
 	pullSubmitter := createTestUser(t, "pull_submitter", c)
 	write := AccessModeWrite
-	err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
+	_, err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &write,
 	})
 	assert.NoError(t, err)
 
 	c.SetSudo("pull_submitter")
 
-	newFile, err := c.CreateFile(repo.Owner.UserName, repo.Name, "WOW-file", CreateFileOptions{
+	newFile, _, err := c.CreateFile(repo.Owner.UserName, repo.Name, "WOW-file", CreateFileOptions{
 		Content: "QSBuZXcgRmlsZQoKYW5kIHNvbWUgbGluZXMK",
 		FileOptions: FileOptions{
 			Message:       "creat a new file",
@@ -163,7 +163,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 		return nil, nil, nil, nil, false
 	}
 
-	pull, err := c.CreatePullRequest(c.username, repoName, CreatePullRequestOption{
+	pull, _, err := c.CreatePullRequest(c.username, repoName, CreatePullRequestOption{
 		Base:  "master",
 		Head:  "new_file",
 		Title: "Creat a NewFile",
@@ -175,7 +175,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 
 	reviewer := createTestUser(t, "pull_reviewer", c)
 	admin := AccessModeAdmin
-	err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
+	_, err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &admin,
 	})
 	assert.NoError(t, err)

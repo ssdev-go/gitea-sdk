@@ -19,7 +19,7 @@ func TestNotifications(t *testing.T) {
 	// init user2
 	c := newTestClient()
 
-	user1, err := c.GetMyUserInfo()
+	user1, _, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
 	user2 := createTestUser(t, "notify2", c)
 
@@ -30,30 +30,31 @@ func TestNotifications(t *testing.T) {
 	c.sudo = user2.UserName
 	repoB, err := createTestRepo(t, "TestNotifications_B", c)
 	assert.NoError(t, err)
-	err = c.WatchRepo(user1.UserName, repoA.Name)
+	_, err = c.WatchRepo(user1.UserName, repoA.Name)
 	c.sudo = ""
 	assert.NoError(t, err)
 
 	c.sudo = user2.UserName
-	assert.NoError(t, c.ReadNotifications(MarkNotificationOptions{}))
-	count, err := c.CheckNotifications()
+	_, err = c.ReadNotifications(MarkNotificationOptions{})
+	assert.NoError(t, err)
+	count, _, err := c.CheckNotifications()
 	assert.EqualValues(t, 0, count)
 	assert.NoError(t, err)
 	c.sudo = ""
-	_, err = c.CreateIssue(repoA.Owner.UserName, repoA.Name, CreateIssueOption{Title: "A Issue", Closed: false})
+	_, _, err = c.CreateIssue(repoA.Owner.UserName, repoA.Name, CreateIssueOption{Title: "A Issue", Closed: false})
 	assert.NoError(t, err)
-	issue, err := c.CreateIssue(repoB.Owner.UserName, repoB.Name, CreateIssueOption{Title: "B Issue", Closed: false})
+	issue, _, err := c.CreateIssue(repoB.Owner.UserName, repoB.Name, CreateIssueOption{Title: "B Issue", Closed: false})
 	assert.NoError(t, err)
 	time.Sleep(time.Second * 1)
 
 	// CheckNotifications of user2
 	c.sudo = user2.UserName
-	count, err = c.CheckNotifications()
+	count, _, err = c.CheckNotifications()
 	assert.NoError(t, err)
 	assert.EqualValues(t, 2, count)
 
 	// ListNotifications
-	nList, err := c.ListNotifications(ListNotificationOptions{})
+	nList, _, err := c.ListNotifications(ListNotificationOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 2)
 	for _, n := range nList {
@@ -69,55 +70,58 @@ func TestNotifications(t *testing.T) {
 	}
 
 	// ListRepoNotifications
-	nList, err = c.ListRepoNotifications(repoA.Owner.UserName, repoA.Name, ListNotificationOptions{})
+	nList, _, err = c.ListRepoNotifications(repoA.Owner.UserName, repoA.Name, ListNotificationOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 1)
 	assert.EqualValues(t, "A Issue", nList[0].Subject.Title)
 	// ReadRepoNotifications
-	err = c.ReadRepoNotifications(repoA.Owner.UserName, repoA.Name, MarkNotificationOptions{})
+	_, err = c.ReadRepoNotifications(repoA.Owner.UserName, repoA.Name, MarkNotificationOptions{})
 	assert.NoError(t, err)
 
 	// GetThread
-	n, err := c.GetNotification(nList[0].ID)
+	n, _, err := c.GetNotification(nList[0].ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, false, n.Unread)
 	assert.EqualValues(t, "A Issue", n.Subject.Title)
 
 	// ReadNotifications
-	err = c.ReadNotifications(MarkNotificationOptions{})
+	_, err = c.ReadNotifications(MarkNotificationOptions{})
 	assert.NoError(t, err)
-	nList, err = c.ListNotifications(ListNotificationOptions{})
+	nList, _, err = c.ListNotifications(ListNotificationOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 0)
 
 	// ReadThread
 	iState := StateClosed
 	c.sudo = ""
-	_, err = c.EditIssue(repoB.Owner.UserName, repoB.Name, issue.Index, EditIssueOption{State: &iState})
+	_, _, err = c.EditIssue(repoB.Owner.UserName, repoB.Name, issue.Index, EditIssueOption{State: &iState})
 	assert.NoError(t, err)
 	time.Sleep(time.Second * 1)
 
 	c.sudo = user2.UserName
-	nList, err = c.ListNotifications(ListNotificationOptions{})
+	nList, _, err = c.ListNotifications(ListNotificationOptions{})
 	assert.NoError(t, err)
-	count, err = c.CheckNotifications()
+	count, _, err = c.CheckNotifications()
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1, count)
 	assert.Len(t, nList, 1)
 	if len(nList) > 0 {
-		assert.NoError(t, c.ReadNotification(nList[0].ID))
+		_, err = c.ReadNotification(nList[0].ID)
+		assert.NoError(t, err)
 	}
 
 	c.sudo = ""
-	err = c.ReadNotifications(MarkNotificationOptions{})
+	_, err = c.ReadNotifications(MarkNotificationOptions{})
 	assert.NoError(t, err)
-	nList, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusRead}})
+	nList, _, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusRead}})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 4)
 
-	assert.NoError(t, c.ReadNotification(nList[2].ID, NotifyStatusPinned))
-	assert.NoError(t, c.ReadNotification(nList[3].ID, NotifyStatusUnread))
-	nList, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusPinned, NotifyStatusUnread}})
+	_, err = c.ReadNotification(nList[2].ID, NotifyStatusPinned)
+	assert.NoError(t, err)
+	_, err = c.ReadNotification(nList[3].ID, NotifyStatusUnread)
+	assert.NoError(t, err)
+	nList, _, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusPinned, NotifyStatusUnread}})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 2)
 }

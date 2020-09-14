@@ -27,14 +27,14 @@ func TestIssue(t *testing.T) {
 func createIssue(t *testing.T, c *Client) {
 	log.Println("== TestCreateIssues ==")
 
-	user, err := c.GetMyUserInfo()
+	user, _, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
 	repo, _ := createTestRepo(t, "IssueTestsRepo", c)
 
 	nowTime := time.Now()
-	mile, _ := c.CreateMilestone(user.UserName, repo.Name, CreateMilestoneOption{Title: "mile1"})
-	label1, _ := c.CreateLabel(user.UserName, repo.Name, CreateLabelOption{Name: "Label1", Description: "a", Color: "#ee0701"})
-	label2, _ := c.CreateLabel(user.UserName, repo.Name, CreateLabelOption{Name: "Label2", Description: "b", Color: "#128a0c"})
+	mile, _, _ := c.CreateMilestone(user.UserName, repo.Name, CreateMilestoneOption{Title: "mile1"})
+	label1, _, _ := c.CreateLabel(user.UserName, repo.Name, CreateLabelOption{Name: "Label1", Description: "a", Color: "#ee0701"})
+	label2, _, _ := c.CreateLabel(user.UserName, repo.Name, CreateLabelOption{Name: "Label2", Description: "b", Color: "#128a0c"})
 
 	createTestIssue(t, c, repo.Name, "First Issue", "", nil, nil, 0, nil, false, false)
 	createTestIssue(t, c, repo.Name, "Issue 2", "closed isn't it?", nil, nil, 0, nil, true, false)
@@ -49,14 +49,14 @@ func createIssue(t *testing.T, c *Client) {
 
 func editIssues(t *testing.T, c *Client) {
 	log.Println("== TestEditIssues ==")
-	il, err := c.ListIssues(ListIssueOption{KeyWord: "soon"})
+	il, _, err := c.ListIssues(ListIssueOption{KeyWord: "soon"})
 	assert.NoError(t, err)
-	issue, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
+	issue, _, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
 	assert.NoError(t, err)
 
 	body := "123 test and go"
 	state := StateClosed
-	issueNew, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
+	issueNew, _, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
 		Title: "Edited",
 		Body:  &body,
 		State: &state,
@@ -70,7 +70,7 @@ func editIssues(t *testing.T, c *Client) {
 func listIssues(t *testing.T, c *Client) {
 	log.Println("== TestListIssues ==")
 
-	issues, err := c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{
+	issues, _, err := c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{
 		Labels:  []string{"Label1", "Label2"},
 		KeyWord: "",
 		State:   "all",
@@ -78,7 +78,7 @@ func listIssues(t *testing.T, c *Client) {
 	assert.NoError(t, err)
 	assert.Len(t, issues, 1)
 
-	issues, err = c.ListIssues(ListIssueOption{
+	issues, _, err = c.ListIssues(ListIssueOption{
 		Labels:  []string{"Label2"},
 		KeyWord: "Done",
 		State:   "all",
@@ -86,7 +86,7 @@ func listIssues(t *testing.T, c *Client) {
 	assert.NoError(t, err)
 	assert.Len(t, issues, 1)
 
-	issues, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{
+	issues, _, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{
 		Milestones: []string{"mile1"},
 		State:      "all",
 	})
@@ -98,15 +98,15 @@ func listIssues(t *testing.T, c *Client) {
 		}
 	}
 
-	issues, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{})
+	issues, _, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{})
 	assert.NoError(t, err)
 	assert.Len(t, issues, 3)
 }
 
 func createTestIssue(t *testing.T, c *Client, repoName, title, body string, assignees []string, deadline *time.Time, milestone int64, labels []int64, closed, shouldFail bool) {
-	user, err := c.GetMyUserInfo()
+	user, _, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
-	issue, e := c.CreateIssue(user.UserName, repoName, CreateIssueOption{
+	issue, _, e := c.CreateIssue(user.UserName, repoName, CreateIssueOption{
 		Title:     title,
 		Body:      body,
 		Assignees: assignees,

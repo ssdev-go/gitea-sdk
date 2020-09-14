@@ -15,21 +15,24 @@ func TestRepoTransfer(t *testing.T) {
 	log.Printf("== TestRepoTransfer ==")
 	c := newTestClient()
 
-	org, err := c.AdminCreateOrg(c.username, CreateOrgOption{Name: "TransferOrg"})
+	org, _, err := c.AdminCreateOrg(c.username, CreateOrgOption{Name: "TransferOrg"})
 	assert.NoError(t, err)
 	repo, err := createTestRepo(t, "ToMove", c)
 	assert.NoError(t, err)
 
-	newRepo, err := c.TransferRepo(repo.Owner.UserName, repo.Name, TransferRepoOption{NewOwner: org.UserName})
+	newRepo, _, err := c.TransferRepo(repo.Owner.UserName, repo.Name, TransferRepoOption{NewOwner: org.UserName})
 	assert.NoError(t, err)
 	assert.NotNil(t, newRepo)
 
 	repo, err = createTestRepo(t, "ToMove", c)
 	assert.NoError(t, err)
-	_, err = c.TransferRepo(repo.Owner.UserName, repo.Name, TransferRepoOption{NewOwner: org.UserName})
+	_, _, err = c.TransferRepo(repo.Owner.UserName, repo.Name, TransferRepoOption{NewOwner: org.UserName})
 	assert.Error(t, err)
 
-	assert.NoError(t, c.DeleteRepo(repo.Owner.UserName, repo.Name))
-	assert.NoError(t, c.DeleteRepo(newRepo.Owner.UserName, newRepo.Name))
-	assert.NoError(t, c.DeleteOrg(org.UserName))
+	_, err = c.DeleteRepo(repo.Owner.UserName, repo.Name)
+	assert.NoError(t, err)
+	_, err = c.DeleteRepo(newRepo.Owner.UserName, newRepo.Name)
+	assert.NoError(t, err)
+	_, err = c.DeleteOrg(org.UserName)
+	assert.NoError(t, err)
 }

@@ -23,37 +23,41 @@ func TestOrgMembership(t *testing.T) {
 
 	user := createTestUser(t, "org_mem_user", c)
 	c.SetSudo(user.UserName)
-	newOrg, err := c.CreateOrg(CreateOrgOption{Name: "MemberOrg"})
+	newOrg, _, err := c.CreateOrg(CreateOrgOption{Name: "MemberOrg"})
 	assert.NoError(t, err)
 	assert.NotNil(t, newOrg)
 
 	// Check func
-	check, err := c.CheckPublicOrgMembership(newOrg.UserName, user.UserName)
+	check, _, err := c.CheckPublicOrgMembership(newOrg.UserName, user.UserName)
 	assert.NoError(t, err)
 	assert.False(t, check)
-	check, err = c.CheckOrgMembership(newOrg.UserName, user.UserName)
+	check, _, err = c.CheckOrgMembership(newOrg.UserName, user.UserName)
 	assert.NoError(t, err)
 	assert.True(t, check)
 
-	err = c.SetPublicOrgMembership(newOrg.UserName, user.UserName, true)
+	_, err = c.SetPublicOrgMembership(newOrg.UserName, user.UserName, true)
 	assert.NoError(t, err)
-	check, err = c.CheckPublicOrgMembership(newOrg.UserName, user.UserName)
+	check, _, err = c.CheckPublicOrgMembership(newOrg.UserName, user.UserName)
 	assert.NoError(t, err)
 	assert.True(t, check)
 
-	u, err := c.ListOrgMembership(newOrg.UserName, ListOrgMembershipOption{})
+	u, _, err := c.ListOrgMembership(newOrg.UserName, ListOrgMembershipOption{})
 	assert.NoError(t, err)
 	assert.Len(t, u, 1)
 	assert.EqualValues(t, user.UserName, u[0].UserName)
-	u, err = c.ListPublicOrgMembership(newOrg.UserName, ListOrgMembershipOption{})
+	u, _, err = c.ListPublicOrgMembership(newOrg.UserName, ListOrgMembershipOption{})
 	assert.NoError(t, err)
 	assert.Len(t, u, 1)
 	assert.EqualValues(t, user.UserName, u[0].UserName)
 
-	assert.Error(t, c.DeleteOrgMembership(newOrg.UserName, user.UserName))
+	_, err = c.DeleteOrgMembership(newOrg.UserName, user.UserName)
+	assert.Error(t, err)
 
 	c.sudo = ""
-	assert.Error(t, c.AdminDeleteUser(user.UserName))
-	assert.NoError(t, c.DeleteOrg(newOrg.UserName))
-	assert.NoError(t, c.AdminDeleteUser(user.UserName))
+	_, err = c.AdminDeleteUser(user.UserName)
+	assert.Error(t, err)
+	_, err = c.DeleteOrg(newOrg.UserName)
+	assert.NoError(t, err)
+	_, err = c.AdminDeleteUser(user.UserName)
+	assert.NoError(t, err)
 }
