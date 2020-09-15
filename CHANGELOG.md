@@ -1,5 +1,44 @@
 # Changelog
 
+## [v0.13.0](https://gitea.com/gitea/go-sdk/releases/tag/v0.13.0) - 2020-09-15
+
+* BREAKING
+  * Check Gitea Version Requirement (#419)
+  * All Function return http responce (#416)
+  * Remove opts from ListPullReviewComments (#411)
+  * Use enum AccessMode for OrgTeam and Collaborator functions (#408)
+  * CreateOrgOption rename UserName to Name (#386)
+  * EditMilestoneOption also use StateType (#350)
+  * Refactor RepoSearch to be easy usable (#346)
+* FEATURES
+  * Milestone Functions accept name to identify (#418)
+  * Make http requests with context (#417)
+  * Add GetGlobalAttachmentSettings (#414)
+  * Add GetArchive (#413)
+  * Add GetRepoLanguages + TESTs (#412)
+  * Add CreateBranch (#407)
+  * Add Admin CronTask functions (#406)
+  * Add GetGlobalAPISettings Function (#404)
+  * Add Get Diff and Patch endpoints for pull requests (#398)
+  * Add Validate func for Create/Edit Options (#370)
+  * Add Function to get GetGlobalSettings and GetSettingAllowedReactions (#359)
+* ENHANCEMENTS
+  * TrackedTime API >= 1.11.x needed (#415)
+  * Update Milestone struct (#410)
+  * Add Fallback for GetPullRequestDiff/Patch (#399)
+  * DeleteToken Accept Names too (#394)
+  * Update ListMilestoneOption struct (#393)
+  * Migration Api Changed (#392)
+  * Refactor Visibletype Orgs (#382)
+  * Extend Notification Functions (#381)
+  * Update GetGlobalSettings Functions (#376)
+  * Allow Creating Closed Milestones (#373)
+  * CreateLabel correct Color if needed for old versions (#365)
+  * Issue/Pull add IsLocked Property (#357)
+  * Update EditPullRequestOption Add Base (#353)
+  * File Create/Update/Delete detect DefaultBranch if Branch not set for old Versions (#352)
+  * Improve Error Handling (#351)
+
 ## [v0.12.2](https://gitea.com/gitea/go-sdk/releases/tag/v0.12.2) - 2020-09-05
 
 * ENHANCEMENTS
