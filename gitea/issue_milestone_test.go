@@ -55,10 +55,21 @@ func TestMilestones(t *testing.T) {
 	assert.Len(t, ml, 1)
 	assert.EqualValues(t, "v3.0", ml[0].Title)
 
+	// test fallback resolveMilestoneByName
+	m, _, err := c.resolveMilestoneByName(repo.Owner.UserName, repo.Name, "V3.0")
+	assert.NoError(t, err)
+	assert.EqualValues(t, ml[0].ID, m.ID)
+	m, _, err = c.resolveMilestoneByName(repo.Owner.UserName, repo.Name, "NoEvidenceOfExist")
+	assert.Error(t, err)
+	assert.EqualValues(t, "milestone 'NoEvidenceOfExist' do not exist", err.Error())
+
 	// GetMilestone
 	_, _, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m4.ID)
 	assert.Error(t, err)
-	m, _, err := c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
+	m, _, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, m1, m)
+	m2, _, err := c.GetMilestoneByName(repo.Owner.UserName, repo.Name, m.Title)
+	assert.NoError(t, err)
+	assert.EqualValues(t, m, m2)
 }
