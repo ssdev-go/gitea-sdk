@@ -10,6 +10,10 @@ This project acts as a client SDK implementation written in Go to interact with 
 import "code.gitea.io/sdk/gitea"
 ```
 
+## Version Requirements
+ * go >= 1.13
+ * gitea >= 1.10
+
 ## Contributing
 
 Fork -> Patch -> Push -> Pull Request
