@@ -12,7 +12,7 @@ import "code.gitea.io/sdk/gitea"
 
 ## Version Requirements
  * go >= 1.13
- * gitea >= 1.10
+ * gitea >= 1.11
 
 ## Contributing
 

@@ -23,7 +23,7 @@ var jsonHeader = http.Header{"content-type": []string{"application/json"}}
 
 // Version return the library version
 func Version() string {
-	return "0.13.0"
+	return "0.14.0"
 }
 
 // Client represents a Gitea API client.
@@ -55,7 +55,7 @@ func NewClient(url string, options ...func(*Client)) (*Client, error) {
 	for _, opt := range options {
 		opt(client)
 	}
-	if err := client.CheckServerVersionConstraint(">=1.10"); err != nil {
+	if err := client.CheckServerVersionConstraint(">=1.11.0"); err != nil {
 		return nil, err
 	}
 	return client, nil

@@ -11,9 +11,6 @@ import (
 
 // GetIssueSubscribers get list of users who subscribed on an issue
 func (c *Client) GetIssueSubscribers(owner, repo string, index int64) ([]*User, *Response, error) {
-	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
-		return nil, nil, err
-	}
 	subscribers := make([]*User, 0, 10)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions", owner, repo, index), nil, nil, &subscribers)
 	return subscribers, resp, err
@@ -21,9 +18,6 @@ func (c *Client) GetIssueSubscribers(owner, repo string, index int64) ([]*User, 
 
 // AddIssueSubscription Subscribe user to issue
 func (c *Client) AddIssueSubscription(owner, repo string, index int64, user string) (*Response, error) {
-	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
-		return nil, err
-	}
 	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
 	if err != nil {
 		return resp, err
@@ -39,9 +33,6 @@ func (c *Client) AddIssueSubscription(owner, repo string, index int64, user stri
 
 // DeleteIssueSubscription unsubscribe user from issue
 func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user string) (*Response, error) {
-	if err := c.CheckServerVersionConstraint(">=1.11.0"); err != nil {
-		return nil, err
-	}
 	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/%s", owner, repo, index, user), nil, nil)
 	if err != nil {
 		return resp, err
