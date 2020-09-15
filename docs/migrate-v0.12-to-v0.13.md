@@ -11,6 +11,7 @@ feel free to create an issue.
 -   [Variable Renames (#386)](#Variable-Renames)
 -   [Change Type of Permission Field (#408)](#Change-Type-of-Permission-Field)
 -   [All Function return http responce (#416)](#All-Function-return-http-responce)
+-   [NewClient has new Option Interface (#417)](#NewClient-has-new-Option-Interface)
 
 <!-- tocstop -->
 
@@ -74,3 +75,14 @@ If an error ocure before an http request (e.g. gitea is to old), it will be nil.
 
 Pulls:
 -   [#416 All Function return http responce](https://gitea.com/gitea/go-sdk/pulls/416)
+
+
+## NewClient has new Option Interface
+
+function `NewClient` use functional options now.  
+If you simply like to migrate replace `client := NewClient(giteaUrl, token)` with `client, _ := NewClient(giteaURL, SetToken(token))`.
+
+If you like tu utilize them, currently there are: SetContext, SetBasicAuth, SetOTP, SetToken, SetHTTPClient, SetSudo
+
+Pulls:
+-   [#417 Make http requests with context](https://gitea.com/gitea/go-sdk/pulls/417)

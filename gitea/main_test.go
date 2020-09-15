@@ -46,7 +46,8 @@ func newTestClient() *Client {
 		client.SetBasicAuth(getGiteaUsername(), getGiteaPassword())
 		return client
 	}
-	return NewClient(getGiteaURL(), getGiteaToken())
+	c, _ := NewClient(getGiteaURL(), SetToken(getGiteaToken()))
+	return c
 }
 
 func giteaMasterPath() string {
