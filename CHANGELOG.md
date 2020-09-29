@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.13.1](https://gitea.com/gitea/go-sdk/releases/tag/v0.13.1) - 2020-09-29
+
+* FEATURES
+  * Add GetReleaseByTag (#427) (#430)
+* BUGFIXES
+  * Return http Response on NotFound too (#428) (#429)
+* ENHANCEMENTS
+  * Update Struct NotificationSubject (#424) (#425)
+  * Add Debug Mode (#422) (#423)
+
+
 ## [v0.13.0](https://gitea.com/gitea/go-sdk/releases/tag/v0.13.0) - 2020-09-15
 
 * BREAKING
