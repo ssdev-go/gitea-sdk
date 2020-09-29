@@ -237,7 +237,7 @@ func (c *Client) getResponse(method, path string, header http.Header, body io.Re
 func (c *Client) getParsedResponse(method, path string, header http.Header, body io.Reader, obj interface{}) (*Response, error) {
 	data, resp, err := c.getResponse(method, path, header, body)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	return resp, json.Unmarshal(data, obj)
 }
