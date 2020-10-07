@@ -40,7 +40,7 @@ func TestGetGlobalSettings(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, &GlobalAttachmentSettings{
 		Enabled:      true,
-		AllowedTypes: "image/jpeg,image/png,application/zip,application/gzip",
+		AllowedTypes: ".docx,.gif,.gz,.jpeg,.jpg,.log,.pdf,.png,.pptx,.txt,.xlsx,.zip",
 		MaxSize:      4,
 		MaxFiles:     5,
 	}, attachSettings)
