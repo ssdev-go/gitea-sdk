@@ -25,7 +25,7 @@ help:
 .PHONY: clean
 clean:
 	rm -r -f test
-	$(GO) clean -i ./...
+	cd gitea && $(GO) clean -i ./...
 
 .PHONY: fmt
 fmt:
@@ -68,10 +68,10 @@ test-instance:
 	echo "DB_TYPE = sqlite3" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "[repository]" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "ROOT = ${WORK_DIR}/test/data/" >> ${WORK_DIR}/test/conf/app.ini; \
-	echo "[server]" >> /tmp/conf/app.ini; \
-	echo "ROOT_URL = ${GITEA_SDK_TEST_URL}" >> /tmp/conf/app.ini; \
+	echo "[server]" >> ${WORK_DIR}/test/conf/app.ini; \
+	echo "ROOT_URL = ${GITEA_SDK_TEST_URL}" >> ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/gitea-master migrate -c ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/gitea-master admin create-user --username=${GITEA_SDK_TEST_USERNAME} --password=${GITEA_SDK_TEST_PASSWORD} --email=test01@gitea.io --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
+	${WORK_DIR}/test/gitea-master admin user create --username=${GITEA_SDK_TEST_USERNAME} --password=${GITEA_SDK_TEST_PASSWORD} --email=test01@gitea.io --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/gitea-master web -c ${WORK_DIR}/test/conf/app.ini
 
 .PHONY: bench
