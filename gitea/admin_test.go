@@ -43,7 +43,7 @@ func TestAdminCronTasks(t *testing.T) {
 
 	tasks, _, err := c.ListCronTasks(ListCronTaskOptions{})
 	assert.NoError(t, err)
-	assert.Len(t, tasks, 15)
+	assert.Len(t, tasks, 16)
 	_, err = c.RunCronTasks(tasks[0].Name)
 	assert.NoError(t, err)
 }
