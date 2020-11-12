@@ -172,12 +172,11 @@ func TestUserEmail(t *testing.T) {
 }
 
 func createTestUser(t *testing.T, username string, client *Client) *User {
-	bFalse := false
 	user, _, _ := client.GetUserInfo(username)
 	if user.ID != 0 {
 		return user
 	}
-	user, _, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: &bFalse, SendNotify: bFalse})
+	user, _, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: OptionalBool(false), SendNotify: false})
 	assert.NoError(t, err)
 	return user
 }

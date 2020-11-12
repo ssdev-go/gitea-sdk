@@ -54,16 +54,15 @@ func editIssues(t *testing.T, c *Client) {
 	issue, _, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
 	assert.NoError(t, err)
 
-	body := "123 test and go"
 	state := StateClosed
 	issueNew, _, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
 		Title: "Edited",
-		Body:  &body,
+		Body:  OptionalString("123 test and go"),
 		State: &state,
 	})
 	assert.NoError(t, err)
 	assert.EqualValues(t, issue.ID, issueNew.ID)
-	assert.EqualValues(t, body, issueNew.Body)
+	assert.EqualValues(t, "123 test and go", issueNew.Body)
 	assert.EqualValues(t, "Edited", issueNew.Title)
 }
 
