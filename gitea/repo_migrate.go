@@ -82,7 +82,7 @@ func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, *Response, err
 		return nil, nil, err
 	}
 
-	if err := c.CheckServerVersionConstraint(">=1.13.0"); err != nil {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		if len(opt.AuthToken) != 0 {
 			// gitea <= 1.12 dont understand AuthToken
 			opt.AuthUsername = opt.AuthToken

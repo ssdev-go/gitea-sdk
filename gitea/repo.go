@@ -238,7 +238,7 @@ func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, *Response, e
 	} else {
 		link.RawQuery = opt.QueryEncode()
 		// IsPrivate only works on gitea >= 1.12.0
-		if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil && opt.IsPrivate != nil {
+		if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil && opt.IsPrivate != nil {
 			if *opt.IsPrivate {
 				// private repos only not supported on gitea <= 1.11.x
 				return nil, nil, err
