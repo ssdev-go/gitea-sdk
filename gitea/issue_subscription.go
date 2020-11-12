@@ -48,7 +48,7 @@ func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user s
 
 // CheckIssueSubscription check if current user is subscribed to an issue
 func (c *Client) CheckIssueSubscription(owner, repo string, index int64) (*WatchInfo, *Response, error) {
-	if err := c.CheckServerVersionConstraint(">=1.12.0"); err != nil {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
 	wi := new(WatchInfo)
