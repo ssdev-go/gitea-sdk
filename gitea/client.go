@@ -28,17 +28,17 @@ func Version() string {
 
 // Client represents a Gitea API client.
 type Client struct {
-	url           string
-	accessToken   string
-	username      string
-	password      string
-	otp           string
-	sudo          string
-	debug         bool
-	client        *http.Client
-	ctx           context.Context
-	serverVersion *version.Version
-	versionLock   sync.RWMutex
+	url            string
+	accessToken    string
+	username       string
+	password       string
+	otp            string
+	sudo           string
+	debug          bool
+	client         *http.Client
+	ctx            context.Context
+	serverVersion  *version.Version
+	getVersionOnce sync.Once
 }
 
 // Response represents the gitea response
