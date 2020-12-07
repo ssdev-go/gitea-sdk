@@ -1,6 +1,16 @@
 # Changelog
 
-## [v0.13.1](https://gitea.com/gitea/go-sdk/releases/tag/v0.13.1) - 2020-09-29
+## [v0.13.2](https://gitea.com/gitea/go-sdk/releases/tag/gitea/v0.13.2) - 2020-12-07
+
+* BUGFIXES
+  * Use Predefind Versions & Compare Function (#442) (#446)
+* ENHANCEMENTS
+  * Add Gitea2Gitea Migration Support (#454) (#455)
+  * Update CreateRepoOption struct (#445) (#447)
+  * Update CommitMeta Struct (#434) (#437)
+
+
+## [v0.13.1](https://gitea.com/gitea/go-sdk/releases/tag/gitea/v0.13.1) - 2020-09-29
 
 * FEATURES
   * Add GetReleaseByTag (#427) (#430)
@@ -11,7 +21,7 @@
   * Add Debug Mode (#422) (#423)
 
 
-## [v0.13.0](https://gitea.com/gitea/go-sdk/releases/tag/v0.13.0) - 2020-09-15
+## [v0.13.0](https://gitea.com/gitea/go-sdk/releases/tag/gitea/v0.13.0) - 2020-09-15
 
 * BREAKING
   * Check Gitea Version Requirement (#419)
@@ -50,7 +60,7 @@
   * File Create/Update/Delete detect DefaultBranch if Branch not set for old Versions (#352)
   * Improve Error Handling (#351)
 
-## [v0.12.2](https://gitea.com/gitea/go-sdk/releases/tag/v0.12.2) - 2020-09-05
+## [v0.12.2](https://gitea.com/gitea/go-sdk/releases/tag/gitea/v0.12.2) - 2020-09-05
 
 * ENHANCEMENTS
   * Extend Notification Functions (#381) (#385)
