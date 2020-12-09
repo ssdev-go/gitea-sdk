@@ -74,6 +74,16 @@ func TestRelease(t *testing.T) {
 	assert.NoError(t, err)
 	rl, _, _ = c.ListReleases(repo.Owner.UserName, repo.Name, ListReleasesOptions{})
 	assert.Len(t, rl, 0)
+	tags, _, err := c.ListRepoTags(repo.Owner.UserName, repo.Name, ListRepoTagsOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, tags, 1)
+
+	// DeleteReleaseTag
+	_, err = c.DeleteReleaseTag(repo.Owner.UserName, repo.Name, r.TagName)
+	assert.NoError(t, err)
+	tags, _, err = c.ListRepoTags(repo.Owner.UserName, repo.Name, ListRepoTagsOptions{})
+	assert.NoError(t, err)
+	assert.Len(t, tags, 0)
 
 	// Test Response if try to get not existing release
 	_, resp, err := c.GetRelease(repo.Owner.UserName, repo.Name, 1234)

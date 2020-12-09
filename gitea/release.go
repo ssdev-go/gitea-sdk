@@ -124,10 +124,21 @@ func (c *Client) EditRelease(user, repo string, id int64, form EditReleaseOption
 	return r, resp, err
 }
 
-// DeleteRelease delete a release from a repository
+// DeleteRelease delete a release from a repository, keeping its tag
 func (c *Client) DeleteRelease(user, repo string, id int64) (*Response, error) {
 	_, resp, err := c.getResponse("DELETE",
 		fmt.Sprintf("/repos/%s/%s/releases/%d", user, repo, id),
+		nil, nil)
+	return resp, err
+}
+
+// DeleteReleaseTag deletes a tag from a repository, if no release refers to it.
+func (c *Client) DeleteReleaseTag(user, repo string, tag string) (*Response, error) {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_14_0); err != nil {
+		return nil, err
+	}
+	_, resp, err := c.getResponse("DELETE",
+		fmt.Sprintf("/repos/%s/%s/releases/tags/%s", user, repo, tag),
 		nil, nil)
 	return resp, err
 }
