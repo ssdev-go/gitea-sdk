@@ -39,6 +39,7 @@ type Issue struct {
 	OriginalAuthorID int64      `json:"original_author_id"`
 	Title            string     `json:"title"`
 	Body             string     `json:"body"`
+	Ref              string     `json:"ref"`
 	Labels           []*Label   `json:"labels"`
 	Milestone        *Milestone `json:"milestone"`
 	// deprecated
@@ -173,7 +174,9 @@ func (c *Client) GetIssue(owner, repo string, index int64) (*Issue, *Response, e
 type CreateIssueOption struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
-	// username of assignee
+	Ref   string `json:"ref"`
+	// deprecated
+	// TODO: rm on sdk 0.15.0
 	Assignee  string     `json:"assignee"`
 	Assignees []string   `json:"assignees"`
 	Deadline  *time.Time `json:"due_date"`
@@ -210,8 +213,11 @@ func (c *Client) CreateIssue(owner, repo string, opt CreateIssueOption) (*Issue,
 
 // EditIssueOption options for editing an issue
 type EditIssueOption struct {
-	Title     string     `json:"title"`
-	Body      *string    `json:"body"`
+	Title string  `json:"title"`
+	Body  *string `json:"body"`
+	Ref   *string `json:"ref"`
+	// deprecated
+	// TODO: rm on sdk 0.15.0
 	Assignee  *string    `json:"assignee"`
 	Assignees []string   `json:"assignees"`
 	Milestone *int64     `json:"milestone"`

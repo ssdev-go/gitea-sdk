@@ -59,11 +59,13 @@ func editIssues(t *testing.T, c *Client) {
 		Title: "Edited",
 		Body:  OptionalString("123 test and go"),
 		State: &state,
+		Ref:   OptionalString("master"),
 	})
 	assert.NoError(t, err)
 	assert.EqualValues(t, issue.ID, issueNew.ID)
 	assert.EqualValues(t, "123 test and go", issueNew.Body)
 	assert.EqualValues(t, "Edited", issueNew.Title)
+	assert.EqualValues(t, "master", issueNew.Ref)
 }
 
 func listIssues(t *testing.T, c *Client) {
