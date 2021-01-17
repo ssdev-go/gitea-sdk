@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/url"
 	"strings"
 	"time"
@@ -419,4 +420,21 @@ const (
 // e.g.: ref -> master, 70b7c74b33, v1.2.1, ...
 func (c *Client) GetArchive(owner, repo, ref string, ext ArchiveType) ([]byte, *Response, error) {
 	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/archive/%s%s", owner, repo, url.PathEscape(ref), ext), nil, nil)
+}
+
+// GetArchiveReader gets a `git archive` for a particular tree-ish git reference
+// such as a branch name (`master`), a commit hash (`70b7c74b33`), a tag
+// (`v1.2.1`). The archive is returned as a byte stream in a ReadCloser. It is
+// the responsibility of the client to close the reader.
+func (c *Client) GetArchiveReader(owner, repo, ref string, ext ArchiveType) (io.ReadCloser, *Response, error) {
+	resp, err := c.doRequest("GET", fmt.Sprintf("/repos/%s/%s/archive/%s%s", owner, repo, url.PathEscape(ref), ext), nil, nil)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	if _, err := statusCodeToErr(resp); err != nil {
+		return nil, resp, err
+	}
+
+	return resp.Body, resp, nil
 }

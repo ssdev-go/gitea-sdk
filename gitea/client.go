@@ -198,6 +198,48 @@ func (c *Client) doRequest(method, path string, header http.Header, body io.Read
 	return &Response{resp}, nil
 }
 
+// Converts a response for a HTTP status code indicating an error condition
+// (non-2XX) to a well-known error value and response body. For non-problematic
+// (2XX) status codes nil will be returned. Note that on a non-2XX response, the
+// response body stream will have been read and, hence, is closed on return.
+func statusCodeToErr(resp *Response) (body []byte, err error) {
+	// no error
+	if resp.StatusCode/100 == 2 {
+		return nil, nil
+	}
+
+	//
+	// error: body will be read for details
+	//
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("body read on HTTP error %d: %v", resp.StatusCode, err)
+	}
+
+	switch resp.StatusCode {
+	case 403:
+		return data, errors.New("403 Forbidden")
+	case 404:
+		return data, errors.New("404 Not Found")
+	case 409:
+		return data, errors.New("409 Conflict")
+	case 422:
+		return data, fmt.Errorf("422 Unprocessable Entity: %s", string(data))
+	}
+
+	path := resp.Request.URL.Path
+	method := resp.Request.Method
+	header := resp.Request.Header
+	errMap := make(map[string]interface{})
+	if err = json.Unmarshal(data, &errMap); err != nil {
+		// when the JSON can't be parsed, data was probably empty or a
+		// plain string, so we try to return a helpful error anyway
+		return data, fmt.Errorf("Unknown API Error: %d\nRequest: '%s' with '%s' method '%s' header and '%s' body", resp.StatusCode, path, method, header, string(data))
+	}
+	return data, errors.New(errMap["message"].(string))
+}
+
 func (c *Client) getResponse(method, path string, header http.Header, body io.Reader) ([]byte, *Response, error) {
 	resp, err := c.doRequest(method, path, header, body)
 	if err != nil {
@@ -205,30 +247,16 @@ func (c *Client) getResponse(method, path string, header http.Header, body io.Re
 	}
 	defer resp.Body.Close()
 
-	data, err := ioutil.ReadAll(resp.Body)
+	// check for errors
+	data, err := statusCodeToErr(resp)
+	if err != nil {
+		return data, resp, err
+	}
+
+	// success (2XX), read body
+	data, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, resp, err
-	}
-
-	switch resp.StatusCode {
-	case 403:
-		return data, resp, errors.New("403 Forbidden")
-	case 404:
-		return data, resp, errors.New("404 Not Found")
-	case 409:
-		return data, resp, errors.New("409 Conflict")
-	case 422:
-		return data, resp, fmt.Errorf("422 Unprocessable Entity: %s", string(data))
-	}
-
-	if resp.StatusCode/100 != 2 {
-		errMap := make(map[string]interface{})
-		if err = json.Unmarshal(data, &errMap); err != nil {
-			// when the JSON can't be parsed, data was probably empty or a plain string,
-			// so we try to return a helpful error anyway
-			return data, resp, fmt.Errorf("Unknown API Error: %d\nRequest: '%s' with '%s' method '%s' header and '%s' body", resp.StatusCode, path, method, header, string(data))
-		}
-		return data, resp, errors.New(errMap["message"].(string))
 	}
 
 	return data, resp, nil
