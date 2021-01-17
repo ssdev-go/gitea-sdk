@@ -21,6 +21,7 @@ type Release struct {
 	Title        string        `json:"name"`
 	Note         string        `json:"body"`
 	URL          string        `json:"url"`
+	HTMLURL      string        `json:"html_url"`
 	TarURL       string        `json:"tarball_url"`
 	ZipURL       string        `json:"zipball_url"`
 	IsDraft      bool          `json:"draft"`
