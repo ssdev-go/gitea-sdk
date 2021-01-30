@@ -138,7 +138,7 @@ func TestGetArchive(t *testing.T) {
 	time.Sleep(time.Second / 2)
 	archive, _, err := c.GetArchive(repo.Owner.UserName, repo.Name, "master", ZipArchive)
 	assert.NoError(t, err)
-	assert.EqualValues(t, 1620, len(archive))
+	assert.EqualValues(t, 1602, len(archive))
 }
 
 func TestGetArchiveReader(t *testing.T) {
@@ -153,8 +153,8 @@ func TestGetArchiveReader(t *testing.T) {
 	archive := bytes.NewBuffer(nil)
 	nBytes, err := io.Copy(archive, r)
 	assert.NoError(t, err)
-	assert.EqualValues(t, 1620, nBytes)
-	assert.EqualValues(t, 1620, len(archive.Bytes()))
+	assert.EqualValues(t, 1602, nBytes)
+	assert.EqualValues(t, nBytes, len(archive.Bytes()))
 }
 
 // standard func to create a init repo for test routines
