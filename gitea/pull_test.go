@@ -58,7 +58,7 @@ func TestPull(t *testing.T) {
 
 	diff, _, err := c.GetPullRequestDiff(c.username, repoName, pullUpdateFile.Index)
 	assert.NoError(t, err)
-	assert.Len(t, diff, 1310)
+	assert.Len(t, diff, 1281)
 	patch, _, err := c.GetPullRequestPatch(c.username, repoName, pullUpdateFile.Index)
 	assert.NoError(t, err)
 	assert.True(t, len(patch) > len(diff))

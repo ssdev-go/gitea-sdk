@@ -30,8 +30,10 @@ func TestAdminOrg(t *testing.T) {
 
 	orgs, _, err := c.AdminListOrgs(AdminListOrgsOptions{})
 	assert.NoError(t, err)
-	assert.Len(t, orgs, 1)
-	assert.EqualValues(t, newOrg.ID, orgs[0].ID)
+	if assert.True(t, len(orgs) >= 1) {
+		orgs = orgs[len(orgs)-1:]
+		assert.EqualValues(t, newOrg.ID, orgs[0].ID)
+	}
 
 	_, err = c.DeleteOrg(orgName)
 	assert.NoError(t, err)
@@ -43,7 +45,7 @@ func TestAdminCronTasks(t *testing.T) {
 
 	tasks, _, err := c.ListCronTasks(ListCronTaskOptions{})
 	assert.NoError(t, err)
-	assert.Len(t, tasks, 16)
+	assert.Len(t, tasks, 17)
 	_, err = c.RunCronTasks(tasks[0].Name)
 	assert.NoError(t, err)
 }

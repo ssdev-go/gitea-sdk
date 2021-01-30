@@ -136,7 +136,7 @@ func TestGetArchive(t *testing.T) {
 	time.Sleep(time.Second / 2)
 	archive, _, err := c.GetArchive(repo.Owner.UserName, repo.Name, "master", ZipArchive)
 	assert.NoError(t, err)
-	assert.EqualValues(t, 1620, len(archive))
+	assert.EqualValues(t, 1602, len(archive))
 }
 
 // standard func to create a init repo for test routines

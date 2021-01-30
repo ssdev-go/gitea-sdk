@@ -113,6 +113,7 @@ func TestNotifications(t *testing.T) {
 	c.sudo = ""
 	_, err = c.ReadNotifications(MarkNotificationOptions{})
 	assert.NoError(t, err)
+	_, _ = c.DeleteRepo("test01", "Reviews")
 	nList, _, err = c.ListNotifications(ListNotificationOptions{Status: []NotifyStatus{NotifyStatusRead}})
 	assert.NoError(t, err)
 	assert.Len(t, nList, 4)
