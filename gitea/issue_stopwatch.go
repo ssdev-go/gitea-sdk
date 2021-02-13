@@ -11,8 +11,13 @@ import (
 
 // StopWatch represents a running stopwatch of an issue / pr
 type StopWatch struct {
-	Created    time.Time `json:"created"`
-	IssueIndex int64     `json:"issue_index"`
+	Created       time.Time `json:"created"`
+	Seconds       int64     `json:"seconds"`
+	Duration      string    `json:"duration"`
+	IssueIndex    int64     `json:"issue_index"`
+	IssueTitle    string    `json:"issue_title"`
+	RepoOwnerName string    `json:"repo_owner_name"`
+	RepoName      string    `json:"repo_name"`
 }
 
 // GetMyStopwatches list all stopwatches

@@ -218,11 +218,12 @@ type EditIssueOption struct {
 	Ref   *string `json:"ref"`
 	// deprecated
 	// TODO: rm on sdk 0.15.0
-	Assignee  *string    `json:"assignee"`
-	Assignees []string   `json:"assignees"`
-	Milestone *int64     `json:"milestone"`
-	State     *StateType `json:"state"`
-	Deadline  *time.Time `json:"due_date"`
+	Assignee       *string    `json:"assignee"`
+	Assignees      []string   `json:"assignees"`
+	Milestone      *int64     `json:"milestone"`
+	State          *StateType `json:"state"`
+	Deadline       *time.Time `json:"due_date"`
+	RemoveDeadline *bool      `json:"unset_due_date"`
 }
 
 // Validate the EditIssueOption struct
