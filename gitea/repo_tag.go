@@ -29,3 +29,14 @@ func (c *Client) ListRepoTags(user, repo string, opt ListRepoTagsOptions) ([]*Ta
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/tags?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &tags)
 	return tags, resp, err
 }
+
+// DeleteTag deletes a tag from a repository, if no release refers to it
+func (c *Client) DeleteTag(user, repo string, tag string) (*Response, error) {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_14_0); err != nil {
+		return nil, err
+	}
+	_, resp, err := c.getResponse("DELETE",
+		fmt.Sprintf("/repos/%s/%s/tags/%s", user, repo, tag),
+		nil, nil)
+	return resp, err
+}

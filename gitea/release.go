@@ -133,8 +133,8 @@ func (c *Client) DeleteRelease(user, repo string, id int64) (*Response, error) {
 	return resp, err
 }
 
-// DeleteReleaseTag deletes a tag from a repository, if no release refers to it.
-func (c *Client) DeleteReleaseTag(user, repo string, tag string) (*Response, error) {
+// DeleteReleaseByTag deletes a release frm a repository by tag
+func (c *Client) DeleteReleaseByTag(user, repo string, tag string) (*Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_14_0); err != nil {
 		return nil, err
 	}
