@@ -97,6 +97,11 @@ type SubmitPullReviewOptions struct {
 	Body  string          `json:"body"`
 }
 
+// DismissPullReviewOptions are options to dismiss a pull review
+type DismissPullReviewOptions struct {
+	Message string `json:"message"`
+}
+
 // ListPullReviewsOptions options for listing PullReviews
 type ListPullReviewsOptions struct {
 	ListOptions
@@ -220,4 +225,32 @@ func (c *Client) SubmitPullReview(owner, repo string, index, id int64, opt Submi
 		fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d", owner, repo, index, id),
 		jsonHeader, bytes.NewReader(body), r)
 	return r, resp, err
+}
+
+// DismissPullReview dismiss a review for a pull request
+func (c *Client) DismissPullReview(owner, repo string, index, id int64, opt DismissPullReviewOptions) (*Response, error) {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_14_0); err != nil {
+		return nil, err
+	}
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, err
+	}
+
+	_, resp, err := c.getResponse("POST",
+		fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d/dismissals", owner, repo, index, id),
+		jsonHeader, bytes.NewReader(body))
+	return resp, err
+}
+
+// UnDismissPullReview cancel to dismiss a review for a pull request
+func (c *Client) UnDismissPullReview(owner, repo string, index, id int64) (*Response, error) {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_14_0); err != nil {
+		return nil, err
+	}
+
+	_, resp, err := c.getResponse("POST",
+		fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d/undismissals", owner, repo, index, id),
+		jsonHeader, nil)
+	return resp, err
 }
