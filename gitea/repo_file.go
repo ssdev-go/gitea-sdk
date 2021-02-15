@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // FileOptions options for all file APIs
@@ -120,11 +121,21 @@ func (c *Client) GetFile(user, repo, ref, tree string) ([]byte, *Response, error
 	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/raw/%s/%s", user, repo, ref, tree), nil, nil)
 }
 
-// GetContents get the metadata and contents (if a file) of an entry in a repository, or a list of entries if a dir
+// GetContents get the metadata and contents of a file in a repository
 // ref is optional
 func (c *Client) GetContents(owner, repo, ref, filepath string) (*ContentsResponse, *Response, error) {
 	cr := new(ContentsResponse)
+	filepath = strings.TrimPrefix(filepath, "/")
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, ref), jsonHeader, nil, cr)
+	return cr, resp, err
+}
+
+// ListContents gets a list of entries in a dir
+// ref is optional
+func (c *Client) ListContents(owner, repo, ref, filepath string) ([]*ContentsResponse, *Response, error) {
+	cr := make([]*ContentsResponse, 0)
+	filepath = strings.TrimPrefix(filepath, "/")
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, ref), jsonHeader, nil, &cr)
 	return cr, resp, err
 }
 
