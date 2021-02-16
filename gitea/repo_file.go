@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -115,32 +116,49 @@ type FileDeleteResponse struct {
 	Verification *PayloadCommitVerification `json:"verification"`
 }
 
+// pathEscapeSegments escapes segments of a path while not escaping forward slash
+func pathEscapeSegments(path string) string {
+	slice := strings.Split(path, "/")
+	for index := range slice {
+		slice[index] = url.PathEscape(slice[index])
+	}
+	escapedPath := strings.Join(slice, "/")
+	return escapedPath
+}
+
 // GetFile downloads a file of repository, ref can be branch/tag/commit.
-// e.g.: ref -> master, tree -> macaron.go(no leading slash)
-func (c *Client) GetFile(user, repo, ref, tree string) ([]byte, *Response, error) {
-	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/raw/%s/%s", user, repo, ref, tree), nil, nil)
+// e.g.: ref -> master, filepath -> README.md (no leading slash)
+func (c *Client) GetFile(owner, repo, ref, filepath string) ([]byte, *Response, error) {
+	filepath = pathEscapeSegments(filepath)
+	if c.checkServerVersionGreaterThanOrEqual(version1_14_0) != nil {
+		return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/raw/%s/%s", owner, repo, ref, filepath), nil, nil)
+	}
+	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/raw/%s?ref=%s", owner, repo, filepath, url.QueryEscape(ref)), nil, nil)
 }
 
 // GetContents get the metadata and contents of a file in a repository
 // ref is optional
 func (c *Client) GetContents(owner, repo, ref, filepath string) (*ContentsResponse, *Response, error) {
+	filepath = pathEscapeSegments(filepath)
 	cr := new(ContentsResponse)
 	filepath = strings.TrimPrefix(filepath, "/")
-	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, ref), jsonHeader, nil, cr)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, url.QueryEscape(ref)), jsonHeader, nil, cr)
 	return cr, resp, err
 }
 
 // ListContents gets a list of entries in a dir
 // ref is optional
 func (c *Client) ListContents(owner, repo, ref, filepath string) ([]*ContentsResponse, *Response, error) {
+	filepath = pathEscapeSegments(filepath)
 	cr := make([]*ContentsResponse, 0)
 	filepath = strings.TrimPrefix(filepath, "/")
-	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, ref), jsonHeader, nil, &cr)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/contents/%s?ref=%s", owner, repo, filepath, url.QueryEscape(ref)), jsonHeader, nil, &cr)
 	return cr, resp, err
 }
 
 // CreateFile create a file in a repository
 func (c *Client) CreateFile(owner, repo, filepath string, opt CreateFileOptions) (*FileResponse, *Response, error) {
+	filepath = pathEscapeSegments(filepath)
 	var err error
 	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
 		return nil, nil, err
@@ -157,6 +175,7 @@ func (c *Client) CreateFile(owner, repo, filepath string, opt CreateFileOptions)
 
 // UpdateFile update a file in a repository
 func (c *Client) UpdateFile(owner, repo, filepath string, opt UpdateFileOptions) (*FileResponse, *Response, error) {
+	filepath = pathEscapeSegments(filepath)
 	var err error
 	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
 		return nil, nil, err
@@ -173,6 +192,7 @@ func (c *Client) UpdateFile(owner, repo, filepath string, opt UpdateFileOptions)
 
 // DeleteFile delete a file from repository
 func (c *Client) DeleteFile(owner, repo, filepath string, opt DeleteFileOptions) (*Response, error) {
+	filepath = pathEscapeSegments(filepath)
 	var err error
 	if opt.BranchName, err = c.setDefaultBranchForOldVersions(owner, repo, opt.BranchName); err != nil {
 		return nil, err
