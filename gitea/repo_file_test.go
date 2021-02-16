@@ -59,7 +59,7 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	_, resp, err := c.GetFile(repo.Owner.UserName, repo.Name, "master", testFileName)
-	assert.EqualValues(t, "404 Not Found", err.Error())
+	assert.Error(t, err)
 	assert.EqualValues(t, 404, resp.StatusCode)
 
 	licence, _, err := c.GetContents(repo.Owner.UserName, repo.Name, "", "LICENSE")
@@ -82,4 +82,35 @@ func TestFileCreateUpdateGet(t *testing.T) {
 	assert.NotNil(t, licence)
 	assert.False(t, bytes.Equal(licenceRaw, licenceRawNew))
 	assert.EqualValues(t, testContent, base64.StdEncoding.EncodeToString(licenceRawNew))
+
+	// ListContents in root dir of default branch
+	dir, resp, err := c.ListContents(repo.Owner.UserName, repo.Name, "", "")
+	assert.NoError(t, err)
+	assert.Len(t, dir, 3)
+	assert.NotNil(t, resp)
+
+	// ListContents in not existing dir of default branch
+	_, resp, err = c.ListContents(repo.Owner.UserName, repo.Name, "", "/hehe/")
+	assert.Error(t, err)
+	assert.EqualValues(t, 404, resp.StatusCode)
+	// ListContents in root dir of not existing branch
+	_, resp, err = c.ListContents(repo.Owner.UserName, repo.Name, "no-ref-at-all", "")
+	assert.Error(t, err)
+	assert.EqualValues(t, 404, resp.StatusCode)
+
+	// ListContents try to get file as dir
+	dir, resp, err = c.ListContents(repo.Owner.UserName, repo.Name, "", "LICENSE")
+	if assert.Error(t, err) {
+		assert.EqualValues(t, "expect directory, got file", err.Error())
+	}
+	assert.Nil(t, dir)
+	assert.EqualValues(t, 200, resp.StatusCode)
+
+	// GetContents try to get dir as file
+	file, resp, err = c.GetContents(repo.Owner.UserName, repo.Name, "", "")
+	if assert.Error(t, err) {
+		assert.EqualValues(t, "expect file, got directory", err.Error())
+	}
+	assert.Nil(t, file)
+	assert.EqualValues(t, 200, resp.StatusCode)
 }
