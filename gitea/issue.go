@@ -253,6 +253,8 @@ func (c *Client) EditIssue(owner, repo string, index int64, opt EditIssueOption)
 
 func (c *Client) issueBackwardsCompatibility(issue *Issue) {
 	if c.checkServerVersionGreaterThanOrEqual(version1_12_0) != nil {
+		c.mutex.RLock()
 		issue.HTMLURL = fmt.Sprintf("%s/%s/issues/%d", c.url, issue.Repository.FullName, issue.Index)
+		c.mutex.RUnlock()
 	}
 }
