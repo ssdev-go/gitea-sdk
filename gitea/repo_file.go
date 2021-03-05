@@ -154,7 +154,24 @@ func (c *Client) GetContents(owner, repo, ref, filepath string) (*ContentsRespon
 // ListContents gets a list of entries in a dir
 // ref is optional
 func (c *Client) ListContents(owner, repo, ref, filepath string) ([]*ContentsResponse, *Response, error) {
+	if filepath == "" {
+		return c.listRootContents(owner, repo, ref)
+	}
 	data, resp, err := c.getDirOrFileContents(owner, repo, ref, filepath)
+	if err != nil {
+		return nil, resp, err
+	}
+	crl := make([]*ContentsResponse, 0)
+	if json.Unmarshal(data, &crl) != nil {
+		return nil, resp, fmt.Errorf("expect directory, got file")
+	}
+	return crl, resp, err
+}
+
+// ListRootContents gets a list of entries in a dir
+// ref is optional
+func (c *Client) listRootContents(owner, repo, ref string) ([]*ContentsResponse, *Response, error) {
+	data, resp, err := c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/contents?ref=%s", owner, repo, url.QueryEscape(ref)), jsonHeader, nil)
 	if err != nil {
 		return nil, resp, err
 	}
